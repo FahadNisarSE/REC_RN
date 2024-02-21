@@ -119,6 +119,8 @@ dependencies {
     implementation("com.facebook.react:flipper-integration")
     implementation project(':react-native-splash-screen')
 
+    implementation project(':visionmodule')
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

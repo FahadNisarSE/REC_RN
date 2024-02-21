@@ -4,3 +4,6 @@ include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
 include ':react-native-splash-screen'   
 project(':react-native-splash-screen').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-splash-screen/android')
+include ':visionmodule'
+include ':vision-sdk'
+
