@@ -7,3 +7,10 @@ project(':react-native-splash-screen').projectDir = new File(rootProject.project
 include ':visionmodule'
 include ':vision-sdk'
 
+include ':cameramodule'
+include ':ijkplayer-java'
+include ':ijkplayer-media'
+
+include ':ijkplayer-armv5'
+include ':ijkplayer-armv7a'
+include ':ijkplayer-arm64'
