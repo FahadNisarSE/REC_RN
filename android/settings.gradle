@@ -8,9 +8,10 @@ include ':visionmodule'
 include ':vision-sdk'
 
 include ':cameramodule'
-include ':ijkplayer-java'
-include ':ijkplayer-media'
 
+include ':video-player-media-module'
+include ':video-player-java-module'
+
+include ':ijkplayer-arm64'
 include ':ijkplayer-armv5'
 include ':ijkplayer-armv7a'
-include ':ijkplayer-arm64'

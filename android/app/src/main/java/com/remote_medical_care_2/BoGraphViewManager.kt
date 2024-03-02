@@ -26,6 +26,8 @@ class BoGraphViewManager(
     private var propMarginTop: Int? = null
 
 
+
+
     override fun getName() = REACT_CLASS
 
     /**
@@ -33,6 +35,8 @@ class BoGraphViewManager(
      */
     override fun createViewInstance(reactContext: ThemedReactContext): RelativeLayout =
         RelativeLayout(reactContext)
+
+
 
     /**
      * Map the "create" command to an integer
