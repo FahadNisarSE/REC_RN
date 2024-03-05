@@ -57,7 +57,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             promise.reject("BluetoothError", "Bluetooth is not enabled ")
             return
         }
-        startScan()
+//        startScan()
         println(msg)
     }
 

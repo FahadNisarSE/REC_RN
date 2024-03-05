@@ -12,10 +12,10 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.remote_medical_care.videoplayer_media.widget.IRenderView
-import com.remote_medical_care.videoplayer_media.widget.IjkMpOptions
-import com.remote_medical_care.videoplayer_media.widget.IjkVideoView
-import com.remote_medical_care_2.video_player_java_module.IjkMediaPlayer
+import tv.danmaku.ijk.media.player.IjkMediaPlayer
+import tv.danmaku.ijk.media.widget.IRenderView
+import tv.danmaku.ijk.media.widget.IjkMpOptions
+import tv.danmaku.ijk.media.widget.IjkVideoView
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
@@ -66,11 +66,25 @@ class CameraPreviewFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        arguments?.let {
+//            param1 = it.getString(com.remote_medical_care_2.ARG_PARAM1)
+//            param2 = it.getString(com.remote_medical_care_2.ARG_PARAM2)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
         try {
             TCPClient.getInstance()?.info
         } catch (e: IOException) {
             e.printStackTrace()
         }
+
+        UdpTaskCenter.sharedCenter()?.listen("192.168.1.1", 890);
+        UdpTaskCenter.sharedCenter()?.heartBeatTask()
+        UdpTaskCenter.sharedCenter()?.setSendHeartBeat(true)
 //        reqWrite()
 
 //        init player
@@ -97,6 +111,7 @@ class CameraPreviewFragment : Fragment() {
             cifVideoData = ByteArray(inStream.available())
             inStream.read(cifVideoData)
         }catch (e: Exception){
+            Log.e(TAG, "inStream failed")
             e.printStackTrace()
         }
 
@@ -139,11 +154,12 @@ class CameraPreviewFragment : Fragment() {
         /* 进度条 */mProgressBar = view?.findViewById(R.id.progressBar) as ProgressBar
         setTakePhotoCallBack()
 
-        arguments?.let {
-//            param1 = it.getString(com.remote_medical_care_2.ARG_PARAM1)
-//            param2 = it.getString(com.remote_medical_care_2.ARG_PARAM2)
-        }
+        mVideoView!!.setRender(VIDEO_VIEW_RENDER)
+        mVideoView!!.setAspectRatio(VIDEO_VIEW_ASPECT)
+        mVideoView!!.setVideoPath(mVideoPath)
+        mVideoView!!.start()
     }
+
 
     /* IjkPlayer */
     private fun initVideoView(videoView: IjkVideoView?, videoPath: String?): Boolean {
@@ -557,9 +573,6 @@ class CameraPreviewFragment : Fragment() {
 //        return inflater.inflate(R.layout.fragment_bo, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
 
     companion object {
         /**

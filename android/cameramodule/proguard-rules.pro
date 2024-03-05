@@ -19,3 +19,22 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
+
+-keepattributes *Annotation*
+
+-keep class tv.danmaku.ijk.media.player.annotations.*
+-keepclasseswithmembers class * {
+    native <methods>;
+    @tv.danmaku.ijk.media.player.annotations.CalledByNative <methods>;
+    @tv.danmaku.ijk.media.player.annotations.AccessedByNative <fields>;
+}
+
+-keep interface tv.danmaku.ijk.media.player.misc.* { *; }
+
+-keep class com.squareup.otto.*
+-keepclasseswithmembers class * {
+    @com.squareup.otto.Subscribe <methods>;
+}
