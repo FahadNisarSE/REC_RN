@@ -82,9 +82,9 @@ class CameraPreviewFragment : Fragment() {
             e.printStackTrace()
         }
 
-        UdpTaskCenter.sharedCenter()?.listen("192.168.1.1", 890);
-        UdpTaskCenter.sharedCenter()?.heartBeatTask()
-        UdpTaskCenter.sharedCenter()?.setSendHeartBeat(true)
+//        UdpTaskCenter.sharedCenter()?.listen("192.168.1.1", 890);
+//        UdpTaskCenter.sharedCenter()?.heartBeatTask()
+//        UdpTaskCenter.sharedCenter()?.setSendHeartBeat(true)
 //        reqWrite()
 
 //        init player
@@ -117,47 +117,54 @@ class CameraPreviewFragment : Fragment() {
 
 
         /* 按键 */
-        mTakePictureButton = view?.findViewById(R.id.take_picture_button) as Button
-        mTakePictureButton!!.setOnClickListener( object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                takePhoto(1)
-            }
-        })
+//        mTakePictureButton = view?.findViewById(R.id.take_picture_button) as Button
+//        mTakePictureButton!!.setOnClickListener( object : View.OnClickListener {
+//            override fun onClick(v: View?) {
+//                takePhoto(1)
+//            }
+//        })
 
-        mRecordVideoButton = view?.findViewById(R.id.record_video_button) as Button
-        mRecordVideoButton!!.setOnClickListener( object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                recordVideo()
-            }
-        })
+//        mRecordVideoButton = view?.findViewById(R.id.record_video_button) as Button
+//        mRecordVideoButton!!.setOnClickListener( object : View.OnClickListener {
+//            override fun onClick(v: View?) {
+//                recordVideo()
+//            }
+//        })
 
-        mSetVrModeButton = view?.findViewById(R.id.set_vr_mode_button) as Button
-        mSetVrModeButton!!.setOnClickListener(View.OnClickListener {
-            val isVrMode = mVideoView!!.isVrMode
-            setVrMode(!isVrMode)
-        })
+//        mSetVrModeButton = view?.findViewById(R.id.set_vr_mode_button) as Button
+//        mSetVrModeButton!!.setOnClickListener(View.OnClickListener {
+//            val isVrMode = mVideoView!!.isVrMode
+//            setVrMode(!isVrMode)
+//        })
 
-        mSetVideoRotationButton = view?.findViewById(R.id.set_video_rotation_button) as Button
-        mSetVideoRotationButton!!.setOnClickListener(View.OnClickListener {
-            videoRotationDegree += 90
-            videoRotationDegree %= 360
-            setVideoRotation(videoRotationDegree)
-        })
+//        mSetVideoRotationButton = view?.findViewById(R.id.set_video_rotation_button) as Button
+//        mSetVideoRotationButton!!.setOnClickListener(View.OnClickListener {
+//            videoRotationDegree += 90
+//            videoRotationDegree %= 360
+//            setVideoRotation()
+//        })
 
-        mSetVideoRotation180Button = view?.findViewById(R.id.set_video_rotation_180_button) as Button
-        mSetVideoRotation180Button!!.setOnClickListener(View.OnClickListener {
-            val isRotation180 = mVideoView!!.isRotation180
-            setVideoRotation180(!isRotation180)
-        })
+//        mSetVideoRotation180Button = view?.findViewById(R.id.set_video_rotation_180_button) as Button
+//        mSetVideoRotation180Button!!.setOnClickListener(View.OnClickListener {
+//            val isRotation180 = mVideoView!!.isRotation180
+//            setVideoRotation180(!isRotation180)
+//        })
 
 
         /* 进度条 */mProgressBar = view?.findViewById(R.id.progressBar) as ProgressBar
         setTakePhotoCallBack()
+    }
 
+    fun startVideo(){
+        mVideoPath = Constants.RTSP_ADDRESS
         mVideoView!!.setRender(VIDEO_VIEW_RENDER)
         mVideoView!!.setAspectRatio(VIDEO_VIEW_ASPECT)
         mVideoView!!.setVideoPath(mVideoPath)
         mVideoView!!.start()
+    }
+
+    fun stopVideo(){
+        onStopPlayback()
     }
 
 
@@ -374,6 +381,14 @@ class CameraPreviewFragment : Fragment() {
         UdpTaskCenter.sharedCenter()!!.listen("192.168.1.1", 8990)
         UdpTaskCenter.sharedCenter()!!.heartBeatTask()
         UdpTaskCenter.sharedCenter()!!.setSendHeartBeat(true)
+
+
+    }
+
+    private fun onStopPlayback(){
+        mVideoView!!.stopPlayback()
+        mVideoView!!.release(true)
+        mVideoView!!.stopBackgroundPlay()
     }
 
     private fun stopAndRestartPlayback() {
@@ -455,8 +470,10 @@ class CameraPreviewFragment : Fragment() {
         mVideoView!!.isVrMode = en
     }
 
-    private fun setVideoRotation(degree: Int) {
-        mVideoView!!.setVideoRotation(degree)
+    fun rotateVideo() {
+        videoRotationDegree += 90
+        videoRotationDegree %= 360
+        mVideoView!!.setVideoRotation(videoRotationDegree)
     }
 
     private fun setVideoRotation180(enable: Boolean) {

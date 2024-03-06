@@ -14,6 +14,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
+import tv.danmaku.ijk.media.widget.IjkVideoView
 
 class CameraPreviewViewManager(
     private val reactContext: ReactApplicationContext
@@ -23,6 +24,8 @@ class CameraPreviewViewManager(
     private var propWidth: Int? = null
     private var propHeight: Int? = null
     private var propMarginTop: Int? = null
+
+    private var fragment: CameraPreviewFragment? = null
 
 
 
@@ -41,7 +44,7 @@ class CameraPreviewViewManager(
      * Map the "create" command to an integer
      */
     override fun getCommandsMap() =
-        mapOf("create" to COMMAND_CREATE, "updateWaveData" to COMMAND_UPDATE_WAVE_DATA)
+        mapOf("create" to COMMAND_CREATE, "rotateVideo" to COMMAND_ROTATE_VIDEO, "startVideo" to COMMAND_START_VIDEO, "stopVideo" to COMMAND_STOP_VIDEO)
 
     /**
      * Handle "create" command (called from JS) and call createFragment method
@@ -53,14 +56,19 @@ class CameraPreviewViewManager(
         if (commandId != null) {
             when (commandId.toInt()) {
                 COMMAND_CREATE -> createFragment(root, reactNativeViewId)
-                COMMAND_UPDATE_WAVE_DATA -> {
-//                    val boWaveView: WaveSurfaceView = root.findViewById(R.id.bo_wave_view)
+                COMMAND_ROTATE_VIDEO -> {
+                    fragment?.rotateVideo()
+                    val mVideoView = root.findViewById(R.id.video_view) as IjkVideoView
+
+//                    mVideoView!!.setVideoRotation(degree)
 
 //                    val waveData = args.getInt(1)
 //                    boWaveView.mDrawWave.addData(waveData)
 
 //                    Log.e(TAG, "Update command called ${args.getInt(1)}")
                 }
+                COMMAND_START_VIDEO -> fragment?.startVideo()
+                COMMAND_STOP_VIDEO -> fragment?.stopVideo()
             }
         }
     }
@@ -80,11 +88,11 @@ class CameraPreviewViewManager(
         val parentView = root.findViewById<ViewGroup>(reactNativeViewId)
         setupLayout(parentView)
 
-        val myFragment = CameraPreviewFragment()
+        fragment = CameraPreviewFragment()
         val activity = reactContext.currentActivity as FragmentActivity
         activity.supportFragmentManager
             .beginTransaction()
-            .replace(reactNativeViewId, myFragment, reactNativeViewId.toString())
+            .replace(reactNativeViewId, fragment!!, reactNativeViewId.toString())
             .commit()
     }
 
@@ -115,9 +123,13 @@ class CameraPreviewViewManager(
         view.layout(0, marginTop, width, height)
     }
 
+
+
     companion object {
         private const val REACT_CLASS = "CameraPreviewViewManager"
         private const val COMMAND_CREATE = 1
-        private const val COMMAND_UPDATE_WAVE_DATA = 2
+        private const val COMMAND_ROTATE_VIDEO = 2
+        private const val COMMAND_START_VIDEO = 3
+        private const val COMMAND_STOP_VIDEO = 4
     }
 }

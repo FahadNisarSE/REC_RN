@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     >
 
     <!--背景、视频播放界面、进度条-->
@@ -28,50 +28,50 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true">-->
 
-        <Button
-            android:id="@+id/take_picture_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="photo"/>
+<!--        <Button-->
+<!--            android:id="@+id/take_picture_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="photo"/>-->
 
-        <Button
-            android:id="@+id/record_video_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="record"/>
-
-
-
-        <Button
-            android:id="@+id/set_vr_mode_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="VRmode"/>
-
-        <Button
-            android:id="@+id/set_video_rotation_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="rotation90°"/>
-
-        <Button
-            android:id="@+id/set_video_rotation_180_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="rotation180°"/>
+<!--        <Button-->
+<!--            android:id="@+id/record_video_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="record"/>-->
 
 
 
-    </LinearLayout>
+<!--        <Button-->
+<!--            android:id="@+id/set_vr_mode_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="VRmode"/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/set_video_rotation_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="rotation90°"/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/set_video_rotation_180_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="rotation180°"/>-->
+
+
+
+<!--    </LinearLayout>-->
 
 </RelativeLayout>

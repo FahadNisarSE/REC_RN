@@ -2,15 +2,25 @@ import {
   findNodeHandle,
   PixelRatio,
   requireNativeComponent,
+  Text,
+  TouchableOpacity,
   UIManager,
   useWindowDimensions,
   View,
 } from 'react-native';
-import {forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
-const CameraPreviewViewManager = requireNativeComponent(
-  'CameraPreviewViewManager',
-);
+let CameraPreviewViewManager;
+
+try {
+  CameraPreviewViewManager = requireNativeComponent('CameraPreviewViewManager');
+} catch (e) {}
 
 const createCameraPreviewFragment = (viewId: number) => {
   try {
@@ -20,27 +30,48 @@ const createCameraPreviewFragment = (viewId: number) => {
       UIManager.CameraPreviewViewManager.Commands.create.toString(),
       [viewId],
     );
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 };
 
-const updateWaveData = (viewId: number, updateData: number) =>
+const rotateVideo = (viewId: number) =>
   UIManager.dispatchViewManagerCommand(
     viewId,
     // we are calling the 'create' command
-    UIManager.CameraPreviewViewManager.Commands.updateWaveData.toString(),
-    [viewId, updateData],
+    UIManager.CameraPreviewViewManager.Commands.rotateVideo.toString(),
+    [viewId],
+  );
+const startVideo = (viewId: number) =>
+  UIManager.dispatchViewManagerCommand(
+    viewId,
+    // we are calling the 'create' command
+    UIManager.CameraPreviewViewManager.Commands.startVideo.toString(),
+    [viewId],
+  );
+const stopVideo = (viewId: number) =>
+  UIManager.dispatchViewManagerCommand(
+    viewId,
+    // we are calling the 'create' command
+    UIManager.CameraPreviewViewManager.Commands.stopVideo.toString(),
+    [viewId],
   );
 
 const CameraPreview = forwardRef((props, ref) => {
-  const boGraphRef = useRef(null);
+  const cameraPreviewRef = useRef(null);
+  const cameraPreviewCreated = useRef<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    const viewId = findNodeHandle(boGraphRef.current);
-    if (viewId) createCameraPreviewFragment(viewId);
+    const viewId = findNodeHandle(cameraPreviewRef.current);
+    if (viewId && !cameraPreviewCreated.current) {
+      createCameraPreviewFragment(viewId);
+      cameraPreviewCreated.current = true;
+    }
   }, []);
 
   function updateData(updatedData: number) {
-    const viewId = findNodeHandle(boGraphRef.current);
+    const viewId = findNodeHandle(cameraPreviewRef.current);
     if (viewId) updateWaveData(viewId, updatedData);
   }
 
@@ -67,8 +98,40 @@ const CameraPreview = forwardRef((props, ref) => {
           ),
           marginTop: 240,
         }}
-        ref={boGraphRef}
+        ref={cameraPreviewRef}
       />
+      <View
+        style={{
+          width: '100%',
+          height: '100%',
+          zIndex: 999,
+          backgroundColor: 'transparent',
+          position: 'absolute',
+          justifyContent: 'flex-end',
+          padding: 32,
+        }}>
+        <TouchableOpacity
+          onPress={() => {
+            if (!isPlaying) {
+              setIsPlaying(true);
+              startVideo(findNodeHandle(cameraPreviewRef.current)!);
+            } else {
+              stopVideo(findNodeHandle(cameraPreviewRef.current)!);
+              setIsPlaying(false);
+            }
+          }}
+          style={{
+            width: 68,
+            height: 68,
+            borderRadius: 100,
+            backgroundColor: 'orange',
+            alignSelf: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text style={{color: 'black'}}>{isPlaying ? 'Stop' : 'Play'}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 });
