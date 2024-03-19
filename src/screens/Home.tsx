@@ -1,29 +1,23 @@
-import React, {useState} from 'react';
-import {
-  Dimensions,
-  Image,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import CustomSafeArea from '../components/CustomSafeArea';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React from 'react';
+import { Image, StatusBar, View } from 'react-native';
+import AppointmentList from '../components/AppointmentList';
+import Instruction from '../components/Instruction';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import CustomTextRegular from '../components/ui/CustomTextRegular';
-import RecommendedTestsList from '../components/RecommendedTestsList';
+import { BASE_IMG_URL } from '../utils/config';
+import { useSignInStore } from '../utils/store/useSignInStore';
 
-const dimension = Dimensions.get('window');
-type tabName = 'appointment' | 'devices' | 'instruction';
+const Tab = createMaterialTopTabNavigator();
 
-export default function Home({navigation}: {navigation: any}) {
-  const [activeTab, setActiveTab] = useState<tabName>('appointment');
-  const [infoViewHeight, setInfoViewHeight] = useState(0);
+export default function Home() {
+  const {userData} = useSignInStore();
 
   return (
-    <CustomSafeArea stylesClass="flex-1 mx-5">
-      <StatusBar backgroundColor="rgb(0 166 66)" />
-      {/* User information  */}
-      <View onLayout={e => setInfoViewHeight(e.nativeEvent.layout.height)}>
+    <>
+      <View className="flex-1 mx-5">
+        <StatusBar backgroundColor="#46b98d" />
+
+        {/* User information  */}
         <View className="relative mt-4 overflow-hidden rounded-lg">
           <Image
             source={require('../assets/images/background.png')}
@@ -37,109 +31,63 @@ export default function Home({navigation}: {navigation: any}) {
                   Welcome Back
                 </CustomTextSemiBold>
                 <CustomTextSemiBold className="text-2xl text-white">
-                  Josh Alexander
+                  {`${userData?.Firstname} ${userData?.Lastname}`}
                 </CustomTextSemiBold>
               </View>
               <Image
                 className="w-16 h-16 rounded-full"
-                source={require('../assets/images/avatar-02.jpg')}
+                source={{uri: `${BASE_IMG_URL}${userData?.ProfileImg}`}}
                 alt="username"
                 style={{objectFit: 'cover'}}
               />
             </View>
             <View className="flex-row items-end justify-between mt-4">
-              <View>
+              <View className="max-w-[60%]">
                 <CustomTextSemiBold className="mt-1 text-sm text-white">
-                  Josh@mail.com
+                  {userData?.Email}
                 </CustomTextSemiBold>
               </View>
               <View>
                 <CustomTextSemiBold className="mt-1 text-sm text-right text-white">
-                  Male
+                  {userData?.Gender === '1' ? 'Male' : 'Female'}
                 </CustomTextSemiBold>
-                <CustomTextSemiBold className="mt-1 text-sm text-right text-white">
-                  Jan 12, 2000
-                </CustomTextSemiBold>
+                {userData?.Dob && (
+                  <CustomTextSemiBold className="mt-1 text-sm text-right text-white">
+                    {userData?.Dob}
+                  </CustomTextSemiBold>
+                )}
               </View>
             </View>
           </View>
         </View>
-
-        {/* Menu Bar */}
-        <View className="flex-row justify-center gap-1 my-5">
-          <TouchableOpacity
-            onPress={() => setActiveTab('appointment')}
-            activeOpacity={0.7}
-            className={`flex-1 py-3 border border-transparent justify-center border-b-green rounded-lg ${
-              activeTab === 'appointment'
-                ? 'bg-green'
-                : 'bg-gray-50'
-            }`}>
-            <CustomTextSemiBold
-              className={`text-center text-xs ${
-                activeTab === 'appointment' ? 'text-white' : 'text-secondary'
-              }`}>
-              Instructions
-            </CustomTextSemiBold>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setActiveTab('devices')}
-            activeOpacity={0.7}
-            className={`flex-1 justify-center border border-transparent py-3 border-b-green rounded-lg ${
-              activeTab === 'devices'
-                ? 'bg-green'
-                : 'bg-gray-50'
-            }`}>
-            <CustomTextSemiBold
-              className={`text-center text-xs ${
-                activeTab === 'devices' ? 'text-white' : 'text-secondary'
-              }`}>
-              Recom. Tests
-            </CustomTextSemiBold>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setActiveTab('instruction')}
-            activeOpacity={0.7}
-            className={`flex-1 py-3 border border-transparent justify-center border-b-green rounded-lg ${
-              activeTab === 'instruction'
-                ? 'bg-green'
-                : 'bg-gray-50'
-            }`}>
-            <CustomTextSemiBold
-              className={`text-center text-xs ${
-                activeTab === 'instruction' ? 'text-white' : 'text-secondary'
-              }`}>
-              Appointments
-            </CustomTextSemiBold>
-          </TouchableOpacity>
-        </View>
+        <HomeTabs />
       </View>
-
-      {/* Conditionally Rendering components */}
-      <CustomRender activeTab={activeTab} infoViewHeight={infoViewHeight} />
-    </CustomSafeArea>
+    </>
   );
 }
 
-function CustomRender({
-  activeTab,
-  infoViewHeight,
-}: {
-  activeTab: tabName;
-  infoViewHeight: number;
-}) {
-  if (activeTab === 'appointment') return <></>;
-
-  if (activeTab === 'devices')
-    return <RecommendedTestsList infoViewHeight={infoViewHeight} />;
-
-  return <></>;
-}
-
-const styles = StyleSheet.create({
-  homeBody: {
-    height: dimension.height * 0.8,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-  },
-});
+const HomeTabs = () => {
+  return (
+    <View className="flex-1 w-full h-full pb-2 mt-5 overflow-hidden rounded-md">
+      <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: {
+            position: 'relative',
+          },
+          tabBarIndicatorStyle: {backgroundColor: '#46b98d'},
+          tabBarLabelStyle: {
+            fontSize: 14,
+            color: '#02200a',
+            textTransform: 'capitalize',
+            fontFamily: 'Inter-SemiBold',
+          },
+          tabBarAndroidRipple: {borderless: false},
+          tabBarPressColor: 'rgba(0, 0, 0, 0.1)',
+        }}>
+        <Tab.Screen name="instructions" component={Instruction} />
+        {/* <Tab.Screen name="recom. tests" component={RecommendedTestsList} /> */}
+        <Tab.Screen name="appointments" component={AppointmentList} />
+      </Tab.Navigator>
+    </View>
+  );
+};

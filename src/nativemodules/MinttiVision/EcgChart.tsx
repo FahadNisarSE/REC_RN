@@ -4,6 +4,7 @@ import {
   requireNativeComponent,
   UIManager,
   useWindowDimensions,
+  View,
 } from 'react-native';
 import {forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
 
@@ -37,6 +38,7 @@ const EcgChart = forwardRef((props, ref) => {
 
   function updateEcgData(updatedData: number) {
     const viewId = findNodeHandle(ecgChartRef.current);
+    console.log('Update wave data: ', {updatedData, viewId});
     if (viewId) updateEcgWaveData(viewId, updatedData);
   }
 
@@ -45,18 +47,26 @@ const EcgChart = forwardRef((props, ref) => {
   }));
 
   return (
-    <EcgChartViewManager
+    <View
+      className="border border-gray-200"
       style={{
-        // converts dpi to px, provide desired height
-        height: PixelRatio.getPixelSizeForLayoutSize(200),
-        // converts dpi to px, provide desired width
-        width: PixelRatio.getPixelSizeForLayoutSize(
-          useWindowDimensions().width,
-        ),
-        marginTop: 240,
-      }}
-      ref={ecgChartRef}
-    />
+        height: 220,
+        start: 0,
+        width: useWindowDimensions().width,
+      }}>
+      <EcgChartViewManager
+        style={{
+          // converts dpi to px, provide desired height
+          height: PixelRatio.getPixelSizeForLayoutSize(200),
+          // converts dpi to px, provide desired width
+          width: PixelRatio.getPixelSizeForLayoutSize(
+            useWindowDimensions().width,
+          ),
+          marginTop: 30,
+        }}
+        ref={ecgChartRef}
+      />
+    </View>
   );
 });
 

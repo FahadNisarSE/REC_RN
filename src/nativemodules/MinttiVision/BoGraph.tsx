@@ -39,6 +39,7 @@ const BoGraph = forwardRef((props, ref) => {
 
   function updateData(updatedData: number) {
     const viewId = findNodeHandle(boGraphRef.current);
+    console.log('update spo2 graph', {viewId, updatedData});
     if (viewId) updateWaveData(viewId, updatedData);
   }
 
@@ -48,8 +49,9 @@ const BoGraph = forwardRef((props, ref) => {
 
   return (
     <View
+    className='border border-gray-200'
       style={{
-        height: 240,
+        height: 220,
         start: 0,
         width: useWindowDimensions().width,
       }}>
@@ -61,7 +63,7 @@ const BoGraph = forwardRef((props, ref) => {
           width: PixelRatio.getPixelSizeForLayoutSize(
             useWindowDimensions().width,
           ),
-          marginTop: 240,
+          marginTop: 30,
         }}
         ref={boGraphRef}
       />

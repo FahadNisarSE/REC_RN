@@ -1,5 +1,11 @@
-import React, {ReactNode} from 'react';
-import {Text as RNText, StyleSheet, TextStyle} from 'react-native';
+import React, {ReactNode, useEffect, useState} from 'react';
+import {
+  AccessibilityInfo,
+  PixelRatio,
+  Text as RNText,
+  StyleSheet,
+  TextStyle,
+} from 'react-native';
 
 interface CustomTextProps {
   style?: TextStyle;
@@ -10,6 +16,7 @@ interface CustomTextProps {
 const CustomTextSemiBold: React.FC<CustomTextProps> = props => {
   return (
     <RNText
+      allowFontScaling={false}
       style={[styles.text, props.style]}
       className={props.className}>
       {props.children}

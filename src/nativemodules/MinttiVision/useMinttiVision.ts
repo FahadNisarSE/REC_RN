@@ -1,53 +1,71 @@
-import {NativeEventEmitter, NativeModules, ToastAndroid} from 'react-native';
 import {useEffect, useState} from 'react';
-import * as events from 'events';
+import {NativeEventEmitter, NativeModules, ToastAndroid} from 'react-native';
+import {useMinttiVisionStore} from '../../utils/store/useMinttiVisionStore';
 
 const {VisionModule} = NativeModules;
 
 const useMinttiVision = ({
-  onScanResult,
-  onBattery,
-  onBodyTemperature,
-  onBp,
   onSpo2,
+  onScanResult,
   onEcg,
+  onBp,
   onBgEvent,
-  onBgResult,
+  onBgResult
 }: useMinttiVisionProps) => {
   const [discoveredDevices, setDiscoveredDevices] = useState<BleDevice[]>();
   const [connectedDevice, setConnectedDevice] = useState<BleDevice>();
+  const {
+    setBp,
+    setSpo2,
+    setBgResult,
+    setBgEvent,
+    setTemperature,
+    setBattery,
+    setECG,
+    setBleDevices,
+    setIsConnecting,
+    setIsScanning,
+    setIsMeasuring,
+    setIsConnected,
+  } = useMinttiVisionStore();
 
   useEffect(() => {
     const eventEmitter = new NativeEventEmitter(NativeModules.VisionModule);
     const scanEventListener = eventEmitter.addListener(
       'onScanResult',
       event => {
+        console.log('Device found: ', event);
         setDiscoveredDevices([event]);
+        setBleDevices(event);
         onScanResult && onScanResult(event);
       },
     );
-    const batteryListener = eventEmitter.addListener(
-      'onBattery',
-      onBattery ?? (() => {}),
+    const batteryListener = eventEmitter.addListener('onBattery', event =>
+      setBattery(event.battery),
     );
     const bodyTemperatureListener = eventEmitter.addListener(
       'onBodyTemperatureResult',
-      onBodyTemperature ?? (() => {}),
+      event => {
+        console.log('Body temperature: ', event);
+      },
     );
 
-    const bpListener = eventEmitter.addListener('onBp', onBp ?? (() => {}));
-    const spo2Listener = eventEmitter.addListener(
-      'onSpo2',
-      onSpo2 ?? (() => {}),
+    const bpListener = eventEmitter.addListener('onBp', event => {
+      onBp && onBp(event);
+    });
+    const spo2Listener = eventEmitter.addListener('onSpo2', event => {
+      console.log('Spo2: ', event);
+      setSpo2(event);
+      onSpo2 && onSpo2(event);
+    });
+    const ecgListener = eventEmitter.addListener('onEcg', event => {
+      onEcg && onEcg(event);
+    });
+    const bgEventListener = eventEmitter.addListener('onBgEvent', event =>
+      onBgEvent && onBgEvent(event)
     );
-    const ecgListener = eventEmitter.addListener('onEcg', onEcg ?? (() => {}));
-    const bgEventListener = eventEmitter.addListener(
-      'onBgEvent',
-      onBgEvent ?? (() => {}),
-    );
-    const bgResultListener = eventEmitter.addListener(
-      'onBgResult',
-      onBgResult ?? (() => {}),
+    const bgResultListener = eventEmitter.addListener('onBgResult', event =>
+      onBgResult && onBgResult(event)
     );
 
     return () => {
@@ -64,8 +82,11 @@ const useMinttiVision = ({
 
   const discoverDevices = async () => {
     try {
+      setIsScanning(true);
       await VisionModule.startDeviceScan('start scanning');
+      setIsScanning(false);
     } catch (e) {
+      setIsScanning(false);
       console.log(e);
       ToastAndroid.show('Error' + e, 1000);
     }
@@ -74,28 +95,32 @@ const useMinttiVision = ({
   async function connectToDevice(device: BleDevice) {
     console.log('Connect to device called');
     try {
+      setIsConnecting(true);
       const result = await VisionModule.connectToDevice({
         ...device,
       });
-      // await getBattery();
+      await getBattery();
       setConnectedDevice(device);
       ToastAndroid.show('Connected to device \n' + result, 1000);
-
+      setIsConnecting(false);
+      setIsConnected(true);
       console.log('connectToDevice>> success >>', result);
     } catch (e) {
+      setIsConnected(false);
       ToastAndroid.show('Error connecting to device \n' + e, 1000);
       console.log(
         'connectToDevice>> error >>',
         e,
         'Error connecting to device',
       );
+      setIsConnecting(false);
     }
   }
 
   async function getBattery() {
     try {
       const battery = await VisionModule.getBattery();
-      console.log('battery>>', battery);
+      setBattery(battery);
       return battery;
     } catch (e) {
       console.log('Error getting battery');
@@ -104,33 +129,49 @@ const useMinttiVision = ({
 
   async function measureBodyTemperature() {
     try {
+      setIsMeasuring(true);
       const bt = await VisionModule.measureBodyTemperature();
-      console.log('measureBodyTemperature>>', bt);
-      return bt;
+      setIsMeasuring(false);
+      setTemperature(bt);
     } catch (e) {}
   }
 
   async function measureBp() {
     try {
-      VisionModule.measureBloodPressure();
-    } catch (e) {}
+      setIsMeasuring(true);
+      await VisionModule.measureBloodPressure();
+    } catch (e) {
+      setIsMeasuring(false);
+    }
   }
 
   async function measureBloodOxygenSaturation() {
     try {
-      VisionModule.measureBloodOxygenSaturation();
-    } catch (e) {}
+      setIsMeasuring(true);
+      await VisionModule.measureBloodOxygenSaturation();
+    } catch (e) {
+      setIsMeasuring(false);
+    }
   }
 
   async function measureECG() {
-    VisionModule.measureECG();
+    setIsMeasuring(true);
+    await VisionModule.measureECG();
   }
 
   async function measureBg() {
-    VisionModule.measureBloodGlucose();
+    try {
+      setIsMeasuring(true);
+      const res = await VisionModule.measureBloodGlucose();
+      console.log('mesareu bg call: ', res);
+    } catch (error) {
+      console.log('Error in bg: ', error);
+    }
   }
+
   async function stopScan() {
     VisionModule.stopScan();
+    setIsScanning(false);
   }
 
   return {
@@ -148,20 +189,16 @@ const useMinttiVision = ({
   };
 };
 
-type useMinttiVisionProps = {
+export type useMinttiVisionProps = {
   onScanResult?: (event: BleDevice) => void;
   onBattery?: (event: {battery: number}) => void;
   onBodyTemperature?: (event: {bodyTemperature: number} | any) => void;
-  onBp?: (
-    event:
-      | {
-          result:
-            | {systolic: number; diastolic: number; heartRate: number}
-            | undefined;
-          error: string | undefined;
-        }
-      | any,
-  ) => void;
+  onBp?: (event: {
+    result:
+      | {systolic: number; diastolic: number; heartRate: number}
+      | undefined;
+    error: string | undefined;
+  }) => void;
   onSpo2?: (event: {
     waveData: number | undefined;
     result: {heartRate: number; spo2: number} | undefined;
@@ -179,7 +216,7 @@ type useMinttiVisionProps = {
     event: BgEvent | undefined;
     message: string | undefined;
   }) => void;
-  onBgResult?: (event: {bp: number}) => void;
+  onBgResult?: (event: {bg: number}) => void;
 };
 
 type BgEvent =
@@ -204,3 +241,5 @@ type BleDevice = {
 };
 
 export default useMinttiVision;
+
+export type TMinittiVisison = typeof useMinttiVision;

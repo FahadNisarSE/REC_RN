@@ -12,6 +12,7 @@ interface CustomTextProps {
 const CustomTextRegular: React.FC<CustomTextProps> = props => {
   return (
     <RNText
+      allowFontScaling={false}
       style={[styles.text, props.style]}
       className={props.className}>
       {props.children}
