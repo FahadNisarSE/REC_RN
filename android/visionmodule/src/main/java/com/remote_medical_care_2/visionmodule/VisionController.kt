@@ -72,7 +72,6 @@ class VisionController(reactContext: ReactApplicationContext) :
 
         try {
             BleManager.getInstance().addConnectionListener(object : IBleConnectionListener {
-
                 override fun onConnectSuccess(p0: String?) {
                     Log.e(TAG, "Successfully connected")
                     promise.resolve("Successfully connected to the device")
@@ -84,7 +83,13 @@ class VisionController(reactContext: ReactApplicationContext) :
                 }
 
                 override fun onDisconnected(p0: String?, p1: Boolean) {
-                    Log.e(TAG, "Disconnected")
+                        Log.e(TAG, "Disconnected $p0")
+                        sendEvent(
+                            reactApplicationContext,
+                            "onDisconnected",
+                            Arguments.createMap().apply {
+                                putString("message", "Device is disconnected")
+                            })
                 }
             })
             Timer().schedule(1000) {
@@ -118,7 +123,6 @@ class VisionController(reactContext: ReactApplicationContext) :
                     Arguments.createMap().apply {
                         putInt("heartRate", heartRate)
                     })
-
             }
 
             override fun onRespiratoryRate(respiratoryRate: Int) {
