@@ -13,6 +13,7 @@ const useMinttiVision = ({
   onEcg,
   onBgEvent,
   onBgResult,
+  onDisconnected,
 }: useMinttiVisionProps) => {
   const [discoveredDevices, setDiscoveredDevices] = useState<BleDevice[]>();
   const [connectedDevice, setConnectedDevice] = useState<BleDevice>();
@@ -49,6 +50,10 @@ const useMinttiVision = ({
       'onBgResult',
       onBgResult ?? (() => {}),
     );
+    const disconnectedListener = eventEmitter.addListener(
+      'onDisconnected',
+      onDisconnected ?? (() => {}),
+    );
 
     return () => {
       scanEventListener.remove();
@@ -59,6 +64,7 @@ const useMinttiVision = ({
       ecgListener.remove();
       bgEventListener.remove();
       bgResultListener.remove();
+      disconnectedListener.remove();
     };
   }, []);
 
@@ -149,6 +155,7 @@ const useMinttiVision = ({
 };
 
 type useMinttiVisionProps = {
+  onDisconnected?: (event: {message: string}) => void;
   onScanResult?: (event: BleDevice) => void;
   onBattery?: (event: {battery: number}) => void;
   onBodyTemperature?: (event: {bodyTemperature: number} | any) => void;
