@@ -9,6 +9,7 @@ const useMinttiVision = ({
   onBattery,
   onBodyTemperature,
   onBp,
+  onBpRaw,
   onSpo2,
   onEcg,
   onBgEvent,
@@ -36,6 +37,10 @@ const useMinttiVision = ({
     );
 
     const bpListener = eventEmitter.addListener('onBp', onBp ?? (() => {}));
+    const bpRawListener = eventEmitter.addListener(
+      'onBpRaw',
+      onBpRaw ?? (() => {}),
+    );
     const spo2Listener = eventEmitter.addListener(
       'onSpo2',
       onSpo2 ?? (() => {}),
@@ -55,6 +60,7 @@ const useMinttiVision = ({
       batteryListener.remove();
       bodyTemperatureListener.remove();
       bpListener.remove();
+      bpRawListener.remove();
       spo2Listener.remove();
       ecgListener.remove();
       bgEventListener.remove();
@@ -162,6 +168,11 @@ type useMinttiVisionProps = {
         }
       | any,
   ) => void;
+  onBpRaw?: (event: {
+    pressurizationData: number | undefined;
+    pressureData: number | undefined;
+    decompressionData: number | undefined;
+  }) => void;
   onSpo2?: (event: {
     waveData: number | undefined;
     result: {heartRate: number; spo2: number} | undefined;

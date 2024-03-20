@@ -28,6 +28,7 @@ import com.mintti.visionsdk.ble.callback.IBleScanCallback
 import com.mintti.visionsdk.ble.callback.IBleWriteResponse
 import com.mintti.visionsdk.ble.callback.IBpResultListener
 import com.mintti.visionsdk.ble.callback.IEcgResultListener
+import com.mintti.visionsdk.ble.callback.IRawBpDataCallback
 import com.mintti.visionsdk.ble.callback.ISpo2ResultListener
 import java.util.Timer
 import kotlin.concurrent.schedule
@@ -336,7 +337,7 @@ class VisionController(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun measureBloodPressure() {
-        BleManager.getInstance().setBpResultListener(object : IBpResultListener {
+        BleManager.getInstance().setBpResultListener(object : IBpResultListener, IRawBpDataCallback {
             override fun onBpResult(systolic: Int, diastolic: Int, heartRate: Int) {
                 sendEvent(reactApplicationContext, "onBp", Arguments.createMap().apply {
                     putMap("result", Arguments.createMap().apply {
@@ -369,6 +370,25 @@ class VisionController(reactContext: ReactApplicationContext) :
                             "This result is invalid, please remeasure"
                         )
                     })
+            }
+
+            override fun onPressurizationData(pressurizationData: Short) {
+                sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
+                    putInt("pressurizationData", pressurizationData.toInt())
+                })
+
+            }
+
+            override fun onDecompressionData(decompressionData: Short) {
+                sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
+                    putInt("decompressionData", decompressionData.toInt())
+                })
+            }
+
+            override fun onPressure(pressureData: Short) {
+                sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
+                    putInt("pressureData", pressureData.toInt())
+                })
             }
         })
         startMeasurements(MeasureType.TYPE_BP)
