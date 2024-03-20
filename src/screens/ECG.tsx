@@ -105,7 +105,11 @@ export default function ECG({navigation}: BloodOxygenProps) {
 
     return (
       <Modal
-        visible={showModal}
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'ECG'
+        }
         animationType="slide"
         transparent={true}
         onRequestClose={() => {

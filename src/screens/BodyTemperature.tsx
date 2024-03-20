@@ -32,10 +32,11 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
   const {mutate, isPending} = useSaveTestResults();
-  const {getBattery, measureBodyTemperature} = useMinttiVision({});
+  const {measureBodyTemperature} = useMinttiVision({});
   const {temperature, setTemperature, isConnected, battery, isMeasuring} =
     useMinttiVisionStore();
 
+  // Reset Values
   useEffect(() => {
     setTemperature(0);
   }, []);
@@ -83,7 +84,11 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
     }
     return (
       <Modal
-        visible={showModal}
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BodyTemperature'
+        }
         animationType="slide"
         transparent={true}
         onRequestClose={() => {

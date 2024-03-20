@@ -15,13 +15,14 @@ import {useNavigation} from '@react-navigation/native';
 import useBluetoothPermissions from '../utils/hook/useBluetoothPermission';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 
 const dimension = Dimensions.get('window');
 
-function buttonText(permission: boolean) {
+function buttonText(permission: boolean, isScanning: boolean) {
   if (!permission) return 'Request permission';
+  if (isScanning) return 'Stop scanning';
   return 'Scan for devices';
 }
 
@@ -30,22 +31,26 @@ type DeviceInitializaionProps = NativeStackScreenProps<
   'DeviceInitialization'
 >;
 
-export default function DeviceInitalization({navigation, route}: DeviceInitializaionProps) {
+export default function DeviceInitalization({
+  navigation,
+  route,
+}: DeviceInitializaionProps) {
   const testRoute = route.params.testRoute;
 
   const [bluetoothPermissions, setBluetoothPermissions] = useState(false);
   const {requestPermissions} = useBluetoothPermissions();
   const {discoverDevices, connectToDevice, stopScan} = useMinttiVision({});
-  const {bleDevices, isConnecting, isScanning, isConnected, setIsConnecting} = useMinttiVisionStore();
+  const {bleDevices, isConnecting, isScanning, isConnected, setIsConnecting} =
+    useMinttiVisionStore();
 
   useEffect(() => {
     // @ts-ignore
-    if(isConnected) navigation.navigate(testRoute)
-  }, [isConnected])
+    if (isConnected) navigation.navigate(testRoute);
+  }, [isConnected]);
 
   useEffect(() => {
     requestPermissions((result: boolean) => setBluetoothPermissions(result));
-    setIsConnecting(false)
+    setIsConnecting(false);
   }, []);
 
   const onPressHandler = () => {
@@ -142,7 +147,7 @@ export default function DeviceInitalization({navigation, route}: DeviceInitializ
             )}
           </View>
           <CustomTextSemiBold className="mx-auto text-xl text-text">
-            {buttonText(bluetoothPermissions)}
+            {buttonText(bluetoothPermissions, isScanning)}
           </CustomTextSemiBold>
         </TouchableOpacity>
       </View>

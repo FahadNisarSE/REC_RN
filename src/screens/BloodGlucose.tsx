@@ -20,6 +20,7 @@ import Button from '../components/ui/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {queryClient} from '../../App';
+import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -54,62 +55,50 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
     },
   });
 
+  // Reset all test data
+  useEffect(() => {
+    setBgEvent(null);
+    setBgResult(null)
+  }, [])
+
   function toggleModal(status: boolean) {
     setShowModal(status);
   }
 
-  const measurementStepsModal = () => {
+  const MeasruementStepsModal = () => {
     return (
       <Modal
-      visible={bgEvent?.event !== 'bgEventMeasureEnd' && bgEvent !== null}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={() => {
-        toggleModal(false);
-      }}>
-      <Pressable
-        onPress={() => toggleModal(false)}
-        className="w-full h-full bg-black opacity-25"></Pressable>
-      <View
+        visible={
+          bgEvent?.event !== 'bgEventMeasureEnd' &&
+          bgEvent !== null &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BloodGlucose'
+        }
+        animationType="slide"
+        transparent={true}
         style={{
-          ...meetingStyles.modal,
-          height: '65%',
+          position: 'relative',
+          alignItems: 'flex-end',
+          justifyContent: 'flex-end',
         }}
-        className="p-4 bg-white">
-        <View className="flex-row items-center justify-between w-full mb-auto">
-          <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
-            Blood Glucose Measurement
-          </CustomTextSemiBold>
+        onRequestClose={() => {
+          toggleModal(false);
+        }}>
+        <View className="absolute w-full h-full bg-black opacity-25"></View>
+        <View
+          style={{
+            height: '70%',
+          }}
+          className="p-4 mx-5 mt-auto mb-10 bg-white rounded-3xl">
+          {BloodGlucoseIntructionMap(bgEvent?.event ?? '', () =>
+            navigation.navigate('AppointmentDetail', {
+              id: appointmentDetail?.AppointmentId!,
+            }),
+          )}
         </View>
-        <View className="flex-1 mt-4">
-          <View className="flex-1 my-auto">
-            <View className="flex-row items-center">
-              <View className="p-2 rounded-full bg-primmary">
-                <Image
-                  className="w-5 h-5"
-                  source={require('../assets/icons/devices/temperature.png')}
-                />
-              </View>
-              <CustomTextSemiBold className="ml-4 text-lg text-primmary">
-                Blood Glucose
-              </CustomTextSemiBold>
-            </View>
-            <View className="mt-4">
-              <View className="flex-row items-center">
-                <CustomTextSemiBold className="text-text">
-                  Blood Glucose
-                </CustomTextSemiBold>
-                <CustomTextRegular className="ml-2 text-gray-600">
-                  {bgResult?.bg} mmol / L
-                </CustomTextRegular>
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
-    </Modal>
-    )
-  }
+      </Modal>
+    );
+  };
 
   const CustomDrawer = useCallback(() => {
     function saveResult() {
@@ -152,7 +141,11 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
 
     return (
       <Modal
-        visible={showModal}
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BloodGlucose'
+        }
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
@@ -309,6 +302,7 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
           onPress={() => measureBloodGlucose()}
         />
       </View>
+      <MeasruementStepsModal />
       <CustomDrawer />
     </>
   );

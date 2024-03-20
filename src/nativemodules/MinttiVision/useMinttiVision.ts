@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {NativeEventEmitter, NativeModules, ToastAndroid} from 'react-native';
 import {useMinttiVisionStore} from '../../utils/store/useMinttiVisionStore';
+import Toast from 'react-native-toast-message';
 
 const {VisionModule} = NativeModules;
 
@@ -10,7 +11,7 @@ const useMinttiVision = ({
   onEcg,
   onBp,
   onBgEvent,
-  onBgResult
+  onBgResult,
 }: useMinttiVisionProps) => {
   const [discoveredDevices, setDiscoveredDevices] = useState<BleDevice[]>();
   const [connectedDevice, setConnectedDevice] = useState<BleDevice>();
@@ -61,11 +62,13 @@ const useMinttiVision = ({
     const ecgListener = eventEmitter.addListener('onEcg', event => {
       onEcg && onEcg(event);
     });
-    const bgEventListener = eventEmitter.addListener('onBgEvent', event =>
-      onBgEvent && onBgEvent(event)
+    const bgEventListener = eventEmitter.addListener(
+      'onBgEvent',
+      event => onBgEvent && onBgEvent(event),
     );
-    const bgResultListener = eventEmitter.addListener('onBgResult', event =>
-      onBgResult && onBgResult(event)
+    const bgResultListener = eventEmitter.addListener(
+      'onBgResult',
+      event => onBgResult && onBgResult(event),
     );
 
     return () => {
@@ -83,8 +86,7 @@ const useMinttiVision = ({
   const discoverDevices = async () => {
     try {
       setIsScanning(true);
-      await VisionModule.startDeviceScan('start scanning');
-      setIsScanning(false);
+      VisionModule.startDeviceScan('start scanning');
     } catch (e) {
       setIsScanning(false);
       console.log(e);
@@ -93,27 +95,27 @@ const useMinttiVision = ({
   };
 
   async function connectToDevice(device: BleDevice) {
-    console.log('Connect to device called');
     try {
+      setIsScanning(false);
       setIsConnecting(true);
-      const result = await VisionModule.connectToDevice({
+      await VisionModule.connectToDevice({
         ...device,
       });
       await getBattery();
       setConnectedDevice(device);
-      ToastAndroid.show('Connected to device \n' + result, 1000);
       setIsConnecting(false);
       setIsConnected(true);
-      console.log('connectToDevice>> success >>', result);
+      Toast.show({
+        type: 'success',
+        text1: 'Connected to Mintti Vision Device',
+      });
     } catch (e) {
       setIsConnected(false);
-      ToastAndroid.show('Error connecting to device \n' + e, 1000);
-      console.log(
-        'connectToDevice>> error >>',
-        e,
-        'Error connecting to device',
-      );
       setIsConnecting(false);
+      Toast.show({
+        type: 'error',
+        text1: 'Error! Failed while connecting to device',
+      });
     }
   }
 
@@ -222,11 +224,11 @@ export type useMinttiVisionProps = {
 type BgEvent =
   | 'bgEventWaitPagerInsert'
   | 'bgEventPaperUsed'
-  | 'bgEventMeasureEnd'
-  | 'bgEventGetBgResultTimeout'
-  | 'bgEventBloodSampleDetecting'
   | 'bgEventWaitDripBlood'
-  | 'bgEventCalibrationFailed';
+  | 'bgEventBloodSampleDetecting'
+  | 'bgEventGetBgResultTimeout'
+  | 'bgEventCalibrationFailed'
+  | 'bgEventMeasureEnd';
 
 type BleDevice = {
   rssi: number;

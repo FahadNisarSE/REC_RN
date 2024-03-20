@@ -49,7 +49,7 @@ interface MinittiVisionInterface {
   temperature: number;
   setTemperature: (state: number) => void;
   spo2: SPO2 | null;
-  setSpo2: (spo2: SPO2) => void;
+  setSpo2: (spo2: SPO2 | null) => void;
   bp: BP | null;
   setBp: (bg: BP | null) => void;
   ecg: ECG | null;
@@ -62,7 +62,7 @@ interface MinittiVisionInterface {
     bgEvent: {event: BgEvent | undefined; message: string | undefined} | null,
   ) => void;
   bgResult: {bg: number} | null;
-  setBgResult: (bgResult: {bg: number}) => void;
+  setBgResult: (bgResult: {bg: number} | null) => void;
 
   // States
   isConnecting: boolean;

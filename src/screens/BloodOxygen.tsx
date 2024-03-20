@@ -47,7 +47,13 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
       }
     },
   });
-  const {spo2, isConnected, battery, isMeasuring} = useMinttiVisionStore();
+  const {spo2, setSpo2, isConnected, battery, isMeasuring} =
+    useMinttiVisionStore();
+
+  // Reset Test Values
+  useEffect(() => {
+    setSpo2(null);
+  }, []);
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -59,7 +65,11 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     function reTakeTesthandler() {}
     return (
       <Modal
-        visible={showModal}
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BloodOxygen'
+        }
         animationType="slide"
         transparent={true}
         onRequestClose={() => {

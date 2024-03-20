@@ -34,7 +34,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
   const {mutate, isPending} = useSaveTestResults();
   const {bp, setBp, isConnected, battery, isMeasuring, setIsMeasuring} =
     useMinttiVisionStore();
-  const {getBattery, measureBp} = useMinttiVision({
+  const {measureBp} = useMinttiVision({
     onBp: event => {
       if (event.error) {
         Toast.show({
@@ -52,6 +52,11 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
       }
     },
   });
+
+  // Reset all values
+  useEffect(() => {
+    setBp(null);
+  }, []);
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -101,7 +106,11 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
 
     return (
       <Modal
-        visible={showModal}
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BloodPressure'
+        }
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
