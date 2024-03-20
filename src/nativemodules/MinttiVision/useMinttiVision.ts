@@ -9,6 +9,7 @@ const useMinttiVision = ({
   onSpo2,
   onScanResult,
   onEcg,
+  onEcgResult,
   onBp,
   onBpRaw,
   onBgEvent,
@@ -68,6 +69,9 @@ const useMinttiVision = ({
     const ecgListener = eventEmitter.addListener('onEcg', event => {
       onEcg && onEcg(event);
     });
+    const ecgResultListener = eventEmitter.addListener('onEcgResult', event => {
+      onEcgResult && onEcgResult(event);
+    });
     const bgEventListener = eventEmitter.addListener(
       'onBgEvent',
       event => onBgEvent && onBgEvent(event),
@@ -87,6 +91,7 @@ const useMinttiVision = ({
       ecgListener.remove();
       bgEventListener.remove();
       bgResultListener.remove();
+      ecgResultListener.remove();
     };
   }, []);
 
@@ -225,6 +230,9 @@ export type useMinttiVisionProps = {
     respiratoryRate: number | undefined;
     results: {rrMax: number; rrMin: number; hrv: number} | undefined;
     duration: {duration: number; isEnd: boolean} | undefined;
+  }) => void;
+  onEcgResult?: (event: {
+    results: {rrMax: number; rrMin: number; hrv: number} | undefined;
   }) => void;
   onBgEvent?: (event: {
     event: BgEvent | undefined;
