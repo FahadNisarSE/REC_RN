@@ -104,12 +104,12 @@ class VisionController(reactContext: ReactApplicationContext) :
     fun measureECG() {
         BleManager.getInstance().setEcgResultListener(object : IEcgResultListener {
             override fun onDrawWave(wave: Int) {
-                sendEvent(
-                    reactApplicationContext,
-                    "onEcg",
-                    Arguments.createMap().apply {
-                        putInt("wave", wave)
-                    })
+//                sendEvent(
+//                    reactApplicationContext,
+//                    "onEcg",
+//                    Arguments.createMap().apply {
+//                        putInt("wave", wave)
+//                    })
             }
 
             override fun onHeartRate(heartRate: Int) {
@@ -119,9 +119,7 @@ class VisionController(reactContext: ReactApplicationContext) :
                     Arguments.createMap().apply {
                         putInt("heartRate", heartRate)
                     })
-
             }
-
             override fun onRespiratoryRate(respiratoryRate: Int) {
                 sendEvent(
                     reactApplicationContext,
