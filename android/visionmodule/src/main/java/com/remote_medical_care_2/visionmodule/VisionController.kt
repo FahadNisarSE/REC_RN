@@ -115,7 +115,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             override fun onHeartRate(heartRate: Int) {
                 sendEvent(
                     reactApplicationContext,
-                    "onEcg",
+                    "onEcgResult",
                     Arguments.createMap().apply {
                         putInt("heartRate", heartRate)
                     })
@@ -123,7 +123,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             override fun onRespiratoryRate(respiratoryRate: Int) {
                 sendEvent(
                     reactApplicationContext,
-                    "onEcg",
+                    "onEcgResult",
                     Arguments.createMap().apply {
                         putInt("respiratoryRate", respiratoryRate)
                     })
@@ -145,7 +145,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             override fun onEcgDuration(duration: Int, isEnd: Boolean) {
                 sendEvent(
                     reactApplicationContext,
-                    "onEcg",
+                    "onEcgResult",
                     Arguments.createMap().apply {
                         putMap("duration", Arguments.createMap().apply {
                             putInt("duration", duration)
