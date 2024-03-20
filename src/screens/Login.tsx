@@ -3,34 +3,35 @@ import React, {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   Dimensions,
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StatusBar,
   StyleSheet,
   Text,
-  Image,
   TextInput,
-  View,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import ExternalLink from '../components/ui/ExternalLink';
-import {loginUserSchema} from '../nativemodules/loginSchema';
-import {useloggedInStore} from '../utils/store/useLoggedIn';
+import {TLoginUserSchema, loginUserSchema} from '../api/schema/loginSchema';
 import globalStyles from '../styles/style';
+import useSignIn from '../api/action/useSignIn';
 
-const {height} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 export default function Login({}) {
-  const setLoggedIn = useloggedInStore(state => state.setLoggedIn);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const {mutate, error, isPending, setError} = useSignIn();
 
-  async function signInRequest() {
-    setLoggedIn(true);
+  async function signInRequest(data: TLoginUserSchema) {
+    mutate({Email: data.email, Password: data.password});
   }
 
   const {control, handleSubmit, setValue} = useForm({
@@ -65,15 +66,39 @@ export default function Login({}) {
     <KeyboardAvoidingView
       className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar backgroundColor="rgb(0 166 66)" />
-      <View className="flex justify-end flex-1 bg-slate-800">
-        <View style={styles.loginContainer} className="py-10 bg-white">
-          <CustomTextSemiBold className="font-semibold text-center text-green text-mh">
-            Welcome Back!
+      <StatusBar backgroundColor="#46B98D" />
+      {/* Error Message */}
+      {error ? (
+        <View className="absolute z-10 flex-row items-center justify-between p-2 bg-red-500 rounded-md shadow shadow-black top-4 left-4 right-4">
+          <CustomTextSemiBold className="text-white">
+            {error}
           </CustomTextSemiBold>
-          <CustomTextRegular className="text-base text-center text-secondary">
-            Log in to your account
-          </CustomTextRegular>
+          <Pressable
+            onPress={() => setError(null)}
+            className="p-1 bg-white rounded-full">
+            <Image
+              source={require('../assets/icons/x.png')}
+              alt="Close"
+              className="w-5 h-5"
+            />
+          </Pressable>
+        </View>
+      ) : null}
+      <View className="flex justify-end flex-1 bg-slate-800">
+        <CustomTextSemiBold className="font-semibold text-center text-white text-mh">
+          Welcome Back!
+        </CustomTextSemiBold>
+        <CustomTextRegular className="mb-4 text-base text-center text-white">
+          Log in to your account
+        </CustomTextRegular>
+        <View style={styles.loginContainer} className="py-10 bg-white">
+          <Image
+            style={{width: width * 0.7, height: height * 0.05}}
+            resizeMode="contain"
+            className="mx-auto mb-8"
+            source={require('../assets/images/icon.png')}
+            alt="Remote Medical Care"
+          />
           <View className="my-auto">
             <Controller
               control={control}
@@ -87,13 +112,15 @@ export default function Login({}) {
                     placeholderTextColor="rgb(31 41 55)"
                     onChangeText={value => {
                       onChange(value);
-                      handleInputChange('email', value);
+                      if (value.trim() !== '')
+                        handleInputChange('email', value);
                     }}
+                    onBlur={onBlur}
                     style={globalStyles.fontRegular}
                     value={value}
                     placeholder="Email"
                     keyboardType="email-address"
-                    className={`w-full h-12 px-2 py-4 mt-4 text-gray-800 ${
+                    className={`w-full h-12 px-2 py-4 mt-4 text-text ${
                       error?.message ? 'border-red-500' : 'border-gray-200'
                     } border rounded-lg`}
                     autoCorrect={false}
@@ -143,7 +170,7 @@ export default function Login({}) {
                     placeholder="Password"
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
-                    className={`w-full h-12 px-2 py-4 mt-2 mb-auto text-secondary border ${
+                    className={`w-full h-12 px-2 py-4 mt-2 mb-auto text-text border ${
                       error?.message ? 'border-red-500' : 'border-gray-200'
                     } rounded-lg`}
                     autoCorrect={false}
@@ -156,7 +183,8 @@ export default function Login({}) {
               )}
             />
             <Button
-              text="Sign in"
+              disabled={isPending}
+              text={isPending ? 'Signing you in...' : 'Sign in'}
               onPress={handleSubmit(signInRequest)}
               className="mt-8 w-fit"
             />
@@ -164,7 +192,7 @@ export default function Login({}) {
           {!isKeyboardOpen ? (
             <View className="mt-auto">
               <CustomTextRegular
-                className="w-10/12 mx-auto text-sm text-center text-secondary"
+                className="w-10/12 mx-auto text-sm text-center text-text"
                 style={{lineHeight: 25}}>
                 By clicking sign in,{' '}
                 <ExternalLink

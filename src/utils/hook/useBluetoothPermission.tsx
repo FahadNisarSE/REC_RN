@@ -1,4 +1,4 @@
-import {PermissionsAndroid, Platform} from 'react-native';
+import {PermissionsAndroid, Platform, ToastAndroid} from 'react-native';
 
 type VoidCallback = (result: boolean) => void;
 
@@ -14,35 +14,49 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
 
       if (apiLevel < 31) {
         // Request ACCESS_FINE_LOCATION for Android versions below 31
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: 'Location Permission',
-            message: 'This device needs location access to use Bluetooth.',
-            buttonNeutral: 'Ask me later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Permission',
+              message: 'This device needs location access to use Bluetooth.',
+              buttonNeutral: 'Ask me later',
+              buttonNegative: '',
+              buttonPositive: 'OK',
+            },
+          );
 
-        cb(granted === PermissionsAndroid.RESULTS.GRANTED);
+          cb(granted === PermissionsAndroid.RESULTS.GRANTED);
+        } catch (error) {
+          console.log('Error: ', JSON.stringify(error));
+          ToastAndroid.show('Permission Denied', 1000);
+        }
       } else {
-        // Request required permissions for Android versions 31 and above
-        const result = await PermissionsAndroid.requestMultiple([
-          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        ]);
+        try {
 
-        const isGranted =
-          result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
-            PermissionsAndroid.RESULTS.GRANTED;
+          // Request required permissions for Android versions 31 and above
+          const result = await PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          ]);
 
-        cb(isGranted);
+          console.log("Result: ", result)
+          const isGranted =
+            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] ===
+              PermissionsAndroid.RESULTS.GRANTED &&
+            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] ===
+              PermissionsAndroid.RESULTS.GRANTED &&
+            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] ===
+              PermissionsAndroid.RESULTS.GRANTED &&
+            result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
+              PermissionsAndroid.RESULTS.GRANTED;
+
+          cb(isGranted);
+        } catch (error) {
+          console.log('Error: ', JSON.stringify(error));
+          ToastAndroid.show('Permission Denied', 1000);
+        }
       }
     } else {
       // Assume permissions granted on platforms other than Android

@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {ReactNode} from 'react';
+import {View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 export default function CustomSafeArea({
   children,
@@ -13,7 +13,7 @@ export default function CustomSafeArea({
 
   return (
     <View
-    className={stylesClass}
+      className={stylesClass}
       style={{
         paddingTop: insets.top,
         paddingBottom: insets.bottom,

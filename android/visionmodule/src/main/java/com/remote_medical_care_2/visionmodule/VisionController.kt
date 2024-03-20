@@ -58,7 +58,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             promise.reject("BluetoothError", "Bluetooth is not enabled ")
             return
         }
-//        startScan()
+        startScan()
         println(msg)
     }
 
@@ -195,7 +195,7 @@ class VisionController(reactContext: ReactApplicationContext) :
                                 reactApplicationContext,
                                 "onBgEvent",
                                 Arguments.createMap().apply {
-                                    putString("eventType", "bgEventCalibrationFailed")
+                                    putString("event", "bgEventCalibrationFailed")
                                     putString(
                                         "message",
                                         "Calibration failed, pull out the test paper and restart the measurement"
@@ -209,7 +209,7 @@ class VisionController(reactContext: ReactApplicationContext) :
                                 reactApplicationContext,
                                 "onBgEvent",
                                 Arguments.createMap().apply {
-                                    putString("eventType", "bgEventWaitDripBlood")
+                                    putString("event", "bgEventWaitDripBlood")
                                     putString(
                                         "message",
                                         "Waiting for the blood sample to be dripped"
@@ -425,9 +425,7 @@ class VisionController(reactContext: ReactApplicationContext) :
     fun stopScan() {
         BleManager.getInstance().stopScan()
     }
-
-
-
+    
     @ReactMethod
     fun getBattery(promise: Promise) {
         try {
@@ -438,7 +436,6 @@ class VisionController(reactContext: ReactApplicationContext) :
             promise.reject("Battery Error>>", "couldn't get batter $e")
         }
     }
-
 
     private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
         reactContext

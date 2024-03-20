@@ -4,15 +4,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#00AC83',
-        secondary: '#0B0E15',
-        green: '#46b98d',
-        danger: '#C74E5B',
+        primmary: '#46b98d', // #26f064
+        secondary: '#60A5FA',
+        text: '#02200a', // #0B0E15
+        background: '#f9fafb', // #edfef1
+        accent: '#fc5e53'
       },
       fontSize: {
-        mh: '34px'
-      }
+        mh: '34px',
+      },
     },
   },
   plugins: [],
-};
+}
+
