@@ -83,7 +83,7 @@ export default function DeviceInitalization({
       />
       {!bluetoothPermissions && (
         <View>
-          <CustomTextRegular className="text-text">
+          <CustomTextRegular className="text-center text-text">
             If the button above doesn't function as expected, please navigate to
             your phone settings, then proceed to App Management, and grant the
             necessary permissions for location and Bluetooth.

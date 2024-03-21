@@ -86,6 +86,12 @@ class VisionController(reactContext: ReactApplicationContext) :
 
                 override fun onDisconnected(p0: String?, p1: Boolean) {
                     Log.e(TAG, "Disconnected")
+                    sendEvent(
+                        reactApplicationContext,
+                        "onDisconnected",
+                        Arguments.createMap().apply {
+                            putString("message", "Device is disconnected")
+                        })
                 }
             })
             Timer().schedule(1000) {

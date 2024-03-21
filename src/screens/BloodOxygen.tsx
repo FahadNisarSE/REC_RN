@@ -30,7 +30,8 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail} = useAppointmentDetailStore();
   const {mutate, isPending} = useSaveTestResults();
-  const {setIsMeasuring} = useMinttiVisionStore();
+  const {spo2, setSpo2, setIsMeasuring, isConnected, battery, isMeasuring} =
+  useMinttiVisionStore();
   const {getBattery, measureBloodOxygenSaturation} = useMinttiVision({
     onSpo2: event => {
       // @ts-ignore
@@ -47,13 +48,16 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
       }
     },
   });
-  const {spo2, setSpo2, isConnected, battery, isMeasuring} =
-    useMinttiVisionStore();
+
 
   // Reset Test Values
   useEffect(() => {
     setSpo2(null);
   }, []);
+
+  useEffect(() => {
+    if(!isConnected) navigation.navigate("DeviceInitialization", {testRoute: 'BloodOxygen'})
+  }, [isConnected])
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -177,7 +181,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </CustomTextSemiBold>
               <View className="flex-row items-end">
                 <CustomTextRegular className="text-base text-text">
-                  {spo2 ? String(spo2) : 0}
+                  {spo2?.result?.spo2 ? String(spo2.result?.spo2) : 0}
                 </CustomTextRegular>
                 <CustomTextRegular className="text-[10px] text-text">
                   %
@@ -190,7 +194,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </CustomTextSemiBold>
               <View className="flex-row items-end">
                 <CustomTextRegular className="text-base text-text">
-                  {spo2 ? String(spo2) : 0}
+                  {spo2?.result?.heartRate ? String(spo2.result?.heartRate) : 0}
                 </CustomTextRegular>
                 <CustomTextRegular className="text-[10px] text-text">
                   bpm

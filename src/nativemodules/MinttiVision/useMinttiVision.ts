@@ -2,6 +2,12 @@ import {useEffect, useState} from 'react';
 import {NativeEventEmitter, NativeModules, ToastAndroid} from 'react-native';
 import {useMinttiVisionStore} from '../../utils/store/useMinttiVisionStore';
 import Toast from 'react-native-toast-message';
+import {
+  AndroidLocationEnablerResult,
+  isLocationEnabled,
+  promptForEnableLocationIfNeeded,
+} from 'react-native-android-location-enabler';
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
 const {VisionModule} = NativeModules;
 
@@ -43,6 +49,17 @@ const useMinttiVision = ({
         onScanResult && onScanResult(event);
       },
     );
+    const disconnectEventListener = eventEmitter.addListener(
+      'onDisconnected',
+      event => {
+        setIsConnected(false);
+        console.log('Disconnectd from bluetooth device...', event);
+        Toast.show({
+          type: 'error',
+          text1: 'Medical device has been diconnected..',
+        });
+      },
+    );
     const batteryListener = eventEmitter.addListener('onBattery', event =>
       setBattery(event.battery),
     );
@@ -54,22 +71,27 @@ const useMinttiVision = ({
     );
 
     const bpListener = eventEmitter.addListener('onBp', event => {
+      console.log('ON BP: ', event);
       onBp && onBp(event);
     });
 
     const bpRawListener = eventEmitter.addListener('onBpRaw', event => {
+      console.log('ON BP RAW: ', event);
       onBpRaw && onBpRaw(event);
     });
 
     const spo2Listener = eventEmitter.addListener('onSpo2', event => {
       console.log('Spo2: ', event);
       setSpo2(event);
+
       onSpo2 && onSpo2(event);
     });
+
     const ecgListener = eventEmitter.addListener('onEcg', event => {
       onEcg && onEcg(event);
     });
     const ecgResultListener = eventEmitter.addListener('onEcgResult', event => {
+      console.log('Ecg result 1: ', event);
       onEcgResult && onEcgResult(event);
     });
     const bgEventListener = eventEmitter.addListener(
@@ -89,6 +111,7 @@ const useMinttiVision = ({
       bpRawListener.remove();
       spo2Listener.remove();
       ecgListener.remove();
+      disconnectEventListener.remove();
       bgEventListener.remove();
       bgResultListener.remove();
       ecgResultListener.remove();
@@ -97,6 +120,49 @@ const useMinttiVision = ({
 
   const discoverDevices = async () => {
     try {
+      let resultBle: Boolean = new Boolean(true);
+      let resultLoc: AndroidLocationEnablerResult = 'enabled';
+
+      BluetoothStateManager.getState()
+        .then(async bluetoothState => {
+          switch (bluetoothState) {
+            case 'Unknown':
+            case 'Resetting':
+            case 'Unsupported':
+            case 'Unauthorized':
+            case 'PoweredOff':
+              resultBle = await BluetoothStateManager.requestToEnable();
+              break;
+            case 'PoweredOn':
+            default:
+              break;
+          }
+        })
+        .catch(error => {
+          Toast.show({
+            type: 'error',
+            text1: 'Bluetooth is Required',
+            text2: 'Please enable bluetooth.',
+          });
+
+          return;
+        });
+
+      const isLocationEnable = await isLocationEnabled();
+      if (!isLocationEnable) {
+        try {
+          resultLoc = await promptForEnableLocationIfNeeded();
+        } catch (error) {
+          console.log('Error occured...');
+          Toast.show({
+            type: 'error',
+            text1: 'Location is Required',
+            text2: 'Please enable location.',
+          });
+          return;
+        }
+      }
+
       setIsScanning(true);
       VisionModule.startDeviceScan('start scanning');
     } catch (e) {

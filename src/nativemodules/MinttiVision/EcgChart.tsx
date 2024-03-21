@@ -38,7 +38,6 @@ const EcgChart = forwardRef((props, ref) => {
 
   function updateEcgData(updatedData: number) {
     const viewId = findNodeHandle(ecgChartRef.current);
-    console.log('Update wave data: ', {updatedData, viewId});
     if (viewId) updateEcgWaveData(viewId, updatedData);
   }
 

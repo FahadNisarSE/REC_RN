@@ -36,14 +36,13 @@ export default function ECG({navigation}: BloodOxygenProps) {
     useMinttiVisionStore();
   const {measureECG} = useMinttiVision({
     onEcg: event => {
-      setECG(event);
       // @ts-ignore
       ecgChartRef.current?.updateEcgData(event.wave);
-
-      if (event.results) {
-        setIsMeasuring(false);
-        setShowModal(true);
-      }
+    },
+    onEcgResult: event => {
+      console.log('ecg result: ', event);
+      // @ts-ignore
+      setECG(event);
     },
   });
 
@@ -225,6 +224,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
         {/* ECG CHART */}
         <View className="items-start justify-between p-4 mx-5 mt-4 border border-gray-200 rounded-md">
           <View>
+            <CustomTextRegular className='text-xs text-center text-text'>{JSON.stringify(ecg)}</CustomTextRegular>
             <CustomTextRegular className="text-xs text-left text-text">
               Paper Speed: 25 mm/s
             </CustomTextRegular>
