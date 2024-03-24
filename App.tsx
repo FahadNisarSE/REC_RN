@@ -7,6 +7,7 @@ import SplashScreen from 'react-native-splash-screen';
 import AppNavigation from './src/utils/AppNavigation';
 import Toast from 'react-native-toast-message';
 import {useMinttiVisionStore} from './src/utils/store/useMinttiVisionStore';
+import VisionTestScreen from './src/screens/VisionTestScreen.tsx';
 
 export const queryClient = new QueryClient();
 

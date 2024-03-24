@@ -16,6 +16,9 @@ const useMinttiVision = ({
   onScanResult,
   onEcg,
   onEcgResult,
+  onEcgDuration,
+  onEcgHeartRate,
+  onEcgRespiratoryRate,
   onBp,
   onBpRaw,
   onBgEvent,
@@ -238,6 +241,10 @@ const useMinttiVision = ({
     setIsMeasuring(true);
     await VisionModule.measureECG();
   }
+  async function stopECG() {
+    setIsMeasuring(true);
+    await VisionModule.stopECG();
+  }
 
   async function measureBg() {
     try {
@@ -258,6 +265,7 @@ const useMinttiVision = ({
     discoverDevices,
     measureBg,
     measureECG,
+    stopECG,
     measureBloodOxygenSaturation,
     measureBp,
     measureBodyTemperature,
@@ -292,11 +300,16 @@ export type useMinttiVisionProps = {
   }) => void;
   onEcg?: (event: {
     wave: number | undefined;
-    heartRate: number | undefined;
-    respiratoryRate: number | undefined;
-    results: {rrMax: number; rrMin: number; hrv: number} | undefined;
+    // heartRate: number | undefined;
+    // respiratoryRate: number | undefined;
+    // results: {rrMax: number; rrMin: number; hrv: number} | undefined;
+    // duration: {duration: number; isEnd: boolean} | undefined;
+  }) => void;
+  onEcgDuration?: (event: {
     duration: {duration: number; isEnd: boolean} | undefined;
   }) => void;
+  onEcgHeartRate?: (event: {heartRate: number | undefined}) => void;
+  onEcgRespiratoryRate?: (event: {respiratoryRate: number | undefined}) => void;
   onEcgResult?: (event: {
     results: {rrMax: number; rrMin: number; hrv: number} | undefined;
   }) => void;

@@ -16,7 +16,7 @@ PushNotification.configure({
       notification.action === 'Join now' ||
       notification.channelId === 'meeting-channel'
     ) {
-      showMeetingNotification();
+      // showMeetingNotification();
       navigate('LiveMeeting');
     }
   },

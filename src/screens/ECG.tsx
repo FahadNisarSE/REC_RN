@@ -34,7 +34,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
   const {ecg, setECG, isConnected, battery, isMeasuring, setIsMeasuring} =
     useMinttiVisionStore();
-  const {measureECG} = useMinttiVision({
+  const {measureECG, stopECG} = useMinttiVision({
     onEcg: event => {
       // @ts-ignore
       ecgChartRef.current?.updateEcgData(event.wave);
@@ -44,6 +44,9 @@ export default function ECG({navigation}: BloodOxygenProps) {
       // @ts-ignore
       setECG(event);
     },
+    onEcgRespiratoryRate: event => {},
+    onEcgHeartRate: event => {},
+    onEcgDuration: event => {},
   });
 
   const {mutate, isPending} = useSaveTestResults();
@@ -224,7 +227,9 @@ export default function ECG({navigation}: BloodOxygenProps) {
         {/* ECG CHART */}
         <View className="items-start justify-between p-4 mx-5 mt-4 border border-gray-200 rounded-md">
           <View>
-            <CustomTextRegular className='text-xs text-center text-text'>{JSON.stringify(ecg)}</CustomTextRegular>
+            <CustomTextRegular className="text-xs text-center text-text">
+              {JSON.stringify(ecg)}
+            </CustomTextRegular>
             <CustomTextRegular className="text-xs text-left text-text">
               Paper Speed: 25 mm/s
             </CustomTextRegular>
@@ -291,6 +296,12 @@ export default function ECG({navigation}: BloodOxygenProps) {
           className="mx-5 mt-auto mb-5"
           disabled={isMeasuring}
           onPress={() => startECGTest()}
+        />
+        <Button
+          text={'Stop'}
+          className="mx-5 mt-auto mb-5"
+          // disabled={isMeasuring}
+          onPress={() => stopECG()}
         />
       </View>
       <CustomDrawer />

@@ -121,7 +121,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             override fun onHeartRate(heartRate: Int) {
                 sendEvent(
                     reactApplicationContext,
-                    "onEcgResult",
+                    "onEcgHeartRate",
                     Arguments.createMap().apply {
                         putInt("heartRate", heartRate)
                     })
@@ -129,7 +129,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             override fun onRespiratoryRate(respiratoryRate: Int) {
                 sendEvent(
                     reactApplicationContext,
-                    "onEcgResult",
+                    "onEcgRespiratoryRate",
                     Arguments.createMap().apply {
                         putInt("respiratoryRate", respiratoryRate)
                     })
@@ -146,12 +146,33 @@ class VisionController(reactContext: ReactApplicationContext) :
                             putInt("hrv", hrv)
                         })
                     })
+                    sendEvent(
+                    reactApplicationContext,
+                    "onEcgResult",
+                    Arguments.createMap().apply {
+                        putMap("results", Arguments.createMap().apply {
+                            putInt("rrMax", rrMax)
+                            putInt("rrMin", rrMin)
+                            putInt("hrv", hrv)
+                        })
+                    })
+                    sendEvent(
+                    reactApplicationContext,
+                    "onEcgResult",
+                    Arguments.createMap().apply {
+                        putMap("results", Arguments.createMap().apply {
+                            putInt("rrMax", rrMax)
+                            putInt("rrMin", rrMin)
+                            putInt("hrv", hrv)
+                        })
+                    })
             }
+
 
             override fun onEcgDuration(duration: Int, isEnd: Boolean) {
                 sendEvent(
                     reactApplicationContext,
-                    "onEcgResult",
+                    "onEcgDuration",
                     Arguments.createMap().apply {
                         putMap("duration", Arguments.createMap().apply {
                             putInt("duration", duration)
@@ -163,6 +184,10 @@ class VisionController(reactContext: ReactApplicationContext) :
         startMeasurements(MeasureType.TYPE_ECG)
     }
 
+    @ReactMethod
+    fun stopECG(){
+        stopMeasurements(MeasureType.TYPE_ECG)
+    }
     @ReactMethod
     fun setTestPaper(manufacturer: String, testPaperCode: String) {
         BleManager.getInstance().setTestPaper(manufacturer, testPaperCode)
@@ -412,6 +437,18 @@ class VisionController(reactContext: ReactApplicationContext) :
         startMeasurements(MeasureType.TYPE_BT)
     }
 
+    private fun stopMeasurements(measureType: MeasureType){
+        BleManager.getInstance().stopMeasure(measureType, object : IBleWriteResponse {
+            override fun onWriteSuccess() {
+                Log.e(TAG, "startMeasurments>>write success")
+            }
+
+            override fun onWriteFailed() {
+                Log.e(TAG, "startMeasurments>>write failed")
+            }
+
+        })
+    }
     private fun startMeasurements(measureType: MeasureType) {
         BleManager.getInstance().startMeasure(measureType, object : IBleWriteResponse {
             override fun onWriteSuccess() {
@@ -429,7 +466,7 @@ class VisionController(reactContext: ReactApplicationContext) :
     fun stopScan() {
         BleManager.getInstance().stopScan()
     }
-    
+
     @ReactMethod
     fun getBattery(promise: Promise) {
         try {
