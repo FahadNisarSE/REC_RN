@@ -185,6 +185,10 @@ class VisionController(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun stopSpo2(){
+        stopMeasurements(MeasureType.TYPE_SPO2)
+    }
+    @ReactMethod
     fun stopECG(){
         stopMeasurements(MeasureType.TYPE_ECG)
     }
@@ -342,7 +346,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             override fun onSpo2ResultData(heartRate: Int, spo2: Double) {
                 sendEvent(
                     reactApplicationContext,
-                    "onSpo2",
+                    "onSpo2Result",
                     Arguments.createMap().apply {
                         putMap("result", Arguments.createMap().apply {
                             putInt("heartRate", heartRate)
@@ -354,7 +358,7 @@ class VisionController(reactContext: ReactApplicationContext) :
             override fun onSpo2End() {
                 sendEvent(
                     reactApplicationContext,
-                    "onSpo2",
+                    "onSpo2Ended",
                     Arguments.createMap().apply {
                         putBoolean("measurementEnded", true)
                         putString("message", "Spo2 measurement ended")
