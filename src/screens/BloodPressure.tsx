@@ -32,16 +32,19 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
   const {mutate, isPending} = useSaveTestResults();
+  const [appliedPressure, setAppliedPressure] = useState(0);
   const {bp, setBp, isConnected, battery, isMeasuring, setIsMeasuring} =
     useMinttiVisionStore();
   const {measureBp} = useMinttiVision({
     onBp: event => {
-      if (event.error) {
+      if (event?.error) {
         Toast.show({
           type: 'error',
           text1: 'Blood Pressure Test',
           text2: event.error ?? 'Something went wrong',
         });
+
+        return;
       }
 
       setBp(event);
@@ -50,6 +53,16 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         setIsMeasuring(false);
         setShowModal(false);
       }
+    },
+    onBpRaw: event => {
+      setAppliedPressure(
+        Number(
+          event?.decompressionData ||
+            event?.pressureData ||
+            event?.pressurizationData ||
+            0,
+        ),
+      );
     },
   });
 

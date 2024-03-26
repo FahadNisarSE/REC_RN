@@ -33,7 +33,6 @@ const useMinttiVision = ({
     setBgEvent,
     setTemperature,
     setBattery,
-    setECG,
     setBleDevices,
     setIsConnecting,
     setIsScanning,
@@ -46,7 +45,6 @@ const useMinttiVision = ({
     const scanEventListener = eventEmitter.addListener(
       'onScanResult',
       event => {
-        console.log('Device found: ', event);
         setDiscoveredDevices([event]);
         setBleDevices(event);
         onScanResult && onScanResult(event);
@@ -56,7 +54,7 @@ const useMinttiVision = ({
       'onDisconnected',
       event => {
         setIsConnected(false);
-        console.log('Disconnectd from bluetooth device...', event);
+        setIsConnecting(false);
         Toast.show({
           type: 'error',
           text1: 'Medical device has been diconnected..',
@@ -74,17 +72,14 @@ const useMinttiVision = ({
     );
 
     const bpListener = eventEmitter.addListener('onBp', event => {
-      console.log('ON BP: ', event);
       onBp && onBp(event);
     });
 
     const bpRawListener = eventEmitter.addListener('onBpRaw', event => {
-      console.log('ON BP RAW: ', event);
       onBpRaw && onBpRaw(event);
     });
 
     const spo2Listener = eventEmitter.addListener('onSpo2', event => {
-      console.log('Spo2: ', event);
       setSpo2(event);
 
       onSpo2 && onSpo2(event);
@@ -94,9 +89,24 @@ const useMinttiVision = ({
       onEcg && onEcg(event);
     });
     const ecgResultListener = eventEmitter.addListener('onEcgResult', event => {
-      console.log('Ecg result 1: ', event);
       onEcgResult && onEcgResult(event);
     });
+    const ecgRespiratoryRateListener = eventEmitter.addListener(
+      'onEcgRespiratoryRate',
+      event => {
+        onEcgRespiratoryRate && onEcgRespiratoryRate(event);
+      },
+    );
+    const ecgHeartRateListener = eventEmitter.addListener(
+      'onEcgHeartRate',
+      event => {
+        onEcgHeartRate && onEcgHeartRate(event);
+      },
+    );
+    const ecgDurationLisener = eventEmitter.addListener(
+      'onEcgDuration',
+      event => onEcgDuration && onEcgDuration(event),
+    );
     const bgEventListener = eventEmitter.addListener(
       'onBgEvent',
       event => onBgEvent && onBgEvent(event),
@@ -118,6 +128,8 @@ const useMinttiVision = ({
       bgEventListener.remove();
       bgResultListener.remove();
       ecgResultListener.remove();
+      ecgHeartRateListener.remove();
+      ecgRespiratoryRateListener.remove();
     };
   }, []);
 
@@ -242,8 +254,9 @@ const useMinttiVision = ({
     await VisionModule.measureECG();
   }
   async function stopECG() {
-    setIsMeasuring(true);
-    await VisionModule.stopECG();
+    setIsMeasuring(false);
+    const result = await VisionModule.stopECG();
+    console.log('Result: ', result);
   }
 
   async function measureBg() {
@@ -288,9 +301,9 @@ export type useMinttiVisionProps = {
     error: string | undefined;
   }) => void;
   onBpRaw?: (event: {
-    pressurizationData: number | undefined;
-    pressureData: number | undefined;
-    decompressionData: number | undefined;
+    pressurizationData?: string;
+    decompressionData?: string;
+    pressureData?: string;
   }) => void;
   onSpo2?: (event: {
     waveData: number | undefined;

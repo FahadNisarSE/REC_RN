@@ -1,27 +1,26 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useCallback, useRef, useState} from 'react';
 import {
-  Dimensions,
   Image,
   Modal,
   Pressable,
   ToastAndroid,
   TouchableOpacity,
   View,
-  useWindowDimensions,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
+import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import EcgChart from '../nativemodules/MinttiVision/EcgChart';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
 import {meetingStyles} from '../styles/style';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import Button from '../components/ui/Button';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import {queryClient} from '../../App';
-import EcgChart from '../nativemodules/MinttiVision/EcgChart';
+import {calculateAverage} from '../utils/utilityFunctions';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -32,27 +31,69 @@ export default function ECG({navigation}: BloodOxygenProps) {
   const ecgChartRef = useRef();
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
-  const {ecg, setECG, isConnected, battery, isMeasuring, setIsMeasuring} =
-    useMinttiVisionStore();
+  const [respiratoryRateArray, setrespiratoryRateArray] = useState<number[]>(
+    [],
+  );
+  const [heartRateArray, setHeartRateArray] = useState<number[]>([]);
+
+  const [heartRate, setHeartRate] = useState(0);
+  const [respiratoryRate, setRespiratoryRate] = useState(0);
+  const [ecgResult, setEcgResult] = useState<
+    {rrMax: number; rrMin: number; hrv: number} | undefined
+  >();
+  const [duration, setDuration] = useState(0);
+
+  const {isConnected, battery, isMeasuring} = useMinttiVisionStore();
   const {measureECG, stopECG} = useMinttiVision({
     onEcg: event => {
       // @ts-ignore
       ecgChartRef.current?.updateEcgData(event.wave);
     },
     onEcgResult: event => {
-      console.log('ecg result: ', event);
-      // @ts-ignore
-      setECG(event);
+      setEcgResult(event.results);
     },
-    onEcgRespiratoryRate: event => {},
-    onEcgHeartRate: event => {},
-    onEcgDuration: event => {},
+    onEcgRespiratoryRate: event => {
+      if (event.respiratoryRate) {
+        // @ts-ignore
+        setrespiratoryRateArray(prev => [...prev, event?.respiratoryRate]);
+        setRespiratoryRate(event.respiratoryRate);
+      }
+    },
+    onEcgHeartRate: event => {
+      if (event.heartRate) {
+        // @ts-ignore
+        setHeartRateArray(prev => [...prev, event.heartRate]);
+        setHeartRate(event.heartRate);
+      }
+    },
+    onEcgDuration: event => {
+      if (event.duration?.duration) {
+        setDuration(event.duration?.duration);
+      }
+    },
   });
 
   const {mutate, isPending} = useSaveTestResults();
 
+  async function startECGTest() {
+    await measureECG();
+    setTimeout(async () => {
+      await stopECG();
+      toggleModal(true);
+    }, 90 * 1000); // 1.5 min
+  }
+
   function toggleModal(status: boolean) {
     setShowModal(status);
+  }
+
+  function resetSate() {
+    setHeartRate(0);
+    setRespiratoryRate(0);
+    setEcgResult(undefined);
+    setHeartRateArray([]);
+    setrespiratoryRateArray([]);
+    setDuration(0);
   }
 
   const CustomDrawer = useCallback(() => {
@@ -68,11 +109,11 @@ export default function ECG({navigation}: BloodOxygenProps) {
             'Respiratory Rate',
           ],
           VariableValue: [
-            `${ecg?.heartRate} bpm`,
-            `${ecg?.results?.rrMin} ms`,
-            `${ecg?.results?.rrMax} ms`,
-            `${ecg?.heartRate} bpm`,
-            `${ecg?.respiratoryRate} bpm`,
+            `${ecgResult?.hrv} bpm`,
+            `${ecgResult?.rrMin} ms`,
+            `${ecgResult?.rrMax} ms`,
+            `${calculateAverage(heartRateArray)} bpm`,
+            `${calculateAverage(respiratoryRateArray)} bpm`,
           ],
         },
         {
@@ -80,8 +121,8 @@ export default function ECG({navigation}: BloodOxygenProps) {
             ToastAndroid.show('Whoops! Something went wrong', 5000);
           },
           onSuccess: () => {
+            resetSate();
             toggleModal(false),
-              setECG(null),
               Toast.show({
                 type: 'success',
                 text1: 'Save Result',
@@ -101,8 +142,8 @@ export default function ECG({navigation}: BloodOxygenProps) {
     }
 
     function reTakeTesthandler() {
-      setECG(null);
       setShowModal(false);
+      resetSate();
     }
 
     return (
@@ -145,26 +186,24 @@ export default function ECG({navigation}: BloodOxygenProps) {
                 </CustomTextSemiBold>
               </View>
               <View className="mt-4">
-                <CustomTextSemiBold className="text-text">
-                  ECG
-                </CustomTextSemiBold>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Heart Rate: {ecg?.heartRate} bpm
+                  Heart Rate: {heartRate} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Average Heart Rate: {ecg?.heartRate} bpm
+                  Average Heart Rate: {calculateAverage(respiratoryRateArray)}{' '}
+                  bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Respiratory Rate: {ecg?.respiratoryRate} bpm
+                  Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Minimum: {ecg?.results?.rrMin} ms
+                  RRI Minimum: {ecgResult?.rrMin} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Maximum: {ecg?.results?.rrMax} ms
+                  RRI Maximum: {ecgResult?.rrMax} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  HRV: {ecg?.results?.rrMin} ms
+                  HRV: {ecgResult?.rrMin} ms
                 </CustomTextRegular>
               </View>
               <CustomTextRegular className="mt-4 text-text">
@@ -200,10 +239,6 @@ export default function ECG({navigation}: BloodOxygenProps) {
     );
   }, [showModal]);
 
-  async function startECGTest() {
-    await measureECG();
-  }
-
   return (
     <>
       <View className="flex-1 bg-white">
@@ -227,9 +262,6 @@ export default function ECG({navigation}: BloodOxygenProps) {
         {/* ECG CHART */}
         <View className="items-start justify-between p-4 mx-5 mt-4 border border-gray-200 rounded-md">
           <View>
-            <CustomTextRegular className="text-xs text-center text-text">
-              {JSON.stringify(ecg)}
-            </CustomTextRegular>
             <CustomTextRegular className="text-xs text-left text-text">
               Paper Speed: 25 mm/s
             </CustomTextRegular>
@@ -244,24 +276,24 @@ export default function ECG({navigation}: BloodOxygenProps) {
           <View className="flex-row">
             <View className="flex-col items-start">
               <CustomTextRegular className="text-xs text-text">
-                RRI maximum: {ecg?.results?.rrMax ?? 0} ms
+                RRI maximum: {ecgResult?.rrMax ?? 0} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                Heart rate: {ecg?.heartRate ?? 0} bpm
+                Heart rate: {heartRate} bpm
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                Respiratory rate: {ecg?.respiratoryRate ?? 0} bpm
+                Respiratory rate: {respiratoryRate} bpm
               </CustomTextRegular>
             </View>
             <View className="flex-col items-start ml-4">
               <CustomTextRegular className="text-xs text-text">
-                RRI minimum: {ecg?.results?.rrMin ?? 0} ms
+                RRI minimum: {ecgResult?.rrMin ?? 0} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                HRV: {ecg?.results?.hrv ?? 0} ms
+                HRV: {ecgResult?.hrv ?? 0} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                Duration rate: {ecg?.duration?.duration ?? 0} bpm
+                Duration rate: {duration} s
               </CustomTextRegular>
             </View>
           </View>
@@ -296,12 +328,6 @@ export default function ECG({navigation}: BloodOxygenProps) {
           className="mx-5 mt-auto mb-5"
           disabled={isMeasuring}
           onPress={() => startECGTest()}
-        />
-        <Button
-          text={'Stop'}
-          className="mx-5 mt-auto mb-5"
-          // disabled={isMeasuring}
-          onPress={() => stopECG()}
         />
       </View>
       <CustomDrawer />

@@ -19,14 +19,6 @@ type SPO2 = {
   message: string | undefined;
 };
 
-type ECG = {
-  wave: number | undefined;
-  heartRate: number | undefined;
-  respiratoryRate: number | undefined;
-  results: {rrMax: number; rrMin: number; hrv: number} | undefined;
-  duration: {duration: number; isEnd: boolean} | undefined;
-};
-
 type BgEvent =
   | 'bgEventWaitPagerInsert'
   | 'bgEventPaperUsed'
@@ -44,6 +36,7 @@ type BP = {
 interface MinittiVisionInterface {
   bleDevices: BleDevice[];
   setBleDevices: (state: BleDevice) => void;
+  resetBleDevices: () => void;
   battery: number;
   setBattery: (state: number) => void;
   temperature: number;
@@ -52,8 +45,7 @@ interface MinittiVisionInterface {
   setSpo2: (spo2: SPO2 | null) => void;
   bp: BP | null;
   setBp: (bg: BP | null) => void;
-  ecg: ECG | null;
-  setECG: (ecg: ECG | null) => void;
+
   bgEvent: {
     event: BgEvent | undefined;
     message: string | undefined;
@@ -94,6 +86,7 @@ export const useMinttiVisionStore = create<MinittiVisionInterface>()(set => ({
 
       return state;
     }),
+  resetBleDevices: () => set({bleDevices: []}),
   battery: 0,
   setBattery: battery => set({battery: battery}),
   temperature: 0,
@@ -102,8 +95,6 @@ export const useMinttiVisionStore = create<MinittiVisionInterface>()(set => ({
   setBp: bp => set({bp: bp}),
   spo2: null,
   setSpo2: spo2 => set({spo2: spo2}),
-  ecg: null,
-  setECG: ecg => set({ecg: ecg}),
   bgResult: null,
   setBgResult: bgResult => set({bgResult: bgResult}),
   bgEvent: null,

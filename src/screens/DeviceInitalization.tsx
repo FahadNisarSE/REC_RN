@@ -46,6 +46,7 @@ export default function DeviceInitalization({
   useEffect(() => {
     // @ts-ignore
     if (isConnected) navigation.navigate(testRoute);
+    if (!isConnecting) setIsConnecting(false);
   }, [isConnected]);
 
   useEffect(() => {

@@ -1,11 +1,12 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import React from 'react';
-import { Image, StatusBar, View } from 'react-native';
+import {Image, StatusBar, View} from 'react-native';
 import AppointmentList from '../components/AppointmentList';
 import Instruction from '../components/Instruction';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import { BASE_IMG_URL } from '../utils/config';
-import { useSignInStore } from '../utils/store/useSignInStore';
+import {BASE_IMG_URL} from '../utils/config';
+import {useSignInStore} from '../utils/store/useSignInStore';
+import AppointmentHistory from '../components/AppointmentHistory';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -76,7 +77,7 @@ const HomeTabs = () => {
           },
           tabBarIndicatorStyle: {backgroundColor: '#46b98d'},
           tabBarLabelStyle: {
-            fontSize: 14,
+            fontSize: 12,
             color: '#02200a',
             textTransform: 'capitalize',
             fontFamily: 'Inter-SemiBold',
@@ -85,8 +86,8 @@ const HomeTabs = () => {
           tabBarPressColor: 'rgba(0, 0, 0, 0.1)',
         }}>
         <Tab.Screen name="instructions" component={Instruction} />
-        {/* <Tab.Screen name="recom. tests" component={RecommendedTestsList} /> */}
-        <Tab.Screen name="appointments" component={AppointmentList} />
+        <Tab.Screen name="appointment" component={AppointmentList} />
+        <Tab.Screen name="history" component={AppointmentHistory} />
       </Tab.Navigator>
     </View>
   );

@@ -19,6 +19,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import BoGraph from '../nativemodules/MinttiVision/BoGraph';
 import Toast from 'react-native-toast-message';
+import {queryClient} from '../../App';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -28,10 +29,13 @@ type BloodOxygenProps = NativeStackScreenProps<
 export default function BloodOxygen({navigation}: BloodOxygenProps) {
   const bloodOxygenGraphRef = useRef();
   const [showModal, setShowModal] = useState(false);
-  const {appointmentDetail} = useAppointmentDetailStore();
+  const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
   const {mutate, isPending} = useSaveTestResults();
-  const {spo2, setSpo2, setIsMeasuring, isConnected, battery, isMeasuring} =
-  useMinttiVisionStore();
+  const [spO2Result, setSpO2Result] = useState<
+    {heartRate: number; spo2: number} | undefined
+  >();
+  const {setIsMeasuring, isConnected, battery, isMeasuring} =
+    useMinttiVisionStore();
   const {getBattery, measureBloodOxygenSaturation} = useMinttiVision({
     onSpo2: event => {
       // @ts-ignore
@@ -42,6 +46,9 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           text1: 'Blood Oxygen Test',
           text2: event.message,
         });
+      if (event.result) {
+        setSpO2Result(event.result);
+      }
       if (event.measurementEnded) {
         setIsMeasuring(false);
         setShowModal(false);
@@ -49,24 +56,60 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     },
   });
 
-
-  // Reset Test Values
   useEffect(() => {
-    setSpo2(null);
-  }, []);
-
-  useEffect(() => {
-    if(!isConnected) navigation.navigate("DeviceInitialization", {testRoute: 'BloodOxygen'})
-  }, [isConnected])
+    if (!isConnected)
+      navigation.navigate('DeviceInitialization', {testRoute: 'BloodOxygen'});
+  }, [isConnected]);
 
   function toggleModal(status: boolean) {
     setShowModal(status);
   }
 
-  const CustomDrawer = useCallback(() => {
-    function saveResult() {}
+  function reTakeTesthandler() {
+    setShowModal(false);
+    setSpO2Result(undefined);
+  }
 
-    function reTakeTesthandler() {}
+  const CustomDrawer = useCallback(() => {
+    function saveResult() {
+      mutate(
+        {
+          AppointmentTestId: appointmentTestId!,
+          VariableName: ['Blood Oxygen', 'Heart Rate'],
+          VariableValue: [
+            `${spO2Result?.spo2} %`,
+            `${spO2Result?.heartRate} bpm`,
+          ],
+        },
+        {
+          onError: () => {
+            Toast.show({
+              type: 'error',
+              text1: 'Someting went wrong while saving test!',
+              text2: 'Plese try again.',
+            });
+          },
+          onSuccess: () => {
+            setSpO2Result(undefined);
+            toggleModal(false),
+              Toast.show({
+                type: 'success',
+                text1: 'Save Result',
+                text2: 'Blood Pressure result saved successfully. 👍',
+              });
+            queryClient.invalidateQueries({
+              queryKey: [
+                `get_appointment_details_${appointmentDetail?.AppointmentId}`,
+              ],
+            }),
+              navigation.navigate('AppointmentDetail', {
+                id: appointmentDetail?.AppointmentId!,
+              });
+          },
+        },
+      );
+    }
+
     return (
       <Modal
         visible={
@@ -112,7 +155,10 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
                     Blood Oxygen
                   </CustomTextSemiBold>
                   <CustomTextRegular className="text-gray-600">
-                    Average: bpm
+                    Heart Rate: {spO2Result?.heartRate}: bpm
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Blood Oxygen: {spO2Result?.spo2}: %
                   </CustomTextRegular>
                 </View>
               </View>
@@ -181,7 +227,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </CustomTextSemiBold>
               <View className="flex-row items-end">
                 <CustomTextRegular className="text-base text-text">
-                  {spo2?.result?.spo2 ? String(spo2.result?.spo2) : 0}
+                  {spO2Result?.heartRate ?? 0}
                 </CustomTextRegular>
                 <CustomTextRegular className="text-[10px] text-text">
                   %
@@ -194,7 +240,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </CustomTextSemiBold>
               <View className="flex-row items-end">
                 <CustomTextRegular className="text-base text-text">
-                  {spo2?.result?.heartRate ? String(spo2.result?.heartRate) : 0}
+                  {spO2Result?.heartRate ?? 0}
                 </CustomTextRegular>
                 <CustomTextRegular className="text-[10px] text-text">
                   bpm

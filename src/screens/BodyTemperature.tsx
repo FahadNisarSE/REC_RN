@@ -20,6 +20,7 @@ import Button from '../components/ui/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {queryClient} from '../../App';
+import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -169,6 +170,13 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
     setShowModal(true);
   }
 
+  function temperatureResult() {
+    if (temperature >= 36 && temperature <= 37.2) return 'Normal';
+    else if (temperature > 37.2 && temperature <= 42) return 'High';
+    else if (temperature < 36 && temperature >= 32) return 'Low';
+    else return 'Invalid Temperature';
+  }
+
   return (
     <>
       <View className="flex-1 px-5 bg-white">
@@ -201,20 +209,37 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
                 ℃
               </CustomTextRegular>
             </View>
+            <View
+              className="px-2 py-1 mt-2 border border-gray-400 rounded-full"
+              style={{opacity: temperature === 0 ? 0 : 100}}>
+              <CustomTextRegular className="text-gray-400 text-[10px]">
+                {temperatureResult()}
+              </CustomTextRegular>
+            </View>
           </View>
         </View>
 
         {/* Noraml Temperature here */}
         <View className="p-4 mt-4 border border-gray-300 rounded-md">
-          <Image
-            style={{
-              width: dimensions.width * 0.8,
-              marginHorizontal: 'auto',
-              objectFit: 'contain',
-            }}
-            source={require('../assets/images/normal_temperature.png')}
-            alt="normal oxygen level"
-          />
+          <View>
+            <CustomTextRegular className="mb-4 text-center text-text">
+              Normal Temperature Range
+            </CustomTextRegular>
+            <CustomTextSemiBold className="text-center text-text">
+              36 ℃ - 37.2 ℃
+            </CustomTextSemiBold>
+          </View>
+          <View
+            className="flex-row items-center my-4 rounded"
+            style={{opacity: temperature === 0 ? 0 : 100}}>
+            <ResultIdicatorBar
+              lowThreshold={36}
+              highThreshold={37.2}
+              lowestLimit={32}
+              highestLimit={42}
+              value={37}
+            />
+          </View>
         </View>
 
         <View className="flex flex-row justify-between mt-10">

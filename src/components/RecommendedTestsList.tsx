@@ -36,7 +36,8 @@ const RECOMMENDED_TESTS_IMAGES: {
   Temprature: any;
   'Respiratory Rate': any;
   'Blood Glucose': any;
-  'Heart Beat': any;
+  'Heart Sound': any;
+  'Lungs Sound': any;
 } = {
   'Oxygen Saturation': require('../assets/icons/devices/oxygen_level.png'),
   'Blood Pressure': require('../assets/icons/devices/blood_pressure.png'),
@@ -44,7 +45,8 @@ const RECOMMENDED_TESTS_IMAGES: {
   Temprature: require('../assets/icons/devices/temperature.png'),
   'Respiratory Rate': require('../assets/icons/devices/lung_wave.png'),
   'Blood Glucose': require('../assets/icons/devices/sugar_level.png'),
-  'Heart Beat': require('../assets/icons/devices/blood_pressure.png'),
+  'Heart Sound': require('../assets/icons/devices/blood_pressure.png'),
+  'Lungs Sound': require('../assets/icons/devices/lung_wave.png'),
 };
 
 function Item({
@@ -60,7 +62,9 @@ function Item({
 
   function onPressHander() {
     if (DeviceName === 'Vital Signs Monitor') {
-      useAppointmentDetailStore.setState({appointmentTestId: AppointmentTestId});
+      useAppointmentDetailStore.setState({
+        appointmentTestId: AppointmentTestId,
+      });
       // @ts-ignore
       if (isConnected) navigation.navigate(mapTestUrl(TestName));
       else
@@ -85,7 +89,7 @@ function Item({
           <CustomTextSemiBold className="text-text">
             {TestName}
           </CustomTextSemiBold>
-          <CustomTextRegular className="text-text">
+          <CustomTextRegular className="mt-1 text-xs text-text">
             {DeviceName}
           </CustomTextRegular>
         </View>
