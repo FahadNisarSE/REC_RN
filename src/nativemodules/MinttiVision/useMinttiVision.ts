@@ -13,6 +13,8 @@ const {VisionModule} = NativeModules;
 
 const useMinttiVision = ({
   onSpo2,
+  onSpo2Result,
+  onSpo2Ended,
   onScanResult,
   onEcg,
   onEcgResult,
@@ -84,6 +86,22 @@ const useMinttiVision = ({
 
       onSpo2 && onSpo2(event);
     });
+
+    const spo2ResultListener = eventEmitter.addListener('onSpo2Result', event => {
+      console.log('Spo2Result: ', event);
+//      setSpo2(event);
+
+      onSpo2Result && onSpo2Result(event);
+    });
+
+    const spo2EndedListener = eventEmitter.addListener('onSpo2Ended', event => {
+      console.log('Spo2Result: ', event);
+      //      setSpo2(event);
+
+  onSpo2Ended && onSpo2Ended(event);
+    });
+
+
 
     const ecgListener = eventEmitter.addListener('onEcg', event => {
       onEcg && onEcg(event);
@@ -259,6 +277,10 @@ const useMinttiVision = ({
     console.log('Result: ', result);
   }
 
+  async function stopSpo2(){
+    await VisionModule.stopSpo2();
+  }
+
   async function measureBg() {
     try {
       setIsMeasuring(true);
@@ -280,6 +302,7 @@ const useMinttiVision = ({
     measureECG,
     stopECG,
     measureBloodOxygenSaturation,
+    stopSpo2,
     measureBp,
     measureBodyTemperature,
     getBattery,
@@ -307,16 +330,16 @@ export type useMinttiVisionProps = {
   }) => void;
   onSpo2?: (event: {
     waveData: number | undefined;
-    result: {heartRate: number; spo2: number} | undefined;
-    measurementEnded: boolean | undefined;
-    message: string | undefined;
+  }) => void;
+  onSpo2Result?: (event: {
+        result: {heartRate: number; spo2: number} | undefined;
+  }) => void;
+  onSpo2Ended?: (event: {
+        measurementEnded: boolean | undefined;
+        message: string | undefined;
   }) => void;
   onEcg?: (event: {
     wave: number | undefined;
-    // heartRate: number | undefined;
-    // respiratoryRate: number | undefined;
-    // results: {rrMax: number; rrMin: number; hrv: number} | undefined;
-    // duration: {duration: number; isEnd: boolean} | undefined;
   }) => void;
   onEcgDuration?: (event: {
     duration: {duration: number; isEnd: boolean} | undefined;
