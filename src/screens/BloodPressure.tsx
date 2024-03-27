@@ -54,16 +54,17 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         setShowModal(false);
       }
     },
-    onBpRaw: event => {
-      setAppliedPressure(
-        Number(
-          event?.decompressionData ||
-            event?.pressureData ||
-            event?.pressurizationData ||
-            0,
-        ),
-      );
-    },
+    // onBpRaw: event => {
+    //   console.log("bp raw: ", event)
+    //   setAppliedPressure(
+    //     Number(
+    //       event?.decompressionData ||
+    //         event?.pressureData ||
+    //         event?.pressurizationData ||
+    //         0,
+    //     ),
+    //   );
+    // },
   });
 
   // Reset all values

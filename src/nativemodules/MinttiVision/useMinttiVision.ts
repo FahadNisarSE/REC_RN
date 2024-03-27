@@ -78,9 +78,9 @@ const useMinttiVision = ({
       onBp && onBp(event);
     });
 
-    const bpRawListener = eventEmitter.addListener('onBpRaw', event => {
-      onBpRaw && onBpRaw(event);
-    });
+    // const bpRawListener = eventEmitter.addListener('onBpRaw', event => {
+    //   onBpRaw && onBpRaw(event);
+    // });
 
     const spo2Listener = eventEmitter.addListener('onSpo2', event => {
       setSpo2(event);
@@ -141,7 +141,8 @@ const useMinttiVision = ({
       batteryListener.remove();
       bodyTemperatureListener.remove();
       bpListener.remove();
-      bpRawListener.remove();
+      // bpRawListener.remove();
+      spo2EndedListener.remove();
       spo2Listener.remove();
       ecgListener.remove();
       disconnectEventListener.remove();
@@ -286,7 +287,7 @@ const useMinttiVision = ({
     console.log('Result: ', result);
   }
 
-  async function stopBp(){
+  async function stopBp() {
     await VisionModule.stopBp();
   }
 
