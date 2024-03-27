@@ -193,6 +193,12 @@ class VisionController(reactContext: ReactApplicationContext) :
         stopMeasurements(MeasureType.TYPE_ECG)
     }
     @ReactMethod
+    fun stopBp(){
+        stopMeasurements(MeasureType.TYPE_BP)
+    }
+
+
+    @ReactMethod
     fun setTestPaper(manufacturer: String, testPaperCode: String) {
         BleManager.getInstance().setTestPaper(manufacturer, testPaperCode)
     }
@@ -370,60 +376,64 @@ class VisionController(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun measureBloodPressure() {
-        BleManager.getInstance().setBpResultListener(object : IBpResultListener, IRawBpDataCallback {
-            override fun onBpResult(systolic: Int, diastolic: Int, heartRate: Int) {
-                sendEvent(reactApplicationContext, "onBp", Arguments.createMap().apply {
-                    putMap("result", Arguments.createMap().apply {
-                        putInt("systolic", systolic)
-                        putInt("diastolic", diastolic)
-                        putInt("heartRate", heartRate)
+        BleManager.getInstance().apply {
+            setBpResultListener(object : IBpResultListener {
+                override fun onBpResult(systolic: Int, diastolic: Int, heartRate: Int) {
+                    sendEvent(reactApplicationContext, "onBp", Arguments.createMap().apply {
+                        putMap("result", Arguments.createMap().apply {
+                            putInt("systolic", systolic)
+                            putInt("diastolic", diastolic)
+                            putInt("heartRate", heartRate)
+                        })
                     })
-                })
-            }
+                }
+                override fun onLeadError() {
+                    sendEvent(
+                        reactApplicationContext,
+                        "onBp",
+                        Arguments.createMap().apply {
+                            putString(
+                                "error",
+                                "Air leakage is detected, please check the air circuit and remeasure"
+                            )
+                        })
+                }
 
-            override fun onLeadError() {
-                sendEvent(
-                    reactApplicationContext,
-                    "onBp",
-                    Arguments.createMap().apply {
-                        putString(
-                            "error",
-                            "Air leakage is detected, please check the air circuit and remeasure"
-                        )
+                override fun onBpError() {
+                    sendEvent(
+                        reactApplicationContext,
+                        "onBp",
+                        Arguments.createMap().apply {
+                            putString(
+                                "error",
+                                "This result is invalid, please remeasure"
+                            )
+                        })
+                }
+
+
+            })
+            setRawBpDataCallback(object : IRawBpDataCallback {
+                override fun onPressurizationData(pressurizationData: Short) {
+                    sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
+                        putInt("pressurizationData", pressurizationData.toInt())
                     })
-            }
 
-            override fun onBpError() {
-                sendEvent(
-                    reactApplicationContext,
-                    "onBp",
-                    Arguments.createMap().apply {
-                        putString(
-                            "error",
-                            "This result is invalid, please remeasure"
-                        )
+                }
+
+                override fun onDecompressionData(decompressionData: Short) {
+                    sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
+                        putInt("decompressionData", decompressionData.toInt())
                     })
-            }
+                }
 
-            override fun onPressurizationData(pressurizationData: Short) {
-                sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
-                    putInt("pressurizationData", pressurizationData.toInt())
-                })
-
-            }
-
-            override fun onDecompressionData(decompressionData: Short) {
-                sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
-                    putInt("decompressionData", decompressionData.toInt())
-                })
-            }
-
-            override fun onPressure(pressureData: Short) {
-                sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
-                    putInt("pressureData", pressureData.toInt())
-                })
-            }
-        })
+                override fun onPressure(pressureData: Short) {
+                    sendEvent(reactApplicationContext, "onBpRaw", Arguments.createMap().apply {
+                        putInt("pressureData", pressureData.toInt())
+                    })
+                }
+            })
+        }
         startMeasurements(MeasureType.TYPE_BP)
     }
 
