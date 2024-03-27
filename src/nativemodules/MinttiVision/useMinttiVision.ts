@@ -45,6 +45,7 @@ const useMinttiVision = ({
 
   useEffect(() => {
     const eventEmitter = new NativeEventEmitter(NativeModules.VisionModule);
+
     const scanEventListener = eventEmitter.addListener(
       'onScanResult',
       event => {
@@ -268,6 +269,10 @@ const useMinttiVision = ({
     await VisionModule.stopSpo2();
   }
 
+  async function stopBp(){
+    await VisionModule.stopBp();
+  }
+
   async function measureBg() {
     try {
       setIsMeasuring(true);
@@ -291,6 +296,7 @@ const useMinttiVision = ({
     measureBloodOxygenSaturation,
     stopSpo2,
     measureBp,
+    stopBp,
     measureBodyTemperature,
     getBattery,
     connectToDevice,
