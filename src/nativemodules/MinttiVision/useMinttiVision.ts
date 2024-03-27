@@ -87,21 +87,22 @@ const useMinttiVision = ({
       onSpo2 && onSpo2(event);
     });
 
-    const spo2ResultListener = eventEmitter.addListener('onSpo2Result', event => {
-      console.log('Spo2Result: ', event);
-//      setSpo2(event);
+    const spo2ResultListener = eventEmitter.addListener(
+      'onSpo2Result',
+      event => {
+        console.log('Spo2Result: ', event);
+        //      setSpo2(event);
 
-      onSpo2Result && onSpo2Result(event);
-    });
+        onSpo2Result && onSpo2Result(event);
+      },
+    );
 
     const spo2EndedListener = eventEmitter.addListener('onSpo2Ended', event => {
       console.log('Spo2Result: ', event);
       //      setSpo2(event);
 
-  onSpo2Ended && onSpo2Ended(event);
+      onSpo2Ended && onSpo2Ended(event);
     });
-
-
 
     const ecgListener = eventEmitter.addListener('onEcg', event => {
       onEcg && onEcg(event);
@@ -147,6 +148,7 @@ const useMinttiVision = ({
       bgResultListener.remove();
       ecgResultListener.remove();
       ecgHeartRateListener.remove();
+      ecgDurationLisener.remove();
       ecgRespiratoryRateListener.remove();
     };
   }, []);
@@ -258,13 +260,19 @@ const useMinttiVision = ({
     }
   }
 
-  async function measureBloodOxygenSaturation() {
+  async function measureBloodOxygen() {
     try {
       setIsMeasuring(true);
       await VisionModule.measureBloodOxygenSaturation();
     } catch (e) {
       setIsMeasuring(false);
     }
+  }
+
+  async function stopSpo2() {
+    console.log('Stop sp02 called...');
+    setIsMeasuring(false);
+    await VisionModule.stopSpo2();
   }
 
   async function measureECG() {
@@ -275,10 +283,6 @@ const useMinttiVision = ({
     setIsMeasuring(false);
     const result = await VisionModule.stopECG();
     console.log('Result: ', result);
-  }
-
-  async function stopSpo2(){
-    await VisionModule.stopSpo2();
   }
 
   async function measureBg() {
@@ -301,7 +305,7 @@ const useMinttiVision = ({
     measureBg,
     measureECG,
     stopECG,
-    measureBloodOxygenSaturation,
+    measureBloodOxygen,
     stopSpo2,
     measureBp,
     measureBodyTemperature,
@@ -328,19 +332,15 @@ export type useMinttiVisionProps = {
     decompressionData?: string;
     pressureData?: string;
   }) => void;
-  onSpo2?: (event: {
-    waveData: number | undefined;
-  }) => void;
+  onSpo2?: (event: {waveData: number | undefined}) => void;
   onSpo2Result?: (event: {
-        result: {heartRate: number; spo2: number} | undefined;
+    result: {heartRate: number; spo2: number} | undefined;
   }) => void;
   onSpo2Ended?: (event: {
-        measurementEnded: boolean | undefined;
-        message: string | undefined;
+    measurementEnded: boolean | undefined;
+    message: string | undefined;
   }) => void;
-  onEcg?: (event: {
-    wave: number | undefined;
-  }) => void;
+  onEcg?: (event: {wave: number | undefined}) => void;
   onEcgDuration?: (event: {
     duration: {duration: number; isEnd: boolean} | undefined;
   }) => void;

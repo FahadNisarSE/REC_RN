@@ -36,22 +36,32 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
   >();
   const {setIsMeasuring, isConnected, battery, isMeasuring} =
     useMinttiVisionStore();
-  const {getBattery, measureBloodOxygenSaturation} = useMinttiVision({
+  const {measureBloodOxygen, stopSpo2} = useMinttiVision({
     onSpo2: event => {
-      // @ts-ignore
-      bloodOxygenGraphRef?.current?.updateData(event.waveData);
-      if (event.message)
+      if (event.waveData)
+        // @ts-ignore
+        bloodOxygenGraphRef?.current?.updateData(event.waveData);
+    },
+    onSpo2Ended: event => {
+      console.log('Event: sp02 ended: ', event);
+      if (event.measurementEnded)
         Toast.show({
           type: 'info',
           text1: 'Blood Oxygen Test',
           text2: event.message,
         });
-      if (event.result) {
-        setSpO2Result(event.result);
+      if (event.message) {
+        // setSpO2Result(event.?result);
       }
       if (event.measurementEnded) {
         setIsMeasuring(false);
         setShowModal(false);
+      }
+    },
+    onSpo2Result: event => {
+      console.log('SP02  result: ', event);
+      if (event.result) {
+        setSpO2Result(event.result);
       }
     },
   });
@@ -60,6 +70,13 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     if (!isConnected)
       navigation.navigate('DeviceInitialization', {testRoute: 'BloodOxygen'});
   }, [isConnected]);
+
+  async function startMeasurement() {
+    await measureBloodOxygen();
+    setTimeout(async () => {
+      await stopSpo2();
+    }, 40 * 1000);
+  }
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -283,7 +300,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           text={isMeasuring ? 'Measuring...' : 'Start Test'}
           className="mx-5 mt-auto mb-5"
           disabled={isMeasuring}
-          onPress={() => measureBloodOxygenSaturation()}
+          onPress={() => startMeasurement()}
         />
       </View>
       <CustomDrawer />
