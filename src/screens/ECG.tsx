@@ -21,10 +21,12 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {calculateAverage} from '../utils/utilityFunctions';
+import BloodPressure from './BloodPressure';
+import BatteryIndicator from '../components/BatteryIndicatory';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
-  'BodyTemperature'
+  'ECG'
 >;
 
 export default function ECG({navigation}: BloodOxygenProps) {
@@ -110,7 +112,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
           ],
           VariableValue: [
             `${ecgResult?.hrv} bpm`,
-            `${ecgResult?.rrMin} ms`,
+            `${ecgResult?.rrMin ?? 0} ms`,
             `${ecgResult?.rrMax} ms`,
             `${calculateAverage(heartRateArray)} bpm`,
             `${calculateAverage(respiratoryRateArray)} bpm`,
@@ -197,13 +199,13 @@ export default function ECG({navigation}: BloodOxygenProps) {
                   Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Minimum: {ecgResult?.rrMin} ms
+                  RRI Minimum: {ecgResult?.rrMin ?? 0} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Maximum: {ecgResult?.rrMax} ms
+                  RRI Maximum: {ecgResult?.rrMax ?? 0} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  HRV: {ecgResult?.rrMin} ms
+                  HRV: {ecgResult?.rrMin ?? 0} ms
                 </CustomTextRegular>
               </View>
               <CustomTextRegular className="mt-4 text-text">
@@ -237,7 +239,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
         </View>
       </Modal>
     );
-  }, [showModal]);
+  }, [showModal, ecgResult]);
 
   return (
     <>
@@ -317,9 +319,10 @@ export default function ECG({navigation}: BloodOxygenProps) {
               {isConnected ? 'Connected' : 'Disconnected'}
             </CustomTextSemiBold>
           </View>
-          <View className="flex flex-row items-center px-4 py-2 rounded-full bg-primmary">
+          <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
+            <BatteryIndicator percentage={battery} />
             <CustomTextSemiBold className="ml-2 text-xs text-white">
-              Battery: {battery}%
+              {battery} %
             </CustomTextSemiBold>
           </View>
         </View>

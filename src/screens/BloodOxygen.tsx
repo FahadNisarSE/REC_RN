@@ -20,6 +20,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import BoGraph from '../nativemodules/MinttiVision/BoGraph';
 import Toast from 'react-native-toast-message';
 import {queryClient} from '../../App';
+import BatteryIndicator from '../components/BatteryIndicatory';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -31,11 +32,8 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
   const {mutate, isPending} = useSaveTestResults();
-  const [spO2Result, setSpO2Result] = useState<
-    {heartRate: number; spo2: number} | undefined
-  >();
-  const {setIsMeasuring, isConnected, battery, isMeasuring} =
-    useMinttiVisionStore();
+  const [spO2Result, setSpO2Result] = useState<{heartRate: number; spo2: number} | undefined>();
+  const {setIsMeasuring, isConnected, battery, isMeasuring} = useMinttiVisionStore();
   const {measureBloodOxygen, stopSpo2} = useMinttiVision({
     onSpo2: event => {
       if (event.waveData)
@@ -43,23 +41,20 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
         bloodOxygenGraphRef?.current?.updateData(event.waveData);
     },
     onSpo2Ended: event => {
-      console.log('Event: sp02 ended: ', event);
-      if (event.measurementEnded)
+      if (event.measurementEnded) {
+        setIsMeasuring(false);
+        toggleModal(true);
+      }
+
+      if (event.message) {
         Toast.show({
           type: 'info',
           text1: 'Blood Oxygen Test',
           text2: event.message,
         });
-      if (event.message) {
-        // setSpO2Result(event.?result);
-      }
-      if (event.measurementEnded) {
-        setIsMeasuring(false);
-        setShowModal(false);
       }
     },
     onSpo2Result: event => {
-      console.log('SP02  result: ', event);
       if (event.result) {
         setSpO2Result(event.result);
       }
@@ -244,7 +239,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </CustomTextSemiBold>
               <View className="flex-row items-end">
                 <CustomTextRegular className="text-base text-text">
-                  {spO2Result?.heartRate ?? 0}
+                  {spO2Result?.spo2 ?? 0}
                 </CustomTextRegular>
                 <CustomTextRegular className="text-[10px] text-text">
                   %
@@ -290,10 +285,9 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               {isConnected ? 'Connected' : 'Disconnected'}
             </CustomTextSemiBold>
           </View>
-          <View className="flex flex-row items-center px-4 py-2 rounded-full bg-primmary">
-            <CustomTextSemiBold className="ml-2 text-xs text-white">
-              Battery: {battery}%
-            </CustomTextSemiBold>
+          <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
+            <BatteryIndicator percentage={battery} />
+            <CustomTextSemiBold className='ml-2 text-xs text-white'>{battery} %</CustomTextSemiBold>
           </View>
         </View>
         <Button

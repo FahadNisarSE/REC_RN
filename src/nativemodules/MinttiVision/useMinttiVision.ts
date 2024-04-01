@@ -1,13 +1,14 @@
-import {useEffect, useState} from 'react';
-import {NativeEventEmitter, NativeModules, ToastAndroid} from 'react-native';
-import {useMinttiVisionStore} from '../../utils/store/useMinttiVisionStore';
-import Toast from 'react-native-toast-message';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { NativeEventEmitter, NativeModules, ToastAndroid } from 'react-native';
 import {
   AndroidLocationEnablerResult,
   isLocationEnabled,
   promptForEnableLocationIfNeeded,
 } from 'react-native-android-location-enabler';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
+import Toast from 'react-native-toast-message';
+import { useMinttiVisionStore } from '../../utils/store/useMinttiVisionStore';
 
 const {VisionModule} = NativeModules;
 
@@ -29,10 +30,6 @@ const useMinttiVision = ({
   const [discoveredDevices, setDiscoveredDevices] = useState<BleDevice[]>();
   const [connectedDevice, setConnectedDevice] = useState<BleDevice>();
   const {
-    setBp,
-    setSpo2,
-    setBgResult,
-    setBgEvent,
     setTemperature,
     setBattery,
     setBleDevices,
@@ -54,8 +51,7 @@ const useMinttiVision = ({
       },
     );
     const disconnectEventListener = eventEmitter.addListener(
-      'onDisconnected',
-      event => {
+      'onDisconnected',  event => {
         setIsConnected(false);
         setIsConnecting(false);
         Toast.show({
@@ -69,39 +65,37 @@ const useMinttiVision = ({
     );
     const bodyTemperatureListener = eventEmitter.addListener(
       'onBodyTemperatureResult',
-      event => {
-        console.log('Body temperature: ', event);
-      },
+      event => {},
     );
 
     const bpListener = eventEmitter.addListener('onBp', event => {
       onBp && onBp(event);
     });
 
-    // const bpRawListener = eventEmitter.addListener('onBpRaw', event => {
-    //   onBpRaw && onBpRaw(event);
-    // });
+    type CallbackFunction = (event: any) => void;
+
+    // @ts-ignore
+    const throttledBpRawListener: CallbackFunction = _.throttle(
+      (event: any) => {
+        onBpRaw && onBpRaw(event);
+      },
+      250,
+    );
+
+    const bpRawListener = eventEmitter.addListener('onBpRaw', throttledBpRawListener);
 
     const spo2Listener = eventEmitter.addListener('onSpo2', event => {
-      setSpo2(event);
-
       onSpo2 && onSpo2(event);
     });
 
     const spo2ResultListener = eventEmitter.addListener(
       'onSpo2Result',
       event => {
-        console.log('Spo2Result: ', event);
-        //      setSpo2(event);
-
         onSpo2Result && onSpo2Result(event);
       },
     );
 
     const spo2EndedListener = eventEmitter.addListener('onSpo2Ended', event => {
-      console.log('Spo2Result: ', event);
-      //      setSpo2(event);
-
       onSpo2Ended && onSpo2Ended(event);
     });
 
@@ -141,9 +135,10 @@ const useMinttiVision = ({
       batteryListener.remove();
       bodyTemperatureListener.remove();
       bpListener.remove();
-      // bpRawListener.remove();
+      bpRawListener.remove();
       spo2EndedListener.remove();
       spo2Listener.remove();
+      spo2ResultListener.remove();
       ecgListener.remove();
       disconnectEventListener.remove();
       bgEventListener.remove();

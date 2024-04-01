@@ -5,20 +5,35 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import CustomTextSemiBold from './ui/CustomTextSemiBold';
 import {FlatList} from 'react-native-gesture-handler';
-import {BloodPressureInstruction, TemperatureInstruction} from '../constant/Instructions'
-import { useInstuctionsStore } from '../utils/store/useIntructionsStore';
+import {
+  BloodPressureInstruction,
+  ECGInstructions,
+  TemperatureInstruction,
+  oxygernSaturationInstruction,
+} from '../constant/Instructions';
+import {useInstuctionsStore} from '../utils/store/useIntructionsStore';
 
 const InstunctionList = [
   {
     image: require('../assets/icons/devices/temperature.png'),
     name: 'Body Temperature',
-    list: TemperatureInstruction
+    list: TemperatureInstruction,
   },
   {
     image: require('../assets/icons/devices/blood_pressure.png'),
     name: 'Blood Pressure',
-    list: BloodPressureInstruction
-  }
+    list: BloodPressureInstruction,
+  },
+  {
+    image: require('../assets/icons/devices/oxygen_level.png'),
+    name: 'Oxygen Saturation',
+    list: oxygernSaturationInstruction,
+  },
+  {
+    image: require('../assets/icons/devices/blood_pressure.png'),
+    name: 'ECG',
+    list: ECGInstructions,
+  },
 ];
 
 export default function Instruction() {
@@ -47,10 +62,9 @@ export default function Instruction() {
             </View>
             <TouchableOpacity
               onPress={() => {
-                useInstuctionsStore.setState({instructionList: item.list})
-                navigation.navigate('Intructions', {testType: item.name})
-              }
-              }
+                useInstuctionsStore.setState({instructionList: item.list});
+                navigation.navigate('Intructions', {testType: item.name});
+              }}
               activeOpacity={0.8}
               className="flex items-center justify-center p-2 my-auto ml-auto rounded-lg bg-primmary">
               <Image

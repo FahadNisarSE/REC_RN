@@ -37,7 +37,8 @@ const RECOMMENDED_TESTS_IMAGES: {
   'Respiratory Rate': any;
   'Blood Glucose': any;
   'Heart Sound': any;
-  'Lungs Sound': any;
+  'Lung Sound': any;
+  'Self Test': any;
 } = {
   'Oxygen Saturation': require('../assets/icons/devices/oxygen_level.png'),
   'Blood Pressure': require('../assets/icons/devices/blood_pressure.png'),
@@ -46,7 +47,8 @@ const RECOMMENDED_TESTS_IMAGES: {
   'Respiratory Rate': require('../assets/icons/devices/lung_wave.png'),
   'Blood Glucose': require('../assets/icons/devices/sugar_level.png'),
   'Heart Sound': require('../assets/icons/devices/blood_pressure.png'),
-  'Lungs Sound': require('../assets/icons/devices/lung_wave.png'),
+  'Lung Sound': require('../assets/icons/devices/lung_wave.png'),
+  'Self Test': require('../assets/icons/devices/self_assessment.png'),
 };
 
 function Item({

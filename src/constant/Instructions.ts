@@ -25,14 +25,14 @@ export const TemperatureInstruction = [
     title: 'Start Measurement',
     description:
       'Follow the on-screen instructions specific to the measurement type.',
-    image: require('../assets/images/temperature/step_03.png'),
+    image: require('../assets/images/temperature/step_03.jpg'),
   },
   {
     id: '5',
     title: 'Save Results',
     description:
       'Review and confirm the accuracy of the data, then tap "Save" to store it securely.',
-    image: require('../assets/images/temperature/step_04.png'),
+    image: require('../assets/images/temperature/step_04.jpg'),
   },
 ];
 
@@ -80,10 +80,86 @@ export const BloodPressureInstruction = [
   },
   {
     id: '7',
-    title: 'Start Measurement',
+    title: 'Save Results',
     description:
       'Review and confirm the accuracy of the data, then tap "Save" to store it securely.',
-    image: require('../assets/images/temperature/step_04.png'),
+    image: require('../assets/images/bloodpressure/step_06.jpg'),
+  },
+];
+
+export const oxygernSaturationInstruction = [
+  {
+    id: '1',
+    title: 'Begin Test',
+    description:
+      'Tap the "Start Test" button to initiate the measurement process.',
+    image: require('../assets/images/step_0.jpeg'),
+  },
+  {
+    id: '2',
+    title: 'Connect to Device',
+    description:
+      'Ensure Bluetooth is enabled. Find and select your device from the list. Wait for connection confirmation.',
+    image: require('../assets/images/step_1.png'),
+  },
+  {
+    id: '3',
+    title: 'Finger Placement',
+    description:
+      'Gently place the index finger (regardless of left and right hands) on the heart rate sensor on the device.',
+    image: require('../assets/images/oxygen/step_02.png'),
+  },
+  {
+    id: '5',
+    title: 'Start Measurement',
+    description:
+      'Follow the on-screen instructions specific to the measurement type.',
+    image: require('../assets/images/oxygen/step_03.jpg'),
+  },
+  {
+    id: '6',
+    title: 'Save Results',
+    description:
+      'Review and confirm the accuracy of the data, then tap "Save" to store it securely.',
+    image: require('../assets/images/oxygen/step_04.jpg'),
+  },
+];
+
+export const ECGInstructions = [
+  {
+    id: '1',
+    title: 'Begin Test',
+    description:
+      'Tap the "Start Test" button to initiate the measurement process.',
+    image: require('../assets/images/step_0.jpeg'),
+  },
+  {
+    id: '2',
+    title: 'Connect to Device',
+    description:
+      'Ensure Bluetooth is enabled. Find and select your device from the list. Wait for connection confirmation.',
+    image: require('../assets/images/step_1.png'),
+  },
+  {
+    id: '3',
+    title: 'Place the Equipment',
+    description:
+      'Place the thumb of the left hand on the heart rate sensor, then put the fingers of the right hand (the number of fingers is not limited) on the iron plate on the back.',
+    image: require('../assets/images/ecg/step_03.png'),
+  },
+  {
+    id: '4',
+    title: 'Start Measurement',
+    description:
+      'Follow the on-screen instructions specific to the measurement type.',
+    image: require('../assets/images/ecg/step_04.jpg'),
+  },
+  {
+    id: '5',
+    title: 'Save Results',
+    description:
+      'Review and confirm the accuracy of the data, then tap "Save" to store it securely.',
+    image: require('../assets/images/ecg/step_05.jpg'),
   },
 ];
 

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   Dimensions,
@@ -8,15 +8,13 @@ import {
   View,
 } from 'react-native';
 
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { FlatList } from 'react-native-gesture-handler';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {FlatList} from 'react-native-gesture-handler';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import {
-  TTemperatureInstruction
-} from '../constant/Instructions';
-import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
-import { useInstuctionsStore } from '../utils/store/useIntructionsStore';
+import {TTemperatureInstruction} from '../constant/Instructions';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import {useInstuctionsStore} from '../utils/store/useIntructionsStore';
 
 const {width, height} = Dimensions.get('window');
 
@@ -29,7 +27,7 @@ export default function Instructions({navigation, route}: InstrunctionsProps) {
   const [index, setIndex] = useState(0);
   const scrollx = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<FlatList | null>(null);
-  const {instructionList} = useInstuctionsStore()
+  const {instructionList} = useInstuctionsStore();
 
   function handleOnScroll(event: any) {
     Animated.event(
@@ -89,8 +87,8 @@ export default function Instructions({navigation, route}: InstrunctionsProps) {
           <Pressable
             onPress={goToPrev}
             style={{opacity: index === 0 ? 0.5 : 1}}
-            className="px-3 py-1 border rounded border-clr_primmary">
-            <CustomTextSemiBold className="text-clr_primmary">
+            className="px-3 py-1 border rounded border-primmary">
+            <CustomTextSemiBold className="text-primmary">
               Prev
             </CustomTextSemiBold>
           </Pressable>
@@ -99,8 +97,8 @@ export default function Instructions({navigation, route}: InstrunctionsProps) {
             style={{
               opacity: index === instructionList.length - 1 ? 0.5 : 1,
             }}
-            className="px-3 py-1 border rounded border-clr_primmary">
-            <CustomTextSemiBold className="text-clr_primmary">
+            className="px-3 py-1 border rounded border-primmary">
+            <CustomTextSemiBold className="text-primmary">
               Next
             </CustomTextSemiBold>
           </Pressable>
@@ -145,7 +143,7 @@ function SingleInstrunction({
       <View style={{width}} className="my-8 mt-4">
         <CustomTextSemiBold
           style={{maxWidth: width * 0.8}}
-          className="mx-auto text-lg text-center text-clr_primmary">
+          className="mx-auto text-lg text-center text-primmary">
           {title}
         </CustomTextSemiBold>
         <CustomTextRegular

@@ -1,7 +1,13 @@
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useEffect} from 'react';
-import {Image, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import useGetAppointmentDetails from '../api/query/useGetAppointmentDetails';
 import {AppointmentAnswer, AppointmentTest} from '../api/schema/Appointment';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
@@ -27,6 +33,8 @@ type AppointmentDetailProps = NativeStackScreenProps<
   'AppointmentDetail'
 >;
 
+const {width, height} = Dimensions.get('window');
+
 export default function AppointmentDetail({
   navigation,
   route,
@@ -35,6 +43,7 @@ export default function AppointmentDetail({
   const {setAppointmentDetail} = useAppointmentDetailStore();
   const {isLoading, isError, data, refetch} =
     useGetAppointmentDetails(appointmentId);
+  const [showAllSpecialTreatment, setShowAllSpecialTreatment] = useState(false);
 
   useEffect(() => {
     if (data) setAppointmentDetail(data);
@@ -68,11 +77,11 @@ export default function AppointmentDetail({
           </CustomTextSemiBold>
         </View>
         <View className="p-5 px-5 mx-4 overflow-hidden bg-white rounded-xl">
-          {/* Doctor Information */}
-          <View className="flex-row items-center">
+          {/* Doctor Information: 1st row */}
+          <View className="flex-row items-start">
             <Image
-              className="rounded-3xl"
-              style={{width: 100, height: '100%'}}
+              className="rounded-2xl"
+              style={{width: width * 0.2, height: width * 0.2}}
               source={{uri: BASE_IMG_URL + data?.doctor.ProfileImg}}
               alt={`${data?.doctor.Firstname} ${data?.doctor.Lastname}`}
             />
@@ -80,34 +89,46 @@ export default function AppointmentDetail({
               <CustomTextSemiBold className="text-lg text-text">
                 {`${data?.doctor.Firstname} ${data?.doctor.Lastname}`}
               </CustomTextSemiBold>
-              <CustomTextRegular className="max-w-full text-xs capitalize text-text">
-                {data?.doctor.SpecialTreatment}
+              <Pressable
+                disabled={data?.doctor?.SpecialTreatment?.length! <= 60}
+                onPress={() => setShowAllSpecialTreatment(prev => !prev)}>
+                <CustomTextRegular className="max-w-full mt-1 text-xs capitalize text-text">
+                  {data?.doctor?.SpecialTreatment && (
+                    <>
+                      {data?.doctor.SpecialTreatment.length > 60 &&
+                      !showAllSpecialTreatment
+                        ? `${data?.doctor.SpecialTreatment.slice(0, 60)}...more`
+                        : data?.doctor.SpecialTreatment}
+                    </>
+                  )}
+                </CustomTextRegular>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Appointment Details */}
+          <View className="mt-4">
+            <View className="flex-row items-start">
+              <CustomTextSemiBold className="text-sm text-text">
+                Symptoms:
+              </CustomTextSemiBold>
+              <CustomTextRegular
+                className="mt-1 ml-2 text-xs text-text w-fit"
+                style={{maxWidth: width * 0.6}}>
+                {data?.Symptoms}
               </CustomTextRegular>
+            </View>
 
-              {/* Appointment Details */}
-
-              <View>
-                <CustomTextSemiBold className="mt-2 text-text">
-                  Symptoms:
-                </CustomTextSemiBold>
-                <View className="flex-row flex-wrap" style={{maxWidth: 180}}>
-                  <CustomTextRegular className="mt-1 text-xs break-words text-text w-fit">
-                    {data?.Symptoms}
-                  </CustomTextRegular>
-                </View>
-              </View>
-
-              <View>
-                <CustomTextSemiBold className="mt-2 text-text">
-                  Datetime:
-                </CustomTextSemiBold>
-                <View className="flex-row flex-wrap" style={{maxWidth: 180}}>
-                  <CustomTextRegular className="mt-1 text-xs break-words text-text w-fit">
-                    {data?.AppointmentDate} | {data?.AppointmentStartTime} -{' '}
-                    {data?.AppointmentEndTime}
-                  </CustomTextRegular>
-                </View>
-              </View>
+            <View className="flex-row items-start mt-1">
+              <CustomTextSemiBold className="text-sm text-text">
+                Datetime:
+              </CustomTextSemiBold>
+              <CustomTextRegular
+                className="mt-1 ml-2 text-xs text-text w-fit"
+                style={{maxWidth: width * 0.6}}>
+                {data?.AppointmentDate} | {data?.AppointmentStartTime} -{' '}
+                {data?.AppointmentEndTime}
+              </CustomTextRegular>
             </View>
           </View>
         </View>
