@@ -1,0 +1,6 @@
+framework module MinttiVisionSDK {
+  umbrella header "MinttiVisionSDK.h"
+
+  export *
+  module * { export * }
+}

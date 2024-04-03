@@ -55,9 +55,10 @@ export default function DeviceInitalization({
   }, []);
 
   const onPressHandler = () => {
-    if (bluetoothPermissions) isScanning ? stopScan() : discoverDevices();
-    else
-      requestPermissions((result: boolean) => setBluetoothPermissions(result));
+    isScanning ? stopScan() : discoverDevices();
+    // if (bluetoothPermissions) isScanning ? stopScan() : discoverDevices();
+    // else
+    //   requestPermissions((result: boolean) => setBluetoothPermissions(result));
   };
 
   return (

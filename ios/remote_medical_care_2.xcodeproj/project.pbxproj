@@ -12,13 +12,18 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1D7820382BBCCDD5002677D7 /* MinttiVisionSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7820372BBCCDD5002677D7 /* MinttiVisionSDK.framework */; };
+		1D78203B2BBCD707002677D7 /* VisionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78203A2BBCD707002677D7 /* VisionController.m */; };
+		1D78203C2BBCD707002677D7 /* VisionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78203A2BBCD707002677D7 /* VisionController.m */; };
+		1D78203F2BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */; };
+		1D7820402BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */; };
+		26882CB002754C23915EB5AF /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 41C2D0ECF09D4F959FE752F7 /* Inter-Thin.ttf */; };
+		3C42056B80864F1D9044C5CE /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */; };
+		54F1F761D768485D825A7A37 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BB2173B9E5546FAA9A8E27A /* Inter-Regular.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-remote_medical_care_2-remote_medical_care_2Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-remote_medical_care_2-remote_medical_care_2Tests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		BC2B1C84D9F946DA9115AF28 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1054B54CB0B94893BE32049E /* Inter-Bold.ttf */; };
 		A53A0C126EF546199613AF42 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 30D125DA9AE3412A918E9F10 /* Inter-Medium.ttf */; };
-		54F1F761D768485D825A7A37 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BB2173B9E5546FAA9A8E27A /* Inter-Regular.ttf */; };
-		3C42056B80864F1D9044C5CE /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */; };
-		26882CB002754C23915EB5AF /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 41C2D0ECF09D4F959FE752F7 /* Inter-Thin.ttf */; };
+		BC2B1C84D9F946DA9115AF28 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1054B54CB0B94893BE32049E /* Inter-Bold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +40,7 @@
 		00E356EE1AD99517003FC87E /* remote_medical_care_2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = remote_medical_care_2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* remote_medical_care_2Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = remote_medical_care_2Tests.m; sourceTree = "<group>"; };
+		1054B54CB0B94893BE32049E /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../src/assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* remote_medical_care_2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = remote_medical_care_2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = remote_medical_care_2/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = remote_medical_care_2/AppDelegate.mm; sourceTree = "<group>"; };
@@ -42,18 +48,22 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = remote_medical_care_2/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = remote_medical_care_2/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-remote_medical_care_2-remote_medical_care_2Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-remote_medical_care_2-remote_medical_care_2Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D7820372BBCCDD5002677D7 /* MinttiVisionSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MinttiVisionSDK.framework; sourceTree = "<group>"; };
+		1D7820392BBCD6EE002677D7 /* VisionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VisionController.h; sourceTree = "<group>"; };
+		1D78203A2BBCD707002677D7 /* VisionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VisionController.m; sourceTree = "<group>"; };
+		1D78203D2BBCE481002677D7 /* CBPeripheralModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBPeripheralModel.h; sourceTree = "<group>"; };
+		1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CBPeripheralModel.m; sourceTree = "<group>"; };
+		206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../src/assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		30D125DA9AE3412A918E9F10 /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../src/assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-remote_medical_care_2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-remote_medical_care_2.debug.xcconfig"; path = "Target Support Files/Pods-remote_medical_care_2/Pods-remote_medical_care_2.debug.xcconfig"; sourceTree = "<group>"; };
+		41C2D0ECF09D4F959FE752F7 /* Inter-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.ttf"; path = "../src/assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-remote_medical_care_2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-remote_medical_care_2.release.xcconfig"; path = "Target Support Files/Pods-remote_medical_care_2/Pods-remote_medical_care_2.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-remote_medical_care_2-remote_medical_care_2Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-remote_medical_care_2-remote_medical_care_2Tests.debug.xcconfig"; path = "Target Support Files/Pods-remote_medical_care_2-remote_medical_care_2Tests/Pods-remote_medical_care_2-remote_medical_care_2Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-remote_medical_care_2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-remote_medical_care_2.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = remote_medical_care_2/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-remote_medical_care_2-remote_medical_care_2Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-remote_medical_care_2-remote_medical_care_2Tests.release.xcconfig"; path = "Target Support Files/Pods-remote_medical_care_2-remote_medical_care_2Tests/Pods-remote_medical_care_2-remote_medical_care_2Tests.release.xcconfig"; sourceTree = "<group>"; };
+		8BB2173B9E5546FAA9A8E27A /* Inter-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.ttf"; path = "../src/assets/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		1054B54CB0B94893BE32049E /* Inter-Bold.ttf */ = {isa = PBXFileReference; name = "Inter-Bold.ttf"; path = "../src/assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		30D125DA9AE3412A918E9F10 /* Inter-Medium.ttf */ = {isa = PBXFileReference; name = "Inter-Medium.ttf"; path = "../src/assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8BB2173B9E5546FAA9A8E27A /* Inter-Regular.ttf */ = {isa = PBXFileReference; name = "Inter-Regular.ttf"; path = "../src/assets/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; name = "Inter-SemiBold.ttf"; path = "../src/assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		41C2D0ECF09D4F959FE752F7 /* Inter-Thin.ttf */ = {isa = PBXFileReference; name = "Inter-Thin.ttf"; path = "../src/assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D7820382BBCCDD5002677D7 /* MinttiVisionSDK.framework in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-remote_medical_care_2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,12 +107,17 @@
 		13B07FAE1A68108700A75B9A /* remote_medical_care_2 */ = {
 			isa = PBXGroup;
 			children = (
+				1D7820372BBCCDD5002677D7 /* MinttiVisionSDK.framework */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				1D7820392BBCD6EE002677D7 /* VisionController.h */,
+				1D78203A2BBCD707002677D7 /* VisionController.m */,
+				1D78203D2BBCE481002677D7 /* CBPeripheralModel.h */,
+				1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */,
 			);
 			name = remote_medical_care_2;
 			sourceTree = "<group>";
@@ -148,6 +164,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		AFD592E3E5BB4DF8B945FB2D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1054B54CB0B94893BE32049E /* Inter-Bold.ttf */,
+				30D125DA9AE3412A918E9F10 /* Inter-Medium.ttf */,
+				8BB2173B9E5546FAA9A8E27A /* Inter-Regular.ttf */,
+				206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */,
+				41C2D0ECF09D4F959FE752F7 /* Inter-Thin.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -158,19 +186,6 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
-		};
-		AFD592E3E5BB4DF8B945FB2D /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				1054B54CB0B94893BE32049E /* Inter-Bold.ttf */,
-				30D125DA9AE3412A918E9F10 /* Inter-Medium.ttf */,
-				8BB2173B9E5546FAA9A8E27A /* Inter-Regular.ttf */,
-				206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */,
-				41C2D0ECF09D4F959FE752F7 /* Inter-Thin.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -413,7 +428,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D7820402BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */,
 				00E356F31AD99517003FC87E /* remote_medical_care_2Tests.m in Sources */,
+				1D78203C2BBCD707002677D7 /* VisionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,8 +438,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D78203F2BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				1D78203B2BBCD707002677D7 /* VisionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,7 +514,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HF7SZN9PG7;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = remote_medical_care_2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -507,7 +531,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.demo;
 				PRODUCT_NAME = remote_medical_care_2;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -522,6 +546,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HF7SZN9PG7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = remote_medical_care_2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -533,7 +562,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.demo;
 				PRODUCT_NAME = remote_medical_care_2;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -573,7 +602,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -601,6 +630,7 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -608,7 +638,10 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -645,7 +678,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -665,6 +698,7 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -672,7 +706,10 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

@@ -156,57 +156,57 @@ const useMinttiVision = ({
   }, []);
 
   const discoverDevices = async () => {
-    try {
-      let resultBle: Boolean = new Boolean(true);
-      let resultLoc: AndroidLocationEnablerResult = 'enabled';
+    // try {
+    //   let resultBle: Boolean = new Boolean(true);
+    //   let resultLoc: AndroidLocationEnablerResult = 'enabled';
 
-      BluetoothStateManager.getState()
-        .then(async bluetoothState => {
-          switch (bluetoothState) {
-            case 'Unknown':
-            case 'Resetting':
-            case 'Unsupported':
-            case 'Unauthorized':
-            case 'PoweredOff':
-              resultBle = await BluetoothStateManager.requestToEnable();
-              break;
-            case 'PoweredOn':
-            default:
-              break;
-          }
-        })
-        .catch(error => {
-          Toast.show({
-            type: 'error',
-            text1: 'Bluetooth is Required',
-            text2: 'Please enable bluetooth.',
-          });
+    //   BluetoothStateManager.getState()
+    //     .then(async bluetoothState => {
+    //       switch (bluetoothState) {
+    //         case 'Unknown':
+    //         case 'Resetting':
+    //         case 'Unsupported':
+    //         case 'Unauthorized':
+    //         case 'PoweredOff':
+    //           resultBle = await BluetoothStateManager.requestToEnable();
+    //           break;
+    //         case 'PoweredOn':
+    //         default:
+    //           break;
+    //       }
+    //     })
+    //     .catch(error => {
+    //       Toast.show({
+    //         type: 'error',
+    //         text1: 'Bluetooth is Required',
+    //         text2: 'Please enable bluetooth.',
+    //       });
 
-          return;
-        });
+    //       return;
+    //     });
 
-      const isLocationEnable = await isLocationEnabled();
-      if (!isLocationEnable) {
-        try {
-          resultLoc = await promptForEnableLocationIfNeeded();
-        } catch (error) {
-          console.log('Error occured...');
-          Toast.show({
-            type: 'error',
-            text1: 'Location is Required',
-            text2: 'Please enable location.',
-          });
-          return;
-        }
-      }
+    //   const isLocationEnable = await isLocationEnabled();
+    //   if (!isLocationEnable) {
+    //     try {
+    //       resultLoc = await promptForEnableLocationIfNeeded();
+    //     } catch (error) {
+    //       console.log('Error occured...');
+    //       Toast.show({
+    //         type: 'error',
+    //         text1: 'Location is Required',
+    //         text2: 'Please enable location.',
+    //       });
+    //       return;
+    //     }
+    //   }
 
-      setIsScanning(true);
-      VisionModule.startDeviceScan('start scanning');
-    } catch (e) {
-      setIsScanning(false);
-      console.log(e);
-      ToastAndroid.show('Error' + e, 1000);
-    }
+    setIsScanning(true);
+    VisionModule.startDeviceScan();
+    // } catch (e) {
+    //   setIsScanning(false);
+    //   console.log(e);
+    //   ToastAndroid.show('Error' + e, 1000);
+    // }
   };
 
   async function connectToDevice(device: BleDevice) {
