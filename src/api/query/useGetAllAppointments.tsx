@@ -13,6 +13,8 @@ export async function getAllAppointments(
       ClinicId,
     });
 
+    console.log("All appointments: ", data)
+
     if (data.status === 201) {
       return data.data as Appointment[];
     } else throw new Error('Oops! Something went wrong.');

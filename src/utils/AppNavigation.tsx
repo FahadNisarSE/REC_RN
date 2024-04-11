@@ -1,23 +1,22 @@
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppointmentDetail from '../components/AppointmentDetail';
 import CustomDrawer from '../components/CustomDrawer';
 import AboutUs from '../screens/AboutUs';
-import Home from '../screens/Home';
-import Login from '../screens/Login';
-import {useSignInStore} from './store/useSignInStore';
-import DeviceInitalization from '../screens/DeviceInitalization';
+import BloodGlucose from '../screens/BloodGlucose';
 import BloodOxygen from '../screens/BloodOxygen';
 import BloodPressure from '../screens/BloodPressure';
-import BloodGlucose from '../screens/BloodGlucose';
 import BodyTemperature from '../screens/BodyTemperature';
+import DeviceInitalization from '../screens/DeviceInitalization';
 import ECG from '../screens/ECG';
+import Home from '../screens/Home';
 import Instructions from '../screens/Instrunctions';
-import VisionTestScreen from '../screens/VisionTestScreen';
+import Login from '../screens/Login';
+import { useSignInStore } from './store/useSignInStore';
 
 export type HomeStackNavigatorParamList = {
   Home: undefined;

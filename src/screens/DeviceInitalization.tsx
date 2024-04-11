@@ -11,12 +11,12 @@ import React, {useEffect, useState} from 'react';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import Spinner from '../components/ui/Spinner';
-import {useNavigation} from '@react-navigation/native';
 import useBluetoothPermissions from '../utils/hook/useBluetoothPermission';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 const dimension = Dimensions.get('window');
 
@@ -46,7 +46,7 @@ export default function DeviceInitalization({
   useEffect(() => {
     // @ts-ignore
     if (isConnected) navigation.navigate(testRoute);
-    if (!isConnecting) setIsConnecting(false);
+    if (isConnected) setIsConnecting(false);
   }, [isConnected]);
 
   useEffect(() => {
@@ -75,6 +75,7 @@ export default function DeviceInitalization({
         <CustomTextRegular className="mx-auto text-xl text-text">
           Electronic StethoScope
         </CustomTextRegular>
+        <DrawerToggleButton />
       </View>
       <Image
         className="mx-auto my-8"

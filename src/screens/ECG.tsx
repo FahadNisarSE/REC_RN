@@ -11,6 +11,7 @@ import {
 import Toast from 'react-native-toast-message';
 import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
+import BatteryIndicator from '../components/BatteryIndicatory';
 import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
@@ -21,8 +22,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {calculateAverage} from '../utils/utilityFunctions';
-import BloodPressure from './BloodPressure';
-import BatteryIndicator from '../components/BatteryIndicatory';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -257,6 +257,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             ECG
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         <EcgChart ref={ecgChartRef} />

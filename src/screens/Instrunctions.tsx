@@ -15,6 +15,7 @@ import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import {TTemperatureInstruction} from '../constant/Instructions';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useInstuctionsStore} from '../utils/store/useIntructionsStore';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 const {width, height} = Dimensions.get('window');
 
@@ -46,8 +47,9 @@ export default function Instructions({navigation, route}: InstrunctionsProps) {
     )(event);
   }
 
+  // Todo: Change this function singe viewableItems are undefined in some case
   const handleOnViewItemsChanged = useRef(({viewableItems}: any) => {
-    setIndex(viewableItems[0].index);
+    if (viewableItems) setIndex(viewableItems[0]?.index);
   }).current;
 
   const viewabilityConfig = useRef({
@@ -82,6 +84,7 @@ export default function Instructions({navigation, route}: InstrunctionsProps) {
           <CustomTextSemiBold className="mx-auto mb-2 text-lg text-text">
             {route.params.testType}
           </CustomTextSemiBold>
+          <DrawerToggleButton />
         </View>
         <View className="flex-row justify-between px-5">
           <Pressable

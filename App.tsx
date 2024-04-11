@@ -8,8 +8,30 @@ import useMinttiVision from './src/nativemodules/MinttiVision/useMinttiVision.ts
 import AppNavigation from './src/utils/AppNavigation';
 import {useMinttiVisionStore} from './src/utils/store/useMinttiVisionStore.ts';
 import NetInfo from '@react-native-community/netinfo';
+import SpInAppUpdates, {
+  StartUpdateOptions,
+  IAUUpdateKind,
+} from 'sp-react-native-in-app-updates';
 
 export const queryClient = new QueryClient();
+const inAppUpdates = new SpInAppUpdates(true);
+
+const checkUpdates = async () => {
+  try {
+    const result = await inAppUpdates.checkNeedsUpdate();
+    if (result.shouldUpdate) {
+      let updateOptions: StartUpdateOptions = {};
+      if (Platform.OS === 'android') {
+        updateOptions = {
+          updateType: IAUUpdateKind.FLEXIBLE,
+        };
+      }
+      inAppUpdates.startUpdate(updateOptions);
+    }
+  } catch (error) {
+    console.log('In app update: ', error);
+  }
+};
 
 export default function App() {
   const [isConnected, setConnected] = useState(true);
@@ -34,6 +56,11 @@ export default function App() {
     return () => {
       unsubscribe();
     };
+  }, []);
+
+  // In app updates
+  useEffect(() => {
+    checkUpdates();
   }, []);
 
   const showAlert = () => {

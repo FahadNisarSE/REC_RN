@@ -22,6 +22,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {queryClient} from '../../App';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 import BatteryIndicator from '../components/BatteryIndicatory';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -192,6 +193,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Body Temperature
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         {/* Result here */}
@@ -261,7 +263,9 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
           </View>
           <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
             <BatteryIndicator percentage={battery} />
-            <CustomTextSemiBold className='ml-2 text-xs text-white'>{battery} %</CustomTextSemiBold>
+            <CustomTextSemiBold className="ml-2 text-xs text-white">
+              {battery} %
+            </CustomTextSemiBold>
           </View>
         </View>
         <Button

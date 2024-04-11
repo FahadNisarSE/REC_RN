@@ -22,6 +22,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {queryClient} from '../../App';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 import BatteryIndicator from '../components/BatteryIndicatory';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -69,6 +70,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
   // Reset all values
   useEffect(() => {
     setBp(null);
+    setAppliedPressure(0);
   }, []);
 
   function toggleModal(status: boolean) {
@@ -96,7 +98,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
       return 'Elevated Blood Pressure';
     } else if (systolic < 140 && diastolic < 110) {
       return 'Stage 1 Hypertension';
-    } else if (systolic < 180 && diastolic < 120) {
+    } else if (systolic < 180 && diastolic <= 120) {
       return 'Stage 2 Hypertension';
     } else {
       return 'Hypertensive Crisis';
@@ -142,6 +144,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
 
     function reTakeTesthandler() {
       setBp(null);
+      setAppliedPressure(0);
       setShowModal(false);
     }
 
@@ -251,6 +254,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Pressure
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         {/* Pressure Statistics */}
@@ -378,7 +382,9 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           </View>
           <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
             <BatteryIndicator percentage={battery} />
-            <CustomTextSemiBold className='ml-2 text-xs text-white'>{battery} %</CustomTextSemiBold>
+            <CustomTextSemiBold className="ml-2 text-xs text-white">
+              {battery} %
+            </CustomTextSemiBold>
           </View>
         </View>
         <Button

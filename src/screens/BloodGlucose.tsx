@@ -22,6 +22,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {queryClient} from '../../App';
 import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
 import BatteryIndicator from '../components/BatteryIndicatory';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -59,8 +60,8 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
   // Reset all test data
   useEffect(() => {
     setBgEvent(null);
-    setBgResult(null)
-  }, [])
+    setBgResult(null);
+  }, []);
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -242,6 +243,7 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Glucose
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         {/* Blood Glucose Result */}
@@ -292,7 +294,9 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
           </View>
           <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
             <BatteryIndicator percentage={battery} />
-            <CustomTextSemiBold className='ml-2 text-xs text-white'>{battery} %</CustomTextSemiBold>
+            <CustomTextSemiBold className="ml-2 text-xs text-white">
+              {battery} %
+            </CustomTextSemiBold>
           </View>
         </View>
         <Button

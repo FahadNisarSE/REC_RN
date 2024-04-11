@@ -20,6 +20,7 @@ import CustomTextRegular from './ui/CustomTextRegular';
 import CustomTextSemiBold from './ui/CustomTextSemiBold';
 import Error from './ui/Error';
 import Loader from './ui/Loader';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 export type AppointmentDetailTab = {
   'Recom. tests': {appointmentTests: AppointmentTest[]};
@@ -64,7 +65,7 @@ export default function AppointmentDetail({
   return (
     <>
       <CustomSafeArea stylesClass="flex-1">
-        <View className="flex-row p-4">
+        <View className="flex-row items-center p-4">
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Image
               source={require('../assets/icons/chevron-left.png')}
@@ -75,6 +76,7 @@ export default function AppointmentDetail({
           <CustomTextSemiBold className="mx-auto text-xl text-text">
             Appointment Details
           </CustomTextSemiBold>
+          <DrawerToggleButton />
         </View>
         <View className="p-5 px-5 mx-4 overflow-hidden bg-white rounded-xl">
           {/* Doctor Information: 1st row */}

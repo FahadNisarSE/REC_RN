@@ -13,7 +13,6 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
       const apiLevel = Platform.Version;
 
       if (apiLevel < 31) {
-        // Request ACCESS_FINE_LOCATION for Android versions below 31
         try {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -33,7 +32,6 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
         }
       } else {
         try {
-
           // Request required permissions for Android versions 31 and above
           const result = await PermissionsAndroid.requestMultiple([
             PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
@@ -41,16 +39,17 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           ]);
 
-          console.log("Result: ", result)
+          console.log('Result of permission: ', result);
+
           const isGranted =
-            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] ===
-              PermissionsAndroid.RESULTS.GRANTED &&
-            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] ===
+            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] ===
               PermissionsAndroid.RESULTS.GRANTED &&
             result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] ===
               PermissionsAndroid.RESULTS.GRANTED &&
             result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
               PermissionsAndroid.RESULTS.GRANTED;
+
+          console.log('is perimssion granted: ', isGranted);
 
           cb(isGranted);
         } catch (error) {

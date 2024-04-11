@@ -1,26 +1,20 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  Modal,
-  Pressable,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import useSaveTestResults from '../api/action/useSaveTestResult';
-import CustomTextRegular from '../components/ui/CustomTextRegular';
-import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import {meetingStyles} from '../styles/style';
-import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import Button from '../components/ui/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import BoGraph from '../nativemodules/MinttiVision/BoGraph';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Image, Modal, Pressable, TouchableOpacity, View} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {queryClient} from '../../App';
+import useSaveTestResults from '../api/action/useSaveTestResult';
 import BatteryIndicator from '../components/BatteryIndicatory';
+import Button from '../components/ui/Button';
+import CustomTextRegular from '../components/ui/CustomTextRegular';
+import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import BoGraph from '../nativemodules/MinttiVision/BoGraph';
+import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
+import {meetingStyles} from '../styles/style';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
+import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -32,8 +26,11 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
   const {mutate, isPending} = useSaveTestResults();
-  const [spO2Result, setSpO2Result] = useState<{heartRate: number; spo2: number} | undefined>();
-  const {setIsMeasuring, isConnected, battery, isMeasuring} = useMinttiVisionStore();
+  const [spO2Result, setSpO2Result] = useState<
+    {heartRate: number; spo2: number} | undefined
+  >();
+  const {setIsMeasuring, isConnected, battery, isMeasuring} =
+    useMinttiVisionStore();
   const {measureBloodOxygen, stopSpo2} = useMinttiVision({
     onSpo2: event => {
       if (event.waveData)
@@ -47,11 +44,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
       }
 
       if (event.message) {
-        Toast.show({
-          type: 'info',
-          text1: 'Blood Oxygen Test',
-          text2: event.message,
-        });
+       
       }
     },
     onSpo2Result: event => {
@@ -65,6 +58,10 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     if (!isConnected)
       navigation.navigate('DeviceInitialization', {testRoute: 'BloodOxygen'});
   }, [isConnected]);
+
+  useEffect(() => {
+    setSpO2Result(undefined);
+  }, []);
 
   async function startMeasurement() {
     await measureBloodOxygen();
@@ -223,6 +220,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Oxygen Saturation
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         <BoGraph ref={bloodOxygenGraphRef} />
@@ -287,7 +285,9 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           </View>
           <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
             <BatteryIndicator percentage={battery} />
-            <CustomTextSemiBold className='ml-2 text-xs text-white'>{battery} %</CustomTextSemiBold>
+            <CustomTextSemiBold className="ml-2 text-xs text-white">
+              {battery} %
+            </CustomTextSemiBold>
           </View>
         </View>
         <Button

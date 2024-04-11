@@ -1,5 +1,4 @@
 import {useMutation} from '@tanstack/react-query';
-import axiosInstance from '../../utils/config';
 
 export async function saveTestResult(data: {
   AppointmentTestId: string;
@@ -25,7 +24,9 @@ export async function saveTestResult(data: {
       },
     );
 
-    if (response.status === 200) {
+    const data = await response.json();
+
+    if (data?.status === 201) {
       return 'Test result saved successfully.';
     } else {
       throw new Error('Oops! Something went wrong.');
