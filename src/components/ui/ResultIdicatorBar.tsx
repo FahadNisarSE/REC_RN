@@ -1,10 +1,11 @@
 import {View, Text, StyleSheet} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
 
 interface ResultIndicatorBarProps {
   value: number;
@@ -22,21 +23,28 @@ export default function ResultIdicatorBar({
   highestLimit,
 }: ResultIndicatorBarProps) {
   const width = useSharedValue(0);
+  const [invalidTemperatureValue, setinvalidTemperatureValue] = useState(false);
 
   useEffect(() => {
+    if (value < lowestLimit || value > highestLimit) {
+      setinvalidTemperatureValue(true);
+
+      return;
+    }
+    setinvalidTemperatureValue(false);
     let percentage;
     if (value === 0) percentage = 0;
     else
       percentage = ((value - lowestLimit) / (highestLimit - lowestLimit)) * 100;
+    if (percentage < 10) percentage = 10;
     width.value = withTiming(percentage, {duration: 1000});
-    console.log('Percentage: ', percentage);
   }, [value]);
 
-  let color = 'red';
+  let color = '#ff4e44';
   if (value >= lowThreshold && value <= highThreshold) {
-    color = '#15F5BA';
-  } else if (value >= lowestLimit && value <= highestLimit) {
-    color = 'yellow';
+    color = '#09d261';
+  } else if (value >= lowestLimit && value < lowThreshold) {
+    color = '#ffd279';
   }
 
   const barStyle = useAnimatedStyle(() => ({
@@ -44,8 +52,12 @@ export default function ResultIdicatorBar({
     backgroundColor: color,
   }));
 
-  return (
-    <View style={styles.container}>
+  return invalidTemperatureValue ? (
+    <View style={styles.container} className="bg-gray-200">
+      <Animated.View style={[styles.bar]} />
+    </View>
+  ) : (
+    <View style={styles.container} className="bg-gray-200">
       <Animated.View style={[styles.bar, barStyle]} />
     </View>
   );
@@ -56,7 +68,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 8,
     borderRadius: 10,
-    backgroundColor: '#ccc',
     overflow: 'hidden',
   },
   bar: {

@@ -20,10 +20,13 @@ import Button from '../components/ui/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {queryClient} from '../../App';
+import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
+import BatteryIndicator from '../components/BatteryIndicatory';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
-  'BodyTemperature'
+  'BloodPressure'
 >;
 
 const dimensions = Dimensions.get('window');
@@ -43,7 +46,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           text1: 'Blood Pressure Test',
           text2: event.error ?? 'Something went wrong',
         });
-
+        setIsMeasuring(false);
         return;
       }
 
@@ -51,29 +54,55 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
 
       if (event.result) {
         setIsMeasuring(false);
-        setShowModal(false);
+        toggleModal(true);
       }
     },
-    // onBpRaw: event => {
-    //   console.log("bp raw: ", event)
-    //   setAppliedPressure(
-    //     Number(
-    //       event?.decompressionData ||
-    //         event?.pressureData ||
-    //         event?.pressurizationData ||
-    //         0,
-    //     ),
-    //   );
-    // },
+    onBpRaw: event => {
+      setAppliedPressure(
+        prev =>
+          Number(event.decompressionData) ||
+          Number(event.pressurizationData) ||
+          prev,
+      );
+    },
   });
 
   // Reset all values
   useEffect(() => {
     setBp(null);
+    setAppliedPressure(0);
   }, []);
 
   function toggleModal(status: boolean) {
     setShowModal(status);
+  }
+
+  function normalizePressure(pressureValue: number) {
+    const maxPressureValue = 17000;
+    return Math.round((pressureValue / maxPressureValue) * 180);
+  }
+
+  function bloodPressureResult() {
+    let systolic = bp?.result?.systolic as number;
+    let diastolic = bp?.result?.diastolic as number;
+
+    if (!systolic && !diastolic) return 'Invalid Reading';
+
+    if (systolic < 60 || diastolic < 40) {
+      return 'Severe Hypotension';
+    } else if (systolic < 90 && diastolic < 60) {
+      return 'Low Blood Pressure';
+    } else if (systolic < 120 && diastolic < 90) {
+      return 'Normal Blood Pressure';
+    } else if (systolic < 130 && diastolic < 100) {
+      return 'Elevated Blood Pressure';
+    } else if (systolic < 140 && diastolic < 110) {
+      return 'Stage 1 Hypertension';
+    } else if (systolic < 180 && diastolic <= 120) {
+      return 'Stage 2 Hypertension';
+    } else {
+      return 'Hypertensive Crisis';
+    }
   }
 
   const CustomDrawer = useCallback(() => {
@@ -115,6 +144,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
 
     function reTakeTesthandler() {
       setBp(null);
+      setAppliedPressure(0);
       setShowModal(false);
     }
 
@@ -224,17 +254,24 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Pressure
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         {/* Pressure Statistics */}
         <View className="items-center justify-between p-4 border border-gray-200 rounded-md">
           <View className="items-center mx-auto">
             <CustomTextRegular className="text-5xl text-text">
-              0
+              {normalizePressure(appliedPressure)}
             </CustomTextRegular>
-            <CustomTextRegular className="px-2 py-1 text-[10px] border rounded-full text-secondary border-secondary">
-              Normal
-            </CustomTextRegular>
+            {bp?.result ? (
+              <CustomTextRegular className="px-2 py-1 text-[10px] border rounded-full text-secondary border-secondary">
+                {bloodPressureResult()}
+              </CustomTextRegular>
+            ) : (
+              <CustomTextRegular className="px-2 py-1 text-[10px] border rounded-full text-secondary border-secondary">
+                No Data
+              </CustomTextRegular>
+            )}
           </View>
         </View>
 
@@ -284,16 +321,45 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         </View>
 
         {/* Noraml Temperature here */}
-        <View className="p-4 border border-gray-200 rounded-md">
-          <Image
-            style={{
-              width: dimensions.width * 0.8,
-              marginHorizontal: 'auto',
-              objectFit: 'contain',
-            }}
-            source={require('../assets/images/normal_temperature.png')}
-            alt="normal oxygen level"
-          />
+        <View className="p-4 mt-4 border border-gray-300 rounded-mdd">
+          <View>
+            <CustomTextSemiBold className="text-xs text-center text-text">
+              Systolic Pressure
+            </CustomTextSemiBold>
+            <CustomTextRegular className="text-[10px] text-center text-text">
+              90 mmHg - 120 mmHg
+            </CustomTextRegular>
+            <View
+              className="flex-row items-center my-4 rounded"
+              style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+              <ResultIdicatorBar
+                lowThreshold={90}
+                highThreshold={140}
+                lowestLimit={60}
+                highestLimit={180}
+                value={bp?.result?.systolic ?? 0}
+              />
+            </View>
+          </View>
+          <View>
+            <CustomTextSemiBold className="text-xs text-center text-text">
+              Distolic Pressure
+            </CustomTextSemiBold>
+            <CustomTextRegular className="text-[10px] text-center text-text">
+              60 mmHg - 90 mmHg
+            </CustomTextRegular>
+            <View
+              className="flex-row items-center my-4 rounded"
+              style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+              <ResultIdicatorBar
+                lowThreshold={60}
+                highThreshold={90}
+                lowestLimit={40}
+                highestLimit={120}
+                value={bp?.result?.diastolic ?? 0}
+              />
+            </View>
+          </View>
         </View>
 
         <View className="flex flex-row justify-between mt-10">
@@ -314,9 +380,10 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
               {isConnected ? 'Connected' : 'Disconnected'}
             </CustomTextSemiBold>
           </View>
-          <View className="flex flex-row items-center px-4 py-2 rounded-full bg-primmary">
+          <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
+            <BatteryIndicator percentage={battery} />
             <CustomTextSemiBold className="ml-2 text-xs text-white">
-              Battery: {battery}%
+              {battery} %
             </CustomTextSemiBold>
           </View>
         </View>

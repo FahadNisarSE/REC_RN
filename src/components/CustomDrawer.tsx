@@ -3,7 +3,6 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import React, {useEffect} from 'react';
 import {Image, Pressable, View} from 'react-native';
 import {BASE_IMG_URL} from '../utils/config';
 import {useSignInStore} from '../utils/store/useSignInStore';

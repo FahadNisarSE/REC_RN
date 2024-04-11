@@ -1,25 +1,20 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  Modal,
-  Pressable,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import useSaveTestResults from '../api/action/useSaveTestResult';
-import CustomTextRegular from '../components/ui/CustomTextRegular';
-import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import {meetingStyles} from '../styles/style';
-import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import Button from '../components/ui/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import BoGraph from '../nativemodules/MinttiVision/BoGraph';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Image, Modal, Pressable, TouchableOpacity, View} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {queryClient} from '../../App';
+import useSaveTestResults from '../api/action/useSaveTestResult';
+import BatteryIndicator from '../components/BatteryIndicatory';
+import Button from '../components/ui/Button';
+import CustomTextRegular from '../components/ui/CustomTextRegular';
+import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import BoGraph from '../nativemodules/MinttiVision/BoGraph';
+import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
+import {meetingStyles} from '../styles/style';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
+import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -43,23 +38,16 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
         bloodOxygenGraphRef?.current?.updateData(event.waveData);
     },
     onSpo2Ended: event => {
-      console.log('Event: sp02 ended: ', event);
-      if (event.measurementEnded)
-        Toast.show({
-          type: 'info',
-          text1: 'Blood Oxygen Test',
-          text2: event.message,
-        });
-      if (event.message) {
-        // setSpO2Result(event.?result);
-      }
       if (event.measurementEnded) {
         setIsMeasuring(false);
-        setShowModal(false);
+        toggleModal(true);
+      }
+
+      if (event.message) {
+       
       }
     },
     onSpo2Result: event => {
-      console.log('SP02  result: ', event);
       if (event.result) {
         setSpO2Result(event.result);
       }
@@ -70,6 +58,10 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     if (!isConnected)
       navigation.navigate('DeviceInitialization', {testRoute: 'BloodOxygen'});
   }, [isConnected]);
+
+  useEffect(() => {
+    setSpO2Result(undefined);
+  }, []);
 
   async function startMeasurement() {
     await measureBloodOxygen();
@@ -228,6 +220,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Oxygen Saturation
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         <BoGraph ref={bloodOxygenGraphRef} />
@@ -244,7 +237,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </CustomTextSemiBold>
               <View className="flex-row items-end">
                 <CustomTextRegular className="text-base text-text">
-                  {spO2Result?.heartRate ?? 0}
+                  {spO2Result?.spo2 ?? 0}
                 </CustomTextRegular>
                 <CustomTextRegular className="text-[10px] text-text">
                   %
@@ -290,9 +283,10 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               {isConnected ? 'Connected' : 'Disconnected'}
             </CustomTextSemiBold>
           </View>
-          <View className="flex flex-row items-center px-4 py-2 rounded-full bg-primmary">
+          <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
+            <BatteryIndicator percentage={battery} />
             <CustomTextSemiBold className="ml-2 text-xs text-white">
-              Battery: {battery}%
+              {battery} %
             </CustomTextSemiBold>
           </View>
         </View>

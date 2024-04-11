@@ -21,13 +21,13 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {queryClient} from '../../App';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
+import BatteryIndicator from '../components/BatteryIndicatory';
+import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
   'BodyTemperature'
 >;
-
-const dimensions = Dimensions.get('window');
 
 export default function BodyTemperature({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
@@ -38,9 +38,9 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
     useMinttiVisionStore();
 
   // Reset Values
-  useEffect(() => {
-    setTemperature(0);
-  }, []);
+  // useEffect(() => {
+  //   setTemperature(0);
+  // }, []);
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -193,6 +193,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Body Temperature
           </CustomTextRegular>
+          <DrawerToggleButton />
         </View>
 
         {/* Result here */}
@@ -237,7 +238,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
               highThreshold={37.2}
               lowestLimit={32}
               highestLimit={42}
-              value={37}
+              value={temperature}
             />
           </View>
         </View>
@@ -260,9 +261,10 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
               {isConnected ? 'Connected' : 'Disconnected'}
             </CustomTextSemiBold>
           </View>
-          <View className="flex flex-row items-center px-4 py-2 rounded-full bg-primmary">
+          <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
+            <BatteryIndicator percentage={battery} />
             <CustomTextSemiBold className="ml-2 text-xs text-white">
-              Battery: {battery}%
+              {battery} %
             </CustomTextSemiBold>
           </View>
         </View>

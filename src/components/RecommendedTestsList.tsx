@@ -8,6 +8,7 @@ import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import CustomTextRegular from './ui/CustomTextRegular';
 import CustomTextSemiBold from './ui/CustomTextSemiBold';
 import NoRecommendedTests from './ui/NoRecommendedTests';
+import {BASE_IMG_URL} from '../utils/config';
 
 const mapTestUrl = (testname: string) => {
   switch (testname) {
@@ -37,7 +38,8 @@ const RECOMMENDED_TESTS_IMAGES: {
   'Respiratory Rate': any;
   'Blood Glucose': any;
   'Heart Sound': any;
-  'Lungs Sound': any;
+  'Lung Sound': any;
+  'Self Test': any;
 } = {
   'Oxygen Saturation': require('../assets/icons/devices/oxygen_level.png'),
   'Blood Pressure': require('../assets/icons/devices/blood_pressure.png'),
@@ -46,16 +48,18 @@ const RECOMMENDED_TESTS_IMAGES: {
   'Respiratory Rate': require('../assets/icons/devices/lung_wave.png'),
   'Blood Glucose': require('../assets/icons/devices/sugar_level.png'),
   'Heart Sound': require('../assets/icons/devices/blood_pressure.png'),
-  'Lungs Sound': require('../assets/icons/devices/lung_wave.png'),
+  'Lung Sound': require('../assets/icons/devices/lung_wave.png'),
+  'Self Test': require('../assets/icons/devices/self_assessment.png'),
 };
 
 function Item({
+  testAttemptable,
   DeviceName,
   PlaystoreLink,
   Result,
   TestName,
   AppointmentTestId,
-}: AppointmentTest) {
+}: AppointmentTest & {testAttemptable: boolean}) {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackNavigatorParamList>>();
   const {isConnected} = useMinttiVisionStore();
@@ -93,7 +97,7 @@ function Item({
             {DeviceName}
           </CustomTextRegular>
         </View>
-        {Result ? (
+        {Result || !testAttemptable ? (
           <></>
         ) : (
           <TouchableOpacity
@@ -111,16 +115,31 @@ function Item({
 
       {Result ? (
         <View className="p-2 mt-2 bg-gray-100 rounded-lg">
-          {Result?.Variables.map((item, index) => (
-            <View key={item.VariableName + index} className="flex-row ">
-              <CustomTextRegular className="capitalize text-text">
-                {item.VariableName}:
-              </CustomTextRegular>
-              <CustomTextRegular className="ml-2 text-text tex-xs">
-                {item.VariableValue}
-              </CustomTextRegular>
-            </View>
-          ))}
+          {Result?.Variables.map((item, index) =>
+            item.VariableName !== 'Self Assessment' ? (
+              <View key={item.VariableName + index} className="flex-row ">
+                <CustomTextRegular className="capitalize text-text">
+                  {item.VariableName}:
+                </CustomTextRegular>
+                <CustomTextRegular className="ml-2 text-text tex-xs">
+                  {item.VariableValue}
+                </CustomTextRegular>
+              </View>
+            ) : (
+              <View key={item.VariableName + index}>
+                <CustomTextRegular className="capitalize text-text">
+                  {item.VariableName}:
+                </CustomTextRegular>
+                <View className="justify-center flex-1 mt-1">
+                  <Image
+                    source={{uri: BASE_IMG_URL + item.VariableValue}}
+                    alt="Self Assessment"
+                    className="object-cover w-40 h-40 rounded-lg"
+                  />
+                </View>
+              </View>
+            ),
+          )}
         </View>
       ) : null}
     </View>
@@ -138,6 +157,11 @@ export default function RecommendedTestsList() {
   const numberofItemHavingResult =
     appointmentDetail?.Tests?.filter(item => item.Result).length || 0;
 
+  const testAttemptable =
+    appointmentDetail.AppointmentStatus === 'Accepted' ||
+    appointmentDetail.AppointmentStatus === 'On-going' ||
+    appointmentDetail.AppointmentStatus === 'Joined';
+
   return (
     <View className="flex-1 px-4">
       <FlatList
@@ -145,7 +169,9 @@ export default function RecommendedTestsList() {
         data={appointmentDetail?.Tests}
         key={appointmentDetail.Tests.length + numberofItemHavingResult}
         keyExtractor={item => item.TestId}
-        renderItem={({item}) => <Item {...item} />}
+        renderItem={({item}) => (
+          <Item {...item} testAttemptable={testAttemptable} />
+        )}
       />
     </View>
   );

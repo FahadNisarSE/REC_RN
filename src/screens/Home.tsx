@@ -7,6 +7,8 @@ import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import {BASE_IMG_URL} from '../utils/config';
 import {useSignInStore} from '../utils/store/useSignInStore';
 import AppointmentHistory from '../components/AppointmentHistory';
+import {DrawerToggleButton} from '@react-navigation/drawer';
+import CustomTextRegular from '../components/ui/CustomTextRegular';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -28,21 +30,30 @@ export default function Home() {
           <View className="p-3">
             <View className="flex-row items-center justify-between">
               <View>
-                <CustomTextSemiBold className="text-lg text-white">
+                <DrawerToggleButton
+                  tintColor="white"
+                  pressOpacity={0.5}
+                  marginLeft={false}
+                  pressColor="rgba(0, 0, 0, 0)"
+                />
+
+                <CustomTextRegular className="mt-2 text-xs text-white">
                   Welcome Back
-                </CustomTextSemiBold>
+                </CustomTextRegular>
                 <CustomTextSemiBold className="text-2xl text-white">
                   {`${userData?.Firstname} ${userData?.Lastname}`}
                 </CustomTextSemiBold>
               </View>
-              <Image
-                className="w-16 h-16 rounded-full"
-                source={{uri: `${BASE_IMG_URL}${userData?.ProfileImg}`}}
-                alt="username"
-                style={{objectFit: 'cover'}}
-              />
+              <View>
+                <Image
+                  className="w-16 h-16 rounded-full"
+                  source={{uri: `${BASE_IMG_URL}${userData?.ProfileImg}`}}
+                  alt="username"
+                  style={{objectFit: 'cover'}}
+                />
+              </View>
             </View>
-            <View className="flex-row items-end justify-between mt-4">
+            <View className="flex-row items-end justify-between mt-2">
               <View className="max-w-[60%]">
                 <CustomTextSemiBold className="mt-1 text-sm text-white">
                   {userData?.Email}

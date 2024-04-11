@@ -1,5 +1,4 @@
 import {useMutation} from '@tanstack/react-query';
-import axiosInstance from '../../utils/config';
 
 export async function saveTestResult(data: {
   AppointmentTestId: string;
@@ -9,15 +8,29 @@ export async function saveTestResult(data: {
   const {AppointmentTestId, VariableName, VariableValue} = data;
 
   try {
-    const {data} = await axiosInstance.post('/save_test_result', {
-      AppointmentTestId,
-      VariableName,
-      VariableValue,
+    const formData = new FormData();
+    formData.append('AppointmentTestId', AppointmentTestId);
+
+    VariableName.forEach((name, index) => {
+      formData.append(`VariableName[${index}]`, name);
+      formData.append(`VariableValue[${index}]`, VariableValue[index]);
     });
 
-    if (data.status === 201) {
-      return 'Tests result saved successfully.';
-    } else throw new Error('Oops! Something went wrong.');
+    let response = await fetch(
+      'https://staging.remotemedtech.com/api/save_test_result',
+      {
+        method: 'POST',
+        body: formData,
+      },
+    );
+
+    const data = await response.json();
+
+    if (data?.status === 201) {
+      return 'Test result saved successfully.';
+    } else {
+      throw new Error('Oops! Something went wrong.');
+    }
   } catch (error) {
     throw error;
   }
