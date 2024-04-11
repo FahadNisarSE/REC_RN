@@ -17,6 +17,18 @@
 		1D78203C2BBCD707002677D7 /* VisionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78203A2BBCD707002677D7 /* VisionController.m */; };
 		1D78203F2BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */; };
 		1D7820402BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */; };
+		1D7820432BC7BE0C002677D7 /* HeartLive.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820422BC7BE0C002677D7 /* HeartLive.m */; };
+		1D7820442BC7BE0C002677D7 /* HeartLive.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820422BC7BE0C002677D7 /* HeartLive.m */; };
+		1D7820472BC7BE4B002677D7 /* OxyWaveView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820462BC7BE4B002677D7 /* OxyWaveView.m */; };
+		1D7820482BC7BE4B002677D7 /* OxyWaveView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820462BC7BE4B002677D7 /* OxyWaveView.m */; };
+		1D78204B2BC7BE91002677D7 /* SPView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78204A2BC7BE91002677D7 /* SPView.m */; };
+		1D78204C2BC7BE91002677D7 /* SPView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78204A2BC7BE91002677D7 /* SPView.m */; };
+		1D78204E2BC7BFF9002677D7 /* EcgChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78204D2BC7BFF9002677D7 /* EcgChartViewManager.m */; };
+		1D78204F2BC7BFF9002677D7 /* EcgChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D78204D2BC7BFF9002677D7 /* EcgChartViewManager.m */; };
+		1D7820512BC7C171002677D7 /* BoGraphViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820502BC7C171002677D7 /* BoGraphViewManager.m */; };
+		1D7820522BC7C171002677D7 /* BoGraphViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820502BC7C171002677D7 /* BoGraphViewManager.m */; };
+		1D7820542BC7C327002677D7 /* SPViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820532BC7C327002677D7 /* SPViewManager.m */; };
+		1D7820552BC7C327002677D7 /* SPViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7820532BC7C327002677D7 /* SPViewManager.m */; };
 		26882CB002754C23915EB5AF /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 41C2D0ECF09D4F959FE752F7 /* Inter-Thin.ttf */; };
 		3C42056B80864F1D9044C5CE /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */; };
 		54F1F761D768485D825A7A37 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BB2173B9E5546FAA9A8E27A /* Inter-Regular.ttf */; };
@@ -53,6 +65,15 @@
 		1D78203A2BBCD707002677D7 /* VisionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VisionController.m; sourceTree = "<group>"; };
 		1D78203D2BBCE481002677D7 /* CBPeripheralModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBPeripheralModel.h; sourceTree = "<group>"; };
 		1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CBPeripheralModel.m; sourceTree = "<group>"; };
+		1D7820412BC7BDA3002677D7 /* HeartLive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeartLive.h; sourceTree = "<group>"; };
+		1D7820422BC7BE0C002677D7 /* HeartLive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HeartLive.m; sourceTree = "<group>"; };
+		1D7820452BC7BE36002677D7 /* OxyWaveView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OxyWaveView.h; sourceTree = "<group>"; };
+		1D7820462BC7BE4B002677D7 /* OxyWaveView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OxyWaveView.m; sourceTree = "<group>"; };
+		1D7820492BC7BE70002677D7 /* SPView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPView.h; sourceTree = "<group>"; };
+		1D78204A2BC7BE91002677D7 /* SPView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPView.m; sourceTree = "<group>"; };
+		1D78204D2BC7BFF9002677D7 /* EcgChartViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EcgChartViewManager.m; sourceTree = "<group>"; };
+		1D7820502BC7C171002677D7 /* BoGraphViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BoGraphViewManager.m; sourceTree = "<group>"; };
+		1D7820532BC7C327002677D7 /* SPViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPViewManager.m; sourceTree = "<group>"; };
 		206C81EA02514117BC1E0D6D /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../src/assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		30D125DA9AE3412A918E9F10 /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../src/assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-remote_medical_care_2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-remote_medical_care_2.debug.xcconfig"; path = "Target Support Files/Pods-remote_medical_care_2/Pods-remote_medical_care_2.debug.xcconfig"; sourceTree = "<group>"; };
@@ -116,6 +137,15 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				1D7820392BBCD6EE002677D7 /* VisionController.h */,
 				1D78203A2BBCD707002677D7 /* VisionController.m */,
+				1D78204D2BC7BFF9002677D7 /* EcgChartViewManager.m */,
+				1D7820532BC7C327002677D7 /* SPViewManager.m */,
+				1D7820502BC7C171002677D7 /* BoGraphViewManager.m */,
+				1D7820412BC7BDA3002677D7 /* HeartLive.h */,
+				1D7820422BC7BE0C002677D7 /* HeartLive.m */,
+				1D7820452BC7BE36002677D7 /* OxyWaveView.h */,
+				1D7820462BC7BE4B002677D7 /* OxyWaveView.m */,
+				1D7820492BC7BE70002677D7 /* SPView.h */,
+				1D78204A2BC7BE91002677D7 /* SPView.m */,
 				1D78203D2BBCE481002677D7 /* CBPeripheralModel.h */,
 				1D78203E2BBCE4A0002677D7 /* CBPeripheralModel.m */,
 			);
@@ -428,9 +458,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D7820522BC7C171002677D7 /* BoGraphViewManager.m in Sources */,
+				1D78204F2BC7BFF9002677D7 /* EcgChartViewManager.m in Sources */,
 				1D7820402BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */,
 				00E356F31AD99517003FC87E /* remote_medical_care_2Tests.m in Sources */,
+				1D7820442BC7BE0C002677D7 /* HeartLive.m in Sources */,
 				1D78203C2BBCD707002677D7 /* VisionController.m in Sources */,
+				1D7820482BC7BE4B002677D7 /* OxyWaveView.m in Sources */,
+				1D78204C2BC7BE91002677D7 /* SPView.m in Sources */,
+				1D7820552BC7C327002677D7 /* SPViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,9 +474,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D7820432BC7BE0C002677D7 /* HeartLive.m in Sources */,
 				1D78203F2BBCE4A0002677D7 /* CBPeripheralModel.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				1D78204E2BC7BFF9002677D7 /* EcgChartViewManager.m in Sources */,
+				1D7820472BC7BE4B002677D7 /* OxyWaveView.m in Sources */,
+				1D78204B2BC7BE91002677D7 /* SPView.m in Sources */,
+				1D7820542BC7C327002677D7 /* SPViewManager.m in Sources */,
+				1D7820512BC7C171002677D7 /* BoGraphViewManager.m in Sources */,
 				1D78203B2BBCD707002677D7 /* VisionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
