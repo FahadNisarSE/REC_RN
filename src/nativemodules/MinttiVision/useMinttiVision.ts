@@ -65,7 +65,9 @@ const useMinttiVision = ({
     );
     const bodyTemperatureListener = eventEmitter.addListener(
       'onBodyTemperatureResult',
-      event => {},
+      event => {
+        setTemperature(event.bodyTemperature);
+      },
     );
 
     const bpListener = eventEmitter.addListener('onBp', event => {

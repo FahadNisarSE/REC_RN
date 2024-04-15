@@ -8,14 +8,14 @@ import {
 } from 'react-native';
 import {forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
 
-const EcgChartViewManager = requireNativeComponent('EcgChartViewManager');
+const EcgChartViewManager = requireNativeComponent('EcgChart');
 
 const createEcgChartFragment = (viewId: number) => {
   try {
     UIManager.dispatchViewManagerCommand(
       viewId,
       // we are calling the 'create' command
-      UIManager.EcgChartViewManager.Commands.create.toString(),
+      UIManager.EcgChart.Commands.create.toString(),
       [viewId],
     );
   } catch (e) {}
@@ -23,18 +23,20 @@ const createEcgChartFragment = (viewId: number) => {
 const updateEcgWaveData = (viewId: number, updateData: number) =>
   UIManager.dispatchViewManagerCommand(
     viewId,
-    // we are calling the 'create' command
-    UIManager.EcgChartViewManager.Commands.updateWaveData.toString(),
+  //   // we are calling the 'create' command
+  //   // UIManager.EcgChart.Commands.updateWaveData.toString(),
+    UIManager.getViewManagerConfig('EcgChart').Commands.updateWaveData,
     [viewId, updateData],
   );
 
 const EcgChart = forwardRef((props, ref) => {
   const ecgChartRef = useRef(null);
 
-  useEffect(() => {
-    const viewId = findNodeHandle(ecgChartRef.current);
-    if (viewId) createEcgChartFragment(viewId);
-  }, []);
+  // useEffect(() => {
+  //   const viewId = findNodeHandle(ecgChartRef.current);
+  //   console.log(viewId, "VIEW ID");
+  //   if (viewId) createEcgChartFragment(viewId);
+  // }, []);
 
   function updateEcgData(updatedData: number) {
     const viewId = findNodeHandle(ecgChartRef.current);
@@ -49,19 +51,19 @@ const EcgChart = forwardRef((props, ref) => {
     <View
       className="border border-gray-200"
       style={{
+        justifyContent:'center',
+        alignItems:'center',
         height: 220,
         start: 0,
-        width: useWindowDimensions().width,
+        width: 300,
       }}>
       <EcgChartViewManager
         style={{
           // converts dpi to px, provide desired height
-          height: PixelRatio.getPixelSizeForLayoutSize(200),
+          height: 200,
           // converts dpi to px, provide desired width
-          width: PixelRatio.getPixelSizeForLayoutSize(
-            useWindowDimensions().width,
-          ),
-          marginTop: 30,
+          width: 300,
+          // marginTop: 30,
         }}
         ref={ecgChartRef}
       />
