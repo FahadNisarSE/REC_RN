@@ -46,13 +46,7 @@ RCT_EXPORT_METHOD(stopScan) {
 }
 RCT_EXPORT_METHOD(connectToDevice:(NSDictionary *)device resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
   RCTLogInfo(@"Connecting..");
-  
-//  NSDictionary *options = @{CBCentralManagerScanOptionAllowDuplicatesKey : @NO};
-//  NSArray *uuidArray = @[[CBUUID UUIDWithString:@"1802"]];
-//  [self.centralManager scanForPeripheralsWithServices:nil options:options];
-//  [self.centralManager retrieveConnectedPeripheralsWithServices:uuidArray];
-//  [self.visionMTSDK scanStart];
-  CBPeripheral *foundPeripheral = [self findPeripheralModelByName:device[@""]];
+  CBPeripheral *foundPeripheral = [self findPeripheralModelByName:device[@"name"]];
   if (foundPeripheral) {
     [self.centralManager connectPeripheral:foundPeripheral options:nil];
   } else {
@@ -80,6 +74,9 @@ RCT_EXPORT_METHOD(measureBloodGlucose) {
 }
 RCT_EXPORT_METHOD(measureBloodOxygenSaturation) {
   [self.visionMTSDK startOximetryTest];
+}
+RCT_EXPORT_METHOD(stopSpo2) {
+  [self.visionMTSDK endOximetryTest];
 }
 RCT_EXPORT_METHOD(measureBloodPressure) {
   [self.visionMTSDK startBloodPressure];
@@ -125,31 +122,36 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
     {
         _peripheralModels = [[NSMutableArray alloc] init];
     }
-    [self.peripheralModels addObject:peripheral];
-    [self.peripheralModels addObject:peripheral];
+//    [self.peripheralModels addObject:peripheral];
+    [self addPeripheralIfNotAlreadyPresent:peripheral];
   }
 }
 
 //SDK Listenrs
 -(void)receiveMTECGDataSmoothedWave:(int)smoothedWave{ //Get SDK ECG data
+  NSLog(@"wave %d",smoothedWave);
   [self sendEventWithName:@"onEcg" body:@{@"wave": @(smoothedWave)}];
 }
 -(void)receiveMTOxyDataResult:(double)oxyResult andHeartRate:(int)heartRate{//Throw blood oxygen algorithm results
   [self sendEventWithName:@"onSpo2Result" body:@{@"result": @{@"heartRate": @(heartRate), @"spo2":@(oxyResult)}}];
+  NSLog(@"oxyResult %d",oxyResult);
 }
 //** SDK血oxygen  ***/
 -(void)receiveMTOxyDataValue:(int)oxyValue{ //Get SDK blood oxygen data
+  NSLog(@"wave onSpo2 %d",oxyValue);
   [self sendEventWithName:@"onSpo2" body:@{@"waveData": @(oxyValue)}];
 }
 
 /**Blood oxygen measurement ends*/
 - (void)receiveOxyEnd{
+  NSLog(@"receiveOxyEnd %d");
   [self sendEventWithName:@"onSpo2Ended" body:@{@"measurementEnded": @true, @"message": @"Spo2 measurement ended"}];
 }
 /**
  *throw breathing rate
 */
 - (void)receiveRespiratoryRate:(int)respiratoryRate{
+  NSLog(@"respiratoryRate %d", respiratoryRate);
   [self sendEventWithName:@"onEcgRespiratoryRate" body:@{@"respiratoryRate": @(respiratoryRate)}];
 }
 /**
@@ -159,6 +161,7 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
  *ThrowRRIMax
 */
 - (void)receiveRRIMax:(double)RRIMax{
+  NSLog(@"RRIMax %d", RRIMax);
   [self sendEventWithName:@"onEcgResult" body:@{@"results": @{@"rrMax": @(RRIMax)}}];
 }
 
@@ -169,6 +172,7 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
  *ThrowRRIMin
 */
 - (void)receiveRRIMin:(double)RRIMin{
+  NSLog(@"RRIMin %d", RRIMin);
   [self sendEventWithName:@"onEcgResult" body:@{@"results": @{@"rrMin": @(RRIMin)}}];
 }
 
@@ -179,6 +183,7 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
  *throw average heart rate
 */
 - (void)receiveAvrHr:(int)AvrHr{
+  NSLog(@"AvrHr %d", AvrHr);
   [self sendEventWithName:@"onEcgResult" body:@{@"results": @{@"hrv": @(AvrHr)}}];
 }
 /**
@@ -188,12 +193,13 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
  *throw heart rate variability
 */
 - (void)receiveSDNN:(double)SDNN{
+  NSLog(@"SDNN %d", SDNN);
   [self sendEventWithName:@"onEcgDuration" body:@{@"duration": @{@"duration": @(SDNN)}}];
 }
 
 //** SDK body temperature ***/
 -(void)receiveMTTemDataValue:(double)temValue andBlackBody:(double)blackBodyValue andAmbient:(double)ambientValue{ //Get SDK body temperature data
-  NSLog(@"TEMPERATURE:", temValue);
+  NSLog(@"TEMPERATURE: %d", temValue);
   [self sendEventWithName:@"onBodyTemperatureResult" body:@{@"bodyTemperature": @(temValue)}];
 }
 
@@ -214,18 +220,22 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
     
     switch (sugCode) {
         case 0x09:
+          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventCalibrationFailed", @"message":@"Calibration failed, pull out the test paper and restart the measurement"}];
 //            _measureSugViewController.sugLbl.text = @"Calibration failed, please measure again";
             break;
         case 0x08:
+          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventWaitDripBlood", @"message":@"Waiting for the blood sample to be dripped"}];
 //            _measureSugViewController.sugLbl.text = @"Waiting to insert blood glucose test strip";
             break;
         case 0x07:
 //            _measureSugViewController.sugLbl.text = @"The blood glucose test strip was pulled out";
             break;
         case 0x06:
+          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventPaperUsed", @"message":@"Test paper has been used"}];
 //            _measureSugViewController.sugLbl.text = @"Blood glucose test strips have been used";
             break;
         case 0x05:
+          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventMeasureEnd", @"message":@"End of blood glucose measurement"}];
 //            _measureSugViewController.sugLbl.text = @"Measurement ended";
             break;
         case 0x04:
@@ -241,6 +251,7 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 //            _measureSugViewController.sugLbl.text = @"Blood glucose test strip has been inserted";
             break;
         case 0x00:
+        [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventWaitPagerInsert", @"message":@"Please insert the pager"}];
 //            _measureSugViewController.sugLbl.text = @"Waiting to insert blood glucose test strip";
             break;
         default:
@@ -251,14 +262,17 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 //** SDK blood pressure  ***/
 - (void)receiveMTPreCompressionData:(int)compressionValue{//Throw pressurized data
   [self sendEventWithName:@"onBpRaw" body:@{@"pressurizationData": @(compressionValue)}];
+  NSLog(@"compressionValue %d", compressionValue);
 }
 
 - (void)receiveMTPreDecompressionData:(int)decompressionValue{//Throw decompression data
   [self sendEventWithName:@"onBpRaw" body:@{@"decompressionData": @(decompressionValue)}];
+  NSLog(@"decompressionValue %d", decompressionValue);
 }
 
 - (void)receiveMTBPSystolicValue : (int)systolicValue andDiastolic:(int)diastolic andHr:(int)hr{//Throw blood pressure algorithm data
   [self sendEventWithName:@"onBp" body:@{@"result": @{@"systolic": @(systolicValue), @"diastolic": @(diastolic), @"heartRate": @(hr)}}];
+  NSLog(@"systolicValue %d", systolicValue);
 }
 
 - (void)receiveBpLeakError{
@@ -267,9 +281,16 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 }
 
 - (void)receiveBatteryValue:(NSData *)batteryValue{ //Battery power data
-  self.batteryLevel = batteryValue;
-  NSLog(@"batteryLevel", batteryValue);
-  [self sendEventWithName:@"onBattery" body:@{@"battery": batteryValue}];
+  NSMutableString *hexString = [NSMutableString string];
+  const unsigned char *dataBuffer = (const unsigned char *)[batteryValue bytes];
+  if (dataBuffer) {
+      for (NSUInteger i = 0; i < batteryValue.length; ++i) {
+          [hexString appendFormat:@"%02x", (unsigned int)dataBuffer[i]];
+      }
+  }
+  self.batteryLevel = hexString;
+  NSLog(@"batteryValue: %@", hexString);
+  [self sendEventWithName:@"onBattery" body:@{@"battery": hexString}];
 }
 
 
@@ -288,6 +309,7 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 //helper
 // Method to find a peripheral model by name
 - (CBPeripheral *)findPeripheralModelByName:(NSString *)name {
+  NSLog(@"finding name:", name);
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", name];
     NSArray *filtered = [self.peripheralModels filteredArrayUsingPredicate:predicate];
     
@@ -296,4 +318,14 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
     }
     return nil; // Return nil if no match is found
 }
+- (void)addPeripheralIfNotAlreadyPresent:(CBPeripheral *)peripheral {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", peripheral.name];
+    NSArray *filtered = [self.peripheralModels filteredArrayUsingPredicate:predicate];
+    
+    if (filtered.count == 0) {
+        // The peripheral was not found in the array, so add it
+        [self.peripheralModels addObject:peripheral];
+    }
+}
+
 @end

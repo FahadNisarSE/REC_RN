@@ -9,16 +9,20 @@
 
 @implementation HeartLiveManager
 
-RCT_EXPORT_MODULE(EcgChartViewManager)
+RCT_EXPORT_MODULE(EcgChart)
 
 - (UIView *)view
 {
-  return [[HeartLive alloc] init];
+  HeartLive *heartView = [[HeartLive alloc] init];
+     // Optionally configure initial settings or check internals
+  [heartView startDrawingEcgView];
+  return heartView;
 }
 
 // Example of exposing a method to React Native
-RCT_EXPORT_METHOD(updateWaveData:(nonnull NSNumber *)reactTag data:(int)data)
+RCT_EXPORT_METHOD(updateWaveData:(nonnull NSNumber *)reactTag1 reactTag:(nonnull NSNumber *)reactTag data:(int)data)
 {
+  NSLog(@"Heart %d", data);
   [self.bridge.uiManager addUIBlock:
    ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, HeartLive *> *viewRegistry) {
      HeartLive *view = viewRegistry[reactTag];
@@ -26,7 +30,7 @@ RCT_EXPORT_METHOD(updateWaveData:(nonnull NSNumber *)reactTag data:(int)data)
        RCTLogError(@"Cannot find HeartLive with tag #%@", reactTag);
        return;
      }
-     [view addEcgData:data];
+      [view addEcgData:data];
    }];
 }
 
