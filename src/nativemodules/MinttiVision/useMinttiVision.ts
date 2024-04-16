@@ -1,14 +1,9 @@
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
-import { NativeEventEmitter, NativeModules, ToastAndroid } from 'react-native';
-import {
-  AndroidLocationEnablerResult,
-  isLocationEnabled,
-  promptForEnableLocationIfNeeded,
-} from 'react-native-android-location-enabler';
+import {useEffect, useState} from 'react';
+import {Linking, NativeEventEmitter, NativeModules, ToastAndroid} from 'react-native';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 import Toast from 'react-native-toast-message';
-import { useMinttiVisionStore } from '../../utils/store/useMinttiVisionStore';
+import {useMinttiVisionStore} from '../../utils/store/useMinttiVisionStore';
 
 const {VisionModule} = NativeModules;
 
@@ -18,6 +13,7 @@ const useMinttiVision = ({
   onSpo2Ended,
   onScanResult,
   onEcg,
+  onBodyTemperature,
   onEcgResult,
   onEcgDuration,
   onEcgHeartRate,
@@ -30,7 +26,6 @@ const useMinttiVision = ({
   const [discoveredDevices, setDiscoveredDevices] = useState<BleDevice[]>();
   const [connectedDevice, setConnectedDevice] = useState<BleDevice>();
   const {
-    setTemperature,
     setBattery,
     setBleDevices,
     setIsConnecting,
@@ -51,7 +46,8 @@ const useMinttiVision = ({
       },
     );
     const disconnectEventListener = eventEmitter.addListener(
-      'onDisconnected',  event => {
+      'onDisconnected',
+      event => {
         setIsConnected(false);
         setIsConnecting(false);
         Toast.show({
@@ -66,7 +62,7 @@ const useMinttiVision = ({
     const bodyTemperatureListener = eventEmitter.addListener(
       'onBodyTemperatureResult',
       event => {
-        setTemperature(event.bodyTemperature);
+        onBodyTemperature && onBodyTemperature(event);
       },
     );
 
@@ -84,7 +80,10 @@ const useMinttiVision = ({
       250,
     );
 
-    const bpRawListener = eventEmitter.addListener('onBpRaw', throttledBpRawListener);
+    const bpRawListener = eventEmitter.addListener(
+      'onBpRaw',
+      throttledBpRawListener,
+    );
 
     const spo2Listener = eventEmitter.addListener('onSpo2', event => {
       onSpo2 && onSpo2(event);
@@ -153,57 +152,44 @@ const useMinttiVision = ({
   }, []);
 
   const discoverDevices = async () => {
-    // try {
-    //   let resultBle: Boolean = new Boolean(true);
-    //   let resultLoc: AndroidLocationEnablerResult = 'enabled';
+    try {
+      let resultBle: Boolean = new Boolean(true);
+      let earlyReturn = false;
 
-    //   BluetoothStateManager.getState()
-    //     .then(async bluetoothState => {
-    //       switch (bluetoothState) {
-    //         case 'Unknown':
-    //         case 'Resetting':
-    //         case 'Unsupported':
-    //         case 'Unauthorized':
-    //         case 'PoweredOff':
-    //           resultBle = await BluetoothStateManager.requestToEnable();
-    //           break;
-    //         case 'PoweredOn':
-    //         default:
-    //           break;
-    //       }
-    //     })
-    //     .catch(error => {
-    //       Toast.show({
-    //         type: 'error',
-    //         text1: 'Bluetooth is Required',
-    //         text2: 'Please enable bluetooth.',
-    //       });
+      BluetoothStateManager.getState()
+        .then(async bluetoothState => {
+          switch (bluetoothState) {
+            case 'Unknown':
+            case 'Resetting':
+            case 'Unsupported':
+            case 'Unauthorized':
+            case 'PoweredOff':
+              await Linking.openURL('App-Prefs:Bluetooth')
+              earlyReturn = true;
+              break;
+            case 'PoweredOn':
+            default:
+              break;
+          }
+        })
+        .catch(error => {
+          earlyReturn = true;
+          Toast.show({
+            type: 'error',
+            text1: 'Bluetooth is Required',
+            text2: 'Please enable bluetooth.',
+          });
+        });
 
-    //       return;
-    //     });
-
-    //   const isLocationEnable = await isLocationEnabled();
-    //   if (!isLocationEnable) {
-    //     try {
-    //       resultLoc = await promptForEnableLocationIfNeeded();
-    //     } catch (error) {
-    //       console.log('Error occured...');
-    //       Toast.show({
-    //         type: 'error',
-    //         text1: 'Location is Required',
-    //         text2: 'Please enable location.',
-    //       });
-    //       return;
-    //     }
-    //   }
-
-    setIsScanning(true);
-    VisionModule.startDeviceScan();
-    // } catch (e) {
-    //   setIsScanning(false);
-    //   console.log(e);
-    //   ToastAndroid.show('Error' + e, 1000);
-    // }
+      if (!earlyReturn) {
+        setIsScanning(true);
+        VisionModule.startDeviceScan();
+      }
+    } catch (e) {
+      setIsScanning(false);
+      console.log(e);
+      Toast.show({text1: 'Error' + e, type: 'error'});
+    }
   };
 
   async function connectToDevice(device: BleDevice) {
@@ -244,9 +230,7 @@ const useMinttiVision = ({
   async function measureBodyTemperature() {
     try {
       setIsMeasuring(true);
-      const bt = await VisionModule.measureBodyTemperature();
-      setIsMeasuring(false);
-      setTemperature(bt);
+      await VisionModule.measureBodyTemperature();
     } catch (e) {}
   }
 
@@ -269,7 +253,6 @@ const useMinttiVision = ({
   }
 
   async function stopSpo2() {
-    console.log('Stop sp02 called...');
     setIsMeasuring(false);
     await VisionModule.stopSpo2();
   }

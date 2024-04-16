@@ -76,7 +76,7 @@ export default function AppointmentDetail({
           <CustomTextSemiBold className="mx-auto text-xl text-text">
             Appointment Details
           </CustomTextSemiBold>
-          <DrawerToggleButton />
+          <DrawerToggleButton tintColor='black' />
         </View>
         <View className="p-5 px-5 mx-4 overflow-hidden bg-white rounded-xl">
           {/* Doctor Information: 1st row */}

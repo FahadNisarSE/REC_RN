@@ -23,8 +23,8 @@ const createEcgChartFragment = (viewId: number) => {
 const updateEcgWaveData = (viewId: number, updateData: number) =>
   UIManager.dispatchViewManagerCommand(
     viewId,
-  //   // we are calling the 'create' command
-  //   // UIManager.EcgChart.Commands.updateWaveData.toString(),
+    //   // we are calling the 'create' command
+    //   // UIManager.EcgChart.Commands.updateWaveData.toString(),
     UIManager.getViewManagerConfig('EcgChart').Commands.updateWaveData,
     [viewId, updateData],
   );
@@ -51,18 +51,17 @@ const EcgChart = forwardRef((props, ref) => {
     <View
       className="border border-gray-200"
       style={{
-        justifyContent:'center',
-        alignItems:'center',
         height: 220,
-        start: 0,
-        width: 300,
+        width: useWindowDimensions().width,
+        justifyContent: 'center',
+        alignItems: 'center',
       }}>
       <EcgChartViewManager
         style={{
           // converts dpi to px, provide desired height
-          height: 200,
+          height: 220,
           // converts dpi to px, provide desired width
-          width: 300,
+          width: useWindowDimensions().width,
           // marginTop: 30,
         }}
         ref={ecgChartRef}

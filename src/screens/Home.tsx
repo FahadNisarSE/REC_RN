@@ -9,6 +9,7 @@ import {useSignInStore} from '../utils/store/useSignInStore';
 import AppointmentHistory from '../components/AppointmentHistory';
 import {DrawerToggleButton} from '@react-navigation/drawer';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
+import CustomSafeArea from '../components/CustomSafeArea';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -17,7 +18,7 @@ export default function Home() {
 
   return (
     <>
-      <View className="flex-1 mx-5">
+      <CustomSafeArea stylesClass="flex-1 mx-5">
         <StatusBar backgroundColor="#46b98d" />
 
         {/* User information  */}
@@ -73,7 +74,7 @@ export default function Home() {
           </View>
         </View>
         <HomeTabs />
-      </View>
+      </CustomSafeArea>
     </>
   );
 }

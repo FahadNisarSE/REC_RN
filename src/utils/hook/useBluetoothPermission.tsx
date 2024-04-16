@@ -1,4 +1,5 @@
-import {PermissionsAndroid, Platform, ToastAndroid} from 'react-native';
+import {PermissionStatus, PermissionsAndroid, Platform, ToastAndroid} from 'react-native';
+import { request, PERMISSIONS } from 'react-native-permissions';
 
 type VoidCallback = (result: boolean) => void;
 
@@ -57,9 +58,22 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
           ToastAndroid.show('Permission Denied', 1000);
         }
       }
-    } else {
-      // Assume permissions granted on platforms other than Android
-      cb(true);
+    } else if(Platform.OS === 'ios') {
+      try {
+        const locationPermission = (await request(
+          PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+        )) as PermissionStatus;
+        const bluetoothPermission = (await request(
+          PERMISSIONS.IOS.BLUETOOTH,
+        )) as PermissionStatus;
+
+        const permissionAllowed = locationPermission === 'granted' && bluetoothPermission === 'granted';
+        console.log("Bluetooth permission requested...", {locationPermission, bluetoothPermission})
+        cb(permissionAllowed);
+      } catch (error) {
+        console.log("Error: ", error)
+        cb(false);
+      }
     }
   };
 

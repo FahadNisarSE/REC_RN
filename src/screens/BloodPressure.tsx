@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
+  Alert,
   Dimensions,
   Image,
   Modal,
@@ -23,13 +24,12 @@ import {queryClient} from '../../App';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import {DrawerToggleButton} from '@react-navigation/drawer';
+import CustomSafeArea from '../components/CustomSafeArea';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
   'BloodPressure'
 >;
-
-const dimensions = Dimensions.get('window');
 
 export default function BloodPressure({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
@@ -40,6 +40,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
     useMinttiVisionStore();
   const {measureBp} = useMinttiVision({
     onBp: event => {
+      console.log('ON BP: ', event);
       if (event?.error) {
         Toast.show({
           type: 'error',
@@ -47,17 +48,22 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           text2: event.error ?? 'Something went wrong',
         });
         setIsMeasuring(false);
+        setAppliedPressure(0);
+        setBp(null);
         return;
       }
 
       setBp(event);
 
       if (event.result) {
+        setAppliedPressure(0);
         setIsMeasuring(false);
         toggleModal(true);
       }
     },
     onBpRaw: event => {
+      console.log('ON BP RAW: ', event);
+
       setAppliedPressure(
         prev =>
           Number(event.decompressionData) ||
@@ -144,7 +150,6 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
 
     function reTakeTesthandler() {
       setBp(null);
-      setAppliedPressure(0);
       setShowModal(false);
     }
 
@@ -158,17 +163,21 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
+          setBp(null);
           toggleModal(false);
         }}>
         <Pressable
-          onPress={() => toggleModal(false)}
+          onPress={() => {
+            setBp(null);
+            toggleModal(false);
+          }}
           className="w-full h-full bg-black opacity-25"></Pressable>
         <View
           style={{
             ...meetingStyles.modal,
-            height: '65%',
+            height: '50%',
           }}
-          className="p-4 bg-white">
+          className="p-4 pb-8 bg-white m-4 mb-8">
           <View className="flex-row items-center justify-between w-full mb-auto">
             <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
               Test Result
@@ -234,17 +243,29 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
     );
   }, [showModal]);
 
-  async function measureBloodPressure() {
-    await measureBp();
+  function handleTestInProgress() {
+    Alert.alert(
+      'Test in Progresss',
+      'Blood Pressure test is in progresss please wait for it to complete.',
+      [
+        {
+          text: 'Cancel',
+          isPreferred: true,
+          style: 'default',
+        },
+      ],
+    );
   }
 
   return (
-    <>
-      <View className="flex-1 px-5 bg-white">
+    <CustomSafeArea stylesClass="flex-1 bg-white">
+      <View className="px-5 flex-1">
         <View className="flex-row items-center py-5">
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              isMeasuring ? handleTestInProgress() : navigation.goBack()
+            }
             className="p-1">
             <Image
               source={require('../assets/icons/back_arrow.png')}
@@ -254,7 +275,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Pressure
           </CustomTextRegular>
-          <DrawerToggleButton />
+          <DrawerToggleButton tintColor="black" />
         </View>
 
         {/* Pressure Statistics */}
@@ -263,7 +284,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
             <CustomTextRegular className="text-5xl text-text">
               {normalizePressure(appliedPressure)}
             </CustomTextRegular>
-            {bp?.result ? (
+            {/* {bp?.result ? (
               <CustomTextRegular className="px-2 py-1 text-[10px] border rounded-full text-secondary border-secondary">
                 {bloodPressureResult()}
               </CustomTextRegular>
@@ -271,7 +292,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
               <CustomTextRegular className="px-2 py-1 text-[10px] border rounded-full text-secondary border-secondary">
                 No Data
               </CustomTextRegular>
-            )}
+            )} */}
           </View>
         </View>
 
@@ -391,10 +412,10 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           text={isMeasuring ? 'Measuring' : 'Start Test'}
           className="mt-auto mb-5"
           disabled={isMeasuring}
-          onPress={() => measureBloodPressure()}
+          onPress={() => measureBp()}
         />
       </View>
       <CustomDrawer />
-    </>
+    </CustomSafeArea>
   );
 }
