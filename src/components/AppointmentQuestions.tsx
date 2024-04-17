@@ -18,7 +18,7 @@ export default function AppointmentQuestions() {
   const {appointmentDetail} = useAppointmentDetailStore()
 
 
-  if (!appointmentDetail || appointmentDetail?.questions.length === 0)
+  if (!appointmentDetail || !appointmentDetail?.questions || appointmentDetail?.questions?.length === 0)
     return (
       <View className="items-center justify-center flex-1">
         <Image
@@ -36,7 +36,7 @@ export default function AppointmentQuestions() {
   return (
     <View className="flex-1 px-4">
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-        {appointmentDetail.questions.map((item, index) => (
+        {appointmentDetail?.questions?.map((item, index) => (
           <QuestionCard {...item} key={item.AppointmentId + index} />
         ))}
       </ScrollView>

@@ -131,7 +131,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
         <View
           style={{
             ...meetingStyles.modal,
-            height: '65%',
+            height: '75%',
           }}
           className="p-4 bg-white">
           <View className="flex-row items-center justify-between w-full mb-auto">
@@ -162,6 +162,30 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
                   </CustomTextRegular>
                 </View>
               </View>
+
+              {/* Noraml Temperature here */}
+              <View className="p-4 my-8 border border-gray-300 rounded-md">
+                <View>
+                  <CustomTextRegular className="mb-4 text-center text-text">
+                    Normal Temperature Range
+                  </CustomTextRegular>
+                  <CustomTextSemiBold className="text-center text-text">
+                    36 ℃ - 37.2 ℃
+                  </CustomTextSemiBold>
+                </View>
+                <View
+                  className="flex-row items-center my-4 rounded"
+                  style={{opacity: temperature === 0 ? 0 : 100}}>
+                  <ResultIdicatorBar
+                    lowThreshold={36}
+                    highThreshold={37.2}
+                    lowestLimit={32}
+                    highestLimit={42}
+                    value={temperature}
+                  />
+                </View>
+              </View>
+
               <CustomTextRegular className="mt-4 text-text">
                 By pressing "Save Result", your test results will be securely
                 saved and will be shared with{' '}
@@ -171,6 +195,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
                 wish, you have the option to retake the test in case you are not
                 satisfied with the results.
               </CustomTextRegular>
+
               <View className="flex flex-row justify-end mt-auto">
                 <TouchableOpacity
                   onPress={reTakeTesthandler}

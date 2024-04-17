@@ -15,8 +15,8 @@ export interface Appointment {
   created_at: string;
   updated_at: string;
   SpecialTreatment: string;
-  Diagnosis: string;
-  Symptoms: string;
+  Diagnosis?: string;
+  Symptoms?: string;
   CloserDiagnosis: string | null;
   ClinicName: string;
   Firstname: string;
@@ -42,12 +42,12 @@ export interface AppointmentDetail {
   IsoEndTime: string;
   IsoStartTime: string;
   updated_at: string;
-  Diagnosis: string;
-  Symptoms: string;
+  Diagnosis?: string;
+  Symptoms?: string;
   CloserDiagnosis: string | null;
   doctor: Doctor;
   patient: Patient;
-  questions: AppointmentAnswer[];
+  questions?: AppointmentAnswer[];
   Tests: AppointmentTest[];
 }
 

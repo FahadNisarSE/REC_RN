@@ -1,18 +1,49 @@
-import {View, Text} from 'react-native';
-import React from 'react';
-import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
+import {DrawerToggleButton} from '@react-navigation/drawer';
+import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 
-export default function AboutUs() {
+const {width, height} = Dimensions.get('window');
+
+type AppointmentDetailProps = NativeStackScreenProps<
+  HomeStackNavigatorParamList,
+  'AppointmentDetail'
+>;
+
+export default function AboutUs({navigation}: AppointmentDetailProps) {
   return (
     <>
-      <View className="items-center justify-center flex-1">
-        <CustomTextSemiBold className="text-center text-text">
-          AboutUs
+      <View className="flex-row items-center p-4">
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Image
+            source={require('../assets/icons/chevron-left.png')}
+            alt="Go back"
+            className="w-5 h-5"
+          />
+        </TouchableOpacity>
+        <CustomTextSemiBold className="mx-auto text-xl text-text">
+          Appointment Details
         </CustomTextSemiBold>
-        <CustomTextRegular className="mt-4 text-center text-text">
-          Screen under developmnent!
+        <DrawerToggleButton />
+      </View>
+      <View className="items-center justify-center flex-1">
+        <Image
+          source={require('../assets/images/icon.png')}
+          alt="Remote Examination Care"
+          style={{
+            width: width * 0.7,
+            height: width * 0.1,
+            objectFit: 'contain',
+          }}
+        />
+        <CustomTextRegular className="my-6 text-center text-text">
+          Current Version: {DeviceInfo.getVersion()}
         </CustomTextRegular>
+        <Button text="Check for Updates" className="" />
       </View>
     </>
   );

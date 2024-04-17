@@ -22,6 +22,7 @@ import ExternalLink from '../components/ui/ExternalLink';
 import {TLoginUserSchema, loginUserSchema} from '../api/schema/loginSchema';
 import globalStyles from '../styles/style';
 import useSignIn from '../api/action/useSignIn';
+import { useToggleStore } from '../utils/store/useToggleClinicStore';
 
 const {width, height} = Dimensions.get('window');
 
@@ -29,9 +30,14 @@ export default function Login({}) {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const {mutate, error, isPending, setError} = useSignIn();
+  const {setClinicId} = useToggleStore()
 
   async function signInRequest(data: TLoginUserSchema) {
-    mutate({Email: data.email, Password: data.password});
+    mutate({Email: data.email, Password: data.password}, {
+      onSuccess: () => {
+        setClinicId('all')
+      }
+    });
   }
 
   const {control, handleSubmit, setValue} = useForm({

@@ -1,6 +1,6 @@
-import { DrawerToggleButton } from '@react-navigation/drawer';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useState } from 'react';
+import {DrawerToggleButton} from '@react-navigation/drawer';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { queryClient } from '../../App';
+import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import Button from '../components/ui/Button';
@@ -20,10 +20,10 @@ import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import { meetingStyles } from '../styles/style';
-import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
-import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
-import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
+import {meetingStyles} from '../styles/style';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
+import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -197,7 +197,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         <View
           style={{
             ...meetingStyles.modal,
-            height: '65%',
+            height: '90%',
           }}
           className="p-4 bg-white">
           <View className="flex-row items-center justify-between w-full mb-auto">
@@ -222,16 +222,59 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
                 <CustomTextSemiBold className="text-text">
                   Blood Pressure
                 </CustomTextSemiBold>
-                <CustomTextRegular className="ml-2 text-gray-600">
+                <CustomTextRegular className="text-gray-600">
                   Systolic pressure: {bp?.result?.systolic} mmHg
                 </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
+                <CustomTextRegular className="text-gray-600">
                   Diastolic pressure: {bp?.result?.diastolic} mmHg
                 </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
+                <CustomTextRegular className="text-gray-600">
                   Heart Rate: {bp?.result?.heartRate} bpm
                 </CustomTextRegular>
               </View>
+
+              {/* Normal Blood Pressure here */}
+              <View className="p-4 my-8 border border-gray-300 rounded-md">
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Systolic Pressure
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text">
+                    90 mmHg - 120 mmHg
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={90}
+                      highThreshold={140}
+                      lowestLimit={60}
+                      highestLimit={180}
+                      value={bp?.result?.systolic ?? 0}
+                    />
+                  </View>
+                </View>
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Distolic Pressure
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text">
+                    60 mmHg - 90 mmHg
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={60}
+                      highThreshold={90}
+                      lowestLimit={40}
+                      highestLimit={120}
+                      value={bp?.result?.diastolic ?? 0}
+                    />
+                  </View>
+                </View>
+              </View>
+
               <CustomTextRegular className="mt-4 text-text">
                 By pressing "Save Result", your test results will be securely
                 saved and will be shared with{' '}
