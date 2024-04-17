@@ -143,7 +143,7 @@ export default function Login({}) {
                       className="absolute z-30 flex items-center justify-center w-8 h-8 top-4 right-4"
                       onPress={() => setShowPassword(false)}>
                       <Image
-                        className="w-4 h-4"
+                        className="w-5 h-5"
                         source={require('../assets/icons/eye.png')}
                         alt="hide passowrd"
                       />
@@ -194,16 +194,10 @@ export default function Login({}) {
               <CustomTextRegular
                 className="w-10/12 mx-auto text-sm text-center text-text"
                 style={{lineHeight: 25}}>
-                By clicking sign in,{' '}
-                <ExternalLink
-                  buttonText="T & C"
-                  url=""
-                  className="text-green"
-                />{' '}
-                and{' '}
+                By clicking sign in, You agree to{' '}
                 <ExternalLink
                   buttonText="Privacy Policy"
-                  url=""
+                  url="https://remotemedtech.com/data-privacy"
                   className="text-green"
                 />{' '}
                 of Remote Medical Care.

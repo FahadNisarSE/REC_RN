@@ -1,4 +1,5 @@
 import {PermissionsAndroid, Platform, ToastAndroid} from 'react-native';
+import {PERMISSIONS, request} from 'react-native-permissions';
 
 type VoidCallback = (result: boolean) => void;
 
@@ -14,8 +15,19 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
 
       if (apiLevel < 31) {
         try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          // const granted = await PermissionsAndroid.request(
+          //   PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          //   {
+          //     title: 'Location Permission',
+          //     message: 'This device needs location access to use Bluetooth.',
+          //     buttonNeutral: 'Ask me later',
+          //     buttonNegative: '',
+          //     buttonPositive: 'OK',
+          //   },
+          // );
+
+          const permission = await request(
+            PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
             {
               title: 'Location Permission',
               message: 'This device needs location access to use Bluetooth.',
@@ -25,33 +37,47 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
             },
           );
 
-          cb(granted === PermissionsAndroid.RESULTS.GRANTED);
+          console.log('Permission: ', permission);
+
+          cb(permission === 'granted');
+
+          // cb(granted === PermissionsAndroid.RESULTS.GRANTED);
         } catch (error) {
           console.log('Error: ', JSON.stringify(error));
           ToastAndroid.show('Permission Denied', 1000);
         }
       } else {
         try {
-          // Request required permissions for Android versions 31 and above
-          const result = await PermissionsAndroid.requestMultiple([
-            PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-            PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          ]);
+          const bluetoothScanPermission = await request(PERMISSIONS.ANDROID.BLUETOOTH_SCAN, {
+            title: 'Bluetooth Scan Permission',
+            message: 'This device needs bluetooth scan permission to connect.',
+            buttonNeutral: 'Ask me later',
+            buttonNegative: '',
+            buttonPositive: 'OK',
+          });
 
-          console.log('Result of permission: ', result);
+          const bluetoothConnectPermission = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT, {
+            title: 'Bluetooth Connect Permission',
+            message: 'This device needs bluetooth connect permission to connect.',
+            buttonNeutral: 'Ask me later',
+            buttonNegative: '',
+            buttonPositive: 'OK',
+          });
 
-          const isGranted =
-            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] ===
-              PermissionsAndroid.RESULTS.GRANTED &&
-            result[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] ===
-              PermissionsAndroid.RESULTS.GRANTED &&
-            result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
-              PermissionsAndroid.RESULTS.GRANTED;
+          const locationPermission = await request(
+            PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Permission',
+              message: 'This device needs location access to use Bluetooth.',
+              buttonNeutral: 'Ask me later',
+              buttonNegative: '',
+              buttonPositive: 'OK',
+            },
+          );
 
-          console.log('is perimssion granted: ', isGranted);
+          console.log('Result of permission: ', {bluetoothScanPermission, bluetoothConnectPermission, locationPermission});
 
-          cb(isGranted);
+          cb(bluetoothScanPermission === 'granted' && bluetoothConnectPermission === "granted" && locationPermission === 'granted');
         } catch (error) {
           console.log('Error: ', JSON.stringify(error));
           ToastAndroid.show('Permission Denied', 1000);

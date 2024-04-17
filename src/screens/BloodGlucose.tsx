@@ -24,10 +24,7 @@ import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import {DrawerToggleButton} from '@react-navigation/drawer';
 
-type BloodOxygenProps = NativeStackScreenProps<
-  HomeStackNavigatorParamList,
-  'BloodGlucose'
->;
+type BloodOxygenProps = NativeStackScreenProps< HomeStackNavigatorParamList,  'BloodGlucose' >;
 
 const dimensions = Dimensions.get('window');
 

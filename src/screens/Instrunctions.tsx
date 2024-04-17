@@ -1,21 +1,14 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  Animated,
-  Dimensions,
-  Image,
-  Pressable,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
 
+import {DrawerToggleButton} from '@react-navigation/drawer';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {FlatList} from 'react-native-gesture-handler';
+import Carousel from 'react-native-reanimated-carousel';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import {TTemperatureInstruction} from '../constant/Instructions';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useInstuctionsStore} from '../utils/store/useIntructionsStore';
-import {DrawerToggleButton} from '@react-navigation/drawer';
 
 const {width, height} = Dimensions.get('window');
 
@@ -25,55 +18,18 @@ type InstrunctionsProps = NativeStackScreenProps<
 >;
 
 export default function Instructions({navigation, route}: InstrunctionsProps) {
-  const [index, setIndex] = useState(0);
-  const scrollx = useRef(new Animated.Value(0)).current;
-  const flatListRef = useRef<FlatList | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const {instructionList} = useInstuctionsStore();
+  const {testType} = route.params;
 
-  function handleOnScroll(event: any) {
-    Animated.event(
-      [
-        {
-          nativeEvent: {
-            contentOffset: {
-              x: scrollx,
-            },
-          },
-        },
-      ],
-      {
-        useNativeDriver: false,
-      },
-    )(event);
-  }
-
-  // Todo: Change this function singe viewableItems are undefined in some case
-  const handleOnViewItemsChanged = useRef(({viewableItems}: any) => {
-    if (viewableItems) setIndex(viewableItems[0]?.index);
-  }).current;
-
-  const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 50,
-  }).current;
-
-  const goToNext = () => {
-    if (flatListRef.current) {
-      if (index !== instructionList.length - 1)
-        flatListRef.current.scrollToIndex({animated: true, index: index + 1});
-    }
-  };
-
-  const goToPrev = () => {
-    if (flatListRef.current) {
-      if (index !== 0)
-        flatListRef.current.scrollToIndex({animated: true, index: index - 1});
-    }
-  };
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [testType]);
 
   return (
     <>
       <View className="flex-1 mt-2">
-        <View className="flex-row p-4">
+        <View className="flex-row items-center p-4 mb-2">
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Image
               source={require('../assets/icons/chevron-left.png')}
@@ -81,47 +37,29 @@ export default function Instructions({navigation, route}: InstrunctionsProps) {
               className="w-5 h-5"
             />
           </TouchableOpacity>
-          <CustomTextSemiBold className="mx-auto mb-2 text-lg text-text">
-            {route.params.testType}
+          <CustomTextSemiBold className="mx-auto text-lg text-text">
+            {testType}
           </CustomTextSemiBold>
           <DrawerToggleButton />
         </View>
-        <View className="flex-row justify-between px-5">
-          <Pressable
-            onPress={goToPrev}
-            style={{opacity: index === 0 ? 0.5 : 1}}
-            className="px-3 py-1 border rounded border-primmary">
-            <CustomTextSemiBold className="text-primmary">
-              Prev
-            </CustomTextSemiBold>
-          </Pressable>
-          <Pressable
-            onPress={goToNext}
-            style={{
-              opacity: index === instructionList.length - 1 ? 0.5 : 1,
-            }}
-            className="px-3 py-1 border rounded border-primmary">
-            <CustomTextSemiBold className="text-primmary">
-              Next
-            </CustomTextSemiBold>
-          </Pressable>
-        </View>
-        <FlatList
-          ref={flatListRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
+        <Carousel
+          key={testType}
+          width={width}
+          loop={false}
+          height={height * 0.9}
           pagingEnabled={true}
-          bounces={false}
-          key={instructionList.length}
           data={instructionList}
-          onScroll={handleOnScroll}
-          keyExtractor={({id}) => id}
-          onViewableItemsChanged={handleOnViewItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          renderItem={({item}) => <SingleInstrunction {...item} />}
+          scrollAnimationDuration={250}
+          mode="parallax"
+          onSnapToItem={index => setActiveIndex(index)}
+          renderItem={({index}) => (
+            <SingleInstrunction {...instructionList[index]} />
+          )}
         />
-        {/* Pagination */}
-        <Pagination length={instructionList.length} scrollX={scrollx} />
+        <Pagination
+          length={instructionList.length}
+          currentIndex={activeIndex}
+        />
       </View>
     </>
   );
@@ -140,10 +78,10 @@ function SingleInstrunction({
         style={{
           objectFit: 'scale-down',
           width: width * 0.7,
-          height: height * 0.6,
+          height: height * 0.8,
         }}
       />
-      <View style={{width}} className="my-8 mt-4">
+      <View style={{width}} className="my-8">
         <CustomTextSemiBold
           style={{maxWidth: width * 0.8}}
           className="mx-auto text-lg text-center text-primmary">
@@ -151,7 +89,7 @@ function SingleInstrunction({
         </CustomTextSemiBold>
         <CustomTextRegular
           style={{maxWidth: width * 0.8}}
-          className="mx-auto mt-2 mb-2 text-center text-text">
+          className="mx-auto mt-4 text-center text-text">
           {description}
         </CustomTextRegular>
       </View>
@@ -161,35 +99,36 @@ function SingleInstrunction({
 
 function Pagination({
   length,
-  scrollX,
+  currentIndex,
 }: {
   length: number;
-  scrollX: Animated.Value;
+  currentIndex: number;
 }) {
   return (
-    <View className="absolute flex-row items-center justify-center w-full bottom-8">
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        bottom: 8,
+        width: '100%',
+      }}>
       {Array.from({length}).map((_, index) => {
-        const inputRange = [
-          (index - 1) * width,
-          index * width,
-          (index + 1) * width,
-        ];
-        const dotWidth = scrollX.interpolate({
-          inputRange,
-          outputRange: [8, 20, 9],
-          extrapolate: 'clamp',
-        });
+        const isActive = index === currentIndex;
+        const backgroundColor = isActive ? '#374151' : '#d1d5db';
+        const dotWidth = isActive ? 20 : 8;
 
-        const backgroundColor = scrollX.interpolate({
-          inputRange,
-          outputRange: ['#d1d5db', '#374151', '#d1d5db'],
-          extrapolate: 'clamp',
-        });
         return (
-          <Animated.View
+          <View
             key={index}
-            style={{width: dotWidth, backgroundColor}}
-            className={`w-2 h-2 mx-1 rounded-full`}
+            style={{
+              width: dotWidth,
+              height: 8,
+              marginHorizontal: 4,
+              borderRadius: 4,
+              backgroundColor,
+            }}
           />
         );
       })}

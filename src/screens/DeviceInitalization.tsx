@@ -73,7 +73,7 @@ export default function DeviceInitalization({
           />
         </TouchableOpacity>
         <CustomTextRegular className="mx-auto text-xl text-text">
-          Electronic StethoScope
+          Mintti Vision
         </CustomTextRegular>
         <DrawerToggleButton />
       </View>

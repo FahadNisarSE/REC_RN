@@ -1,5 +1,6 @@
+import {DrawerToggleButton} from '@react-navigation/drawer';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Image,
   Modal,
@@ -7,6 +8,8 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import {queryClient} from '../../App';
@@ -22,7 +25,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {calculateAverage} from '../utils/utilityFunctions';
-import {DrawerToggleButton} from '@react-navigation/drawer';
+import {useFocusEffect} from '@react-navigation/native';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -85,6 +88,40 @@ export default function ECG({navigation}: BloodOxygenProps) {
     }, 90 * 1000); // 1.5 min
   }
 
+  function handleTestInProgress() {
+    Alert.alert(
+      'Test in Progress',
+      'ECG Test is in progress. Please wait for it to complete or stop the test and then go back.',
+      [
+        {
+          text: 'Stop Test and Exit',
+          onPress: () => {
+            stopECG();
+            resetSate();
+            navigation.goBack();
+          },
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          isPreferred: true,
+          style: 'default',
+        },
+      ],
+    );
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', function () {
+      if (isMeasuring) {
+        handleTestInProgress();
+      } else {
+        navigation.goBack();
+      }
+      return true;
+    });
+  }, [isMeasuring]);
+
   function toggleModal(status: boolean) {
     setShowModal(status);
   }
@@ -111,7 +148,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
             'Respiratory Rate',
           ],
           VariableValue: [
-            `${ecgResult?.hrv} bpm`,
+            `${ecgResult?.hrv} ms`,
             `${ecgResult?.rrMin ?? 0} ms`,
             `${ecgResult?.rrMax} ms`,
             `${calculateAverage(heartRateArray)} bpm`,
@@ -158,10 +195,14 @@ export default function ECG({navigation}: BloodOxygenProps) {
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
+          resetSate();
           toggleModal(false);
         }}>
         <Pressable
-          onPress={() => toggleModal(false)}
+          onPress={() => {
+            resetSate();
+            toggleModal(false);
+          }}
           className="w-full h-full bg-black opacity-25"></Pressable>
         <View
           style={{
@@ -192,8 +233,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                   Heart Rate: {heartRate} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Average Heart Rate: {calculateAverage(respiratoryRateArray)}{' '}
-                  bpm
+                  Average Heart Rate: {calculateAverage(heartRateArray)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
                   Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm
@@ -205,7 +245,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                   RRI Maximum: {ecgResult?.rrMax ?? 0} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  HRV: {ecgResult?.rrMin ?? 0} ms
+                  HRV: {ecgResult?.hrv ?? 0} ms
                 </CustomTextRegular>
               </View>
               <CustomTextRegular className="mt-4 text-text">
@@ -247,7 +287,9 @@ export default function ECG({navigation}: BloodOxygenProps) {
         <View className="flex-row items-center py-5 mx-5">
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              isMeasuring ? handleTestInProgress() : navigation.goBack()
+            }
             className="p-1">
             <Image
               source={require('../assets/icons/back_arrow.png')}

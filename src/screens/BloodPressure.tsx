@@ -1,6 +1,9 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Dimensions,
+  Alert,
+  BackHandler,
   Image,
   Modal,
   Pressable,
@@ -9,27 +12,23 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { queryClient } from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
+import BatteryIndicator from '../components/BatteryIndicatory';
+import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import {meetingStyles} from '../styles/style';
-import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import Button from '../components/ui/Button';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import {queryClient} from '../../App';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
-import BatteryIndicator from '../components/BatteryIndicatory';
-import {DrawerToggleButton} from '@react-navigation/drawer';
+import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
+import { meetingStyles } from '../styles/style';
+import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
+import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
+import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
   'BloodPressure'
 >;
-
-const dimensions = Dimensions.get('window');
 
 export default function BloodPressure({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
@@ -47,12 +46,15 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           text2: event.error ?? 'Something went wrong',
         });
         setIsMeasuring(false);
+        setAppliedPressure(0);
+        setBp(null);
         return;
       }
 
       setBp(event);
 
       if (event.result) {
+        setAppliedPressure(0);
         setIsMeasuring(false);
         toggleModal(true);
       }
@@ -72,6 +74,31 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
     setBp(null);
     setAppliedPressure(0);
   }, []);
+
+  function handleTestInProgress() {
+    Alert.alert(
+      'Test in Progress',
+      'Body Pressure test is in progress. Please wait for it to complete.',
+      [
+        {
+          text: 'Cancel',
+          isPreferred: true,
+          style: 'default',
+        },
+      ],
+    );
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', function () {
+      if (isMeasuring) {
+        handleTestInProgress();
+      } else {
+        navigation.goBack();
+      }
+      return true;
+    });
+  }, [isMeasuring]);
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -158,10 +185,14 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
+          setBp(null);
           toggleModal(false);
         }}>
         <Pressable
-          onPress={() => toggleModal(false)}
+          onPress={() => {
+            setBp(null);
+            toggleModal(false);
+          }}
           className="w-full h-full bg-black opacity-25"></Pressable>
         <View
           style={{
@@ -234,17 +265,15 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
     );
   }, [showModal]);
 
-  async function measureBloodPressure() {
-    await measureBp();
-  }
-
   return (
     <>
       <View className="flex-1 px-5 bg-white">
         <View className="flex-row items-center py-5">
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              isMeasuring ? handleTestInProgress() : navigation.goBack()
+            }
             className="p-1">
             <Image
               source={require('../assets/icons/back_arrow.png')}
@@ -263,7 +292,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
             <CustomTextRegular className="text-5xl text-text">
               {normalizePressure(appliedPressure)}
             </CustomTextRegular>
-            {bp?.result ? (
+            {/* {bp?.result ? (
               <CustomTextRegular className="px-2 py-1 text-[10px] border rounded-full text-secondary border-secondary">
                 {bloodPressureResult()}
               </CustomTextRegular>
@@ -271,7 +300,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
               <CustomTextRegular className="px-2 py-1 text-[10px] border rounded-full text-secondary border-secondary">
                 No Data
               </CustomTextRegular>
-            )}
+            )} */}
           </View>
         </View>
 
@@ -320,7 +349,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           </View>
         </View>
 
-        {/* Noraml Temperature here */}
+        {/* Normal Blood Pressure here */}
         <View className="p-4 mt-4 border border-gray-300 rounded-mdd">
           <View>
             <CustomTextSemiBold className="text-xs text-center text-text">
@@ -391,7 +420,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           text={isMeasuring ? 'Measuring' : 'Start Test'}
           className="mt-auto mb-5"
           disabled={isMeasuring}
-          onPress={() => measureBloodPressure()}
+          onPress={() => measureBp()}
         />
       </View>
       <CustomDrawer />
