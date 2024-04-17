@@ -245,8 +245,8 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
 
   function handleTestInProgress() {
     Alert.alert(
-      'Test in Progresss',
-      'Blood Pressure test is in progresss please wait for it to complete.',
+      'Test in Progress',
+      'Blood Pressure test is in progress. please wait for it to complete.',
       [
         {
           text: 'Cancel',

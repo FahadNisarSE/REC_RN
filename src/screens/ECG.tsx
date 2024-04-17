@@ -258,8 +258,8 @@ export default function ECG({navigation}: BloodOxygenProps) {
 
   function handleTestInProgress() {
     Alert.alert(
-      'Test in Progresss',
-      'ECG test is in progresss please wait for it to complete or stop the test and then go back.',
+      'Test in Progress',
+      'ECG test is in progress. Please wait for it to complete or stop the test and then go back.',
       [
         {
           text: 'Stop Test and Exit',

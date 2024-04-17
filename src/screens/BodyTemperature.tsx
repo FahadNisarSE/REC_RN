@@ -186,8 +186,8 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
 
   function handleTestInProgress() {
     Alert.alert(
-      'Test in Progresss',
-      'Body Temperature test is in progresss please wait for it to complete.',
+      'Test in Progress',
+      'Body Temperature test is in progress. Please wait for it to complete.',
       [
         {
           text: 'Cancel',
