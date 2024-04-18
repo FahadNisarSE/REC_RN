@@ -6,7 +6,6 @@ export default function BloodGlucoseIntructionMap(
   event_name: string,
   callback: any,
 ) {
-  console.log('Event name: ', event_name);
   switch (event_name) {
     case 'bgEventWaitPagerInsert':
       return (
