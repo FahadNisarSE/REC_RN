@@ -175,7 +175,7 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         <View
           style={{
             ...meetingStyles.modal,
-            height: '50%',
+            height: '75%',
           }}
           className="p-4 pb-8 bg-white m-4 mb-8">
           <View className="flex-row items-center justify-between w-full mb-auto">
@@ -200,16 +200,59 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
                 <CustomTextSemiBold className="text-text">
                   Blood Pressure
                 </CustomTextSemiBold>
-                <CustomTextRegular className="ml-2 text-gray-600">
+                <CustomTextRegular className="text-gray-600">
                   Systolic pressure: {bp?.result?.systolic} mmHg
                 </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
+                <CustomTextRegular className="text-gray-600">
                   Diastolic pressure: {bp?.result?.diastolic} mmHg
                 </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
+                <CustomTextRegular className="text-gray-600">
                   Heart Rate: {bp?.result?.heartRate} bpm
                 </CustomTextRegular>
               </View>
+
+              {/* Noraml Temperature here */}
+              <View className="p-4 mt-4 border border-gray-300 rounded-mdd">
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Systolic Pressure
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text">
+                    90 mmHg - 120 mmHg
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={90}
+                      highThreshold={140}
+                      lowestLimit={60}
+                      highestLimit={180}
+                      value={bp?.result?.systolic ?? 0}
+                    />
+                  </View>
+                </View>
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Distolic Pressure
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text">
+                    60 mmHg - 90 mmHg
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={60}
+                      highThreshold={90}
+                      lowestLimit={40}
+                      highestLimit={120}
+                      value={bp?.result?.diastolic ?? 0}
+                    />
+                  </View>
+                </View>
+              </View>
+
               <CustomTextRegular className="mt-4 text-text">
                 By pressing "Save Result", your test results will be securely
                 saved and will be shared with{' '}

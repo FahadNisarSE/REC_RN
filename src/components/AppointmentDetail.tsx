@@ -117,7 +117,7 @@ export default function AppointmentDetail({
               <CustomTextRegular
                 className="mt-1 ml-2 text-xs text-text w-fit"
                 style={{maxWidth: width * 0.6}}>
-                {data?.Symptoms}
+                {data?.Symptoms ?? ''}
               </CustomTextRegular>
             </View>
 

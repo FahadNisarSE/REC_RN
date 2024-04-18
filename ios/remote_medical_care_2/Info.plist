@@ -34,7 +34,7 @@
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>$(PRODUCT_NAME) requires "Blueetooth Permission" to connect to 6 in 1 device.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-  	<string>$(PRODUCT_NAME) requires "Blueetooth Permission" to connect to 6 in 1 device.</string>
+	<string>$(PRODUCT_NAME) requires "Blueetooth Permission" to connect to 6 in 1 device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>$(PRODUCT_NAME) requires "Location Permission" to connect to 6 in 1 device.</string>
 	<key>UIAppFonts</key>

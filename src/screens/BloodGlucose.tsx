@@ -1,5 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
+  Alert,
+  BackHandler,
   Dimensions,
   Image,
   Modal,
@@ -23,6 +25,8 @@ import {queryClient} from '../../App';
 import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import {DrawerToggleButton} from '@react-navigation/drawer';
+import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
+import CustomSafeArea from '../components/CustomSafeArea';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -48,6 +52,9 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
   const {getBattery, measureBg} = useMinttiVision({
     onBgEvent: event => {
       console.log('Event: ', event);
+      if (event.event === 'bgEventMeasureEnd') {
+        setShowModal(true);
+      }
       setBgEvent(event);
     },
     onBgResult: event => {
@@ -66,6 +73,31 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
   function toggleModal(status: boolean) {
     setShowModal(status);
   }
+
+  function handleTestInProgress() {
+    Alert.alert(
+      'Test in Progress',
+      'Body Glucose test is in progress. Please wait for it to complete.',
+      [
+        {
+          text: 'Cancel',
+          isPreferred: true,
+          style: 'default',
+        },
+      ],
+    );
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', function () {
+      if (isMeasuring) {
+        handleTestInProgress();
+      } else {
+        navigation.goBack();
+      }
+      return true;
+    });
+  }, [isMeasuring]);
 
   const MeasruementStepsModal = () => {
     return (
@@ -92,11 +124,23 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
             height: '70%',
           }}
           className="p-4 mx-5 mt-auto mb-10 bg-white rounded-3xl">
-          {BloodGlucoseIntructionMap(bgEvent?.event ?? '', () =>
-            navigation.navigate('AppointmentDetail', {
-              id: appointmentDetail?.AppointmentId!,
-            }),
-          )}
+          {BloodGlucoseIntructionMap(bgEvent?.event ?? '', () => {
+            if (
+              bgEvent?.event === 'bgEventGetBgResultTimeout' ||
+              bgEvent?.event === 'bgEventCalibrationFailed'
+            ) {
+              setIsMeasuring(false);
+              setBgResult({bg: 0});
+              setBgEvent(null);
+            } else {
+              setIsMeasuring(false);
+              setBgResult({bg: 0});
+              setBgEvent(null);
+              navigation.navigate('AppointmentDetail', {
+                id: appointmentDetail?.AppointmentId!,
+              });
+            }
+          })}
         </View>
       </Modal>
     );
@@ -112,10 +156,16 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
         },
         {
           onError: () => {
-            ToastAndroid.show('Whoops! Something went wrong', 5000);
+            Toast.show({
+              type: 'error',
+              text1: 'Something went wrong.',
+              text2:
+                'Something went wrong while saving test result. Please try again.',
+            });
           },
           onSuccess: () => {
             toggleModal(false);
+            setBgEvent(null);
             setBgResult({bg: 0});
 
             Toast.show({
@@ -138,6 +188,7 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
 
     function reTakeTesthandler() {
       setBgResult({bg: 0});
+      setBgEvent(null);
       setShowModal(false);
     }
 
@@ -151,17 +202,21 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
+          reTakeTesthandler();
           toggleModal(false);
         }}>
         <Pressable
-          onPress={() => toggleModal(false)}
+          onPress={() => {
+            reTakeTesthandler();
+            toggleModal(false);
+          }}
           className="w-full h-full bg-black opacity-25"></Pressable>
         <View
           style={{
             ...meetingStyles.modal,
             height: '65%',
           }}
-          className="p-4 bg-white">
+          className="p-4 pb-8 m-4 mb-8 bg-white">
           <View className="flex-row items-center justify-between w-full mb-auto">
             <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
               Test Result
@@ -188,6 +243,28 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
                   <CustomTextRegular className="ml-2 text-gray-600">
                     {bgResult?.bg} mmol / L
                   </CustomTextRegular>
+                </View>
+              </View>
+              {/* Normal Blood Glucose here */}
+              <View className="p-4 mt-4 border border-gray-300 rounded-md">
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Normal Blood Glucose
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text mt-3">
+                    3.9 mmol/L - 6.1 mmol/L
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bgResult?.bg ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={3.9}
+                      highThreshold={6.1}
+                      lowestLimit={0}
+                      highestLimit={10}
+                      value={bgResult?.bg ?? 0}
+                    />
+                  </View>
                 </View>
               </View>
               <CustomTextRegular className="mt-4 text-text">
@@ -228,12 +305,14 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
   }
 
   return (
-    <>
-      <View className="flex-1 px-5 bg-white">
+    <CustomSafeArea stylesClass="flex-1 bg-white">
+      <View className="flex-1 px-5">
         <View className="flex-row items-center py-5">
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              isMeasuring ? handleTestInProgress() : navigation.goBack();
+            }}
             className="p-1">
             <Image
               source={require('../assets/icons/back_arrow.png')}
@@ -243,7 +322,7 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Glucose
           </CustomTextRegular>
-          <DrawerToggleButton />
+          <DrawerToggleButton tintColor='black' />
         </View>
 
         {/* Blood Glucose Result */}
@@ -252,26 +331,36 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
             <CustomTextRegular className="text-5xl text-text">
               {bgResult?.bg ?? 0}
             </CustomTextRegular>
-            <CustomTextRegular className="text-xs text-text">
+            <CustomTextRegular className="text-xs text-text mb-8">
               mmol/L
             </CustomTextRegular>
-            <CustomTextRegular className="px-2 py-1 mt-2 text-[10px] border rounded-full text-secondary border-secondary">
+            {/* <CustomTextRegular className="px-2 py-1 mt-2 text-[10px] border rounded-full text-secondary border-secondary">
               Normal
-            </CustomTextRegular>
+            </CustomTextRegular> */}
           </View>
         </View>
 
-        {/* Noraml Gloucose level here */}
-        <View className="p-4 mt-4 border border-gray-200 rounded-md">
-          <Image
-            style={{
-              width: dimensions.width * 0.8,
-              marginHorizontal: 'auto',
-              objectFit: 'contain',
-            }}
-            source={require('../assets/images/normal_temperature.png')}
-            alt="normal oxygen level"
-          />
+        {/* Normal Blood Glucose here */}
+        <View className="p-4 mt-4 border border-gray-300 rounded-md">
+          <View>
+            <CustomTextSemiBold className="text-xs text-center text-text">
+              Normal Blood Glucose
+            </CustomTextSemiBold>
+            <CustomTextRegular className="text-[10px] text-center text-text mt-3">
+              3.9 mmol/L - 6.1 mmol/L
+            </CustomTextRegular>
+            <View
+              className="flex-row items-center my-4 rounded"
+              style={{opacity: bgResult?.bg ? 100 : 0}}>
+              <ResultIdicatorBar
+                lowThreshold={3.9}
+                highThreshold={6.1}
+                lowestLimit={0}
+                highestLimit={10}
+                value={bgResult?.bg ?? 0}
+              />
+            </View>
+          </View>
         </View>
 
         <View className="flex flex-row justify-between mt-10">
@@ -308,6 +397,6 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
       </View>
       <MeasruementStepsModal />
       <CustomDrawer />
-    </>
+    </CustomSafeArea>
   );
 }

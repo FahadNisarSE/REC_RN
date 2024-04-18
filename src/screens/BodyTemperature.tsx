@@ -113,7 +113,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
         <View
           style={{
             ...meetingStyles.modal,
-            height: '50%',
+            height: '60%',
           }}
           className="p-4 pb-8 bg-white m-4 mb-8">
           <View className="flex-row items-center justify-between w-full mb-auto">
@@ -142,6 +142,28 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
                   <CustomTextRegular className="ml-2 text-gray-600">
                     {temperature} ℃
                   </CustomTextRegular>
+                </View>
+              </View>
+              {/* Noraml Temperature here */}
+              <View className="p-4 mt-4 border border-gray-300 rounded-md">
+                <View>
+                  <CustomTextRegular className="mb-4 text-center text-text">
+                    Normal Temperature Range
+                  </CustomTextRegular>
+                  <CustomTextSemiBold className="text-center text-text">
+                    36 ℃ - 37.2 ℃
+                  </CustomTextSemiBold>
+                </View>
+                <View
+                  className="flex-row items-center my-4 rounded"
+                  style={{opacity: temperature === 0 ? 0 : 100}}>
+                  <ResultIdicatorBar
+                    lowThreshold={36}
+                    highThreshold={37.2}
+                    lowestLimit={32}
+                    highestLimit={42}
+                    value={temperature}
+                  />
                 </View>
               </View>
               <CustomTextRegular className="mt-4 text-text">

@@ -32,7 +32,11 @@ export default function Login({}) {
   const {mutate, error, isPending, setError} = useSignIn();
 
   async function signInRequest(data: TLoginUserSchema) {
-    mutate({Email: data.email, Password: data.password});
+    mutate({Email: data.email, Password: data.password}, {
+      onSuccess: () => {
+        setClinicId('all')
+      }
+    });
   }
 
   const {control, handleSubmit, setValue} = useForm({
@@ -226,3 +230,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 });
+
+function setClinicId(arg0: string) {
+  throw new Error('Function not implemented.');
+}
