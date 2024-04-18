@@ -1,6 +1,8 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import {DrawerToggleButton} from '@react-navigation/drawer';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useCallback, useState} from 'react';
 import {
-  Dimensions,
+  Alert,
   Image,
   Modal,
   Pressable,
@@ -9,20 +11,19 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
+import BatteryIndicator from '../components/BatteryIndicatory';
+import CustomSafeArea from '../components/CustomSafeArea';
+import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
 import {meetingStyles} from '../styles/style';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import Button from '../components/ui/Button';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import {queryClient} from '../../App';
-import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
-import BatteryIndicator from '../components/BatteryIndicatory';
-import {DrawerToggleButton} from '@react-navigation/drawer';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -33,14 +34,21 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
   const {mutate, isPending} = useSaveTestResults();
-  const {measureBodyTemperature} = useMinttiVision({});
-  const {temperature, setTemperature, isConnected, battery, isMeasuring} =
-    useMinttiVisionStore();
-
-  // Reset Values
-  // useEffect(() => {
-  //   setTemperature(0);
-  // }, []);
+  const {
+    temperature,
+    setTemperature,
+    setIsMeasuring,
+    isConnected,
+    battery,
+    isMeasuring,
+  } = useMinttiVisionStore();
+  const {measureBodyTemperature} = useMinttiVision({
+    onBodyTemperature: event => {
+      setTemperature(event.bodyTemperature);
+      setIsMeasuring(false);
+      setShowModal(true);
+    },
+  });
 
   function toggleModal(status: boolean) {
     setShowModal(status);
@@ -93,17 +101,21 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
+          setTemperature(0);
           toggleModal(false);
         }}>
         <Pressable
-          onPress={() => toggleModal(false)}
+          onPress={() => {
+            setTemperature(0);
+            toggleModal(false);
+          }}
           className="w-full h-full bg-black opacity-25"></Pressable>
         <View
           style={{
             ...meetingStyles.modal,
-            height: '65%',
+            height: '50%',
           }}
-          className="p-4 bg-white">
+          className="p-4 pb-8 bg-white m-4 mb-8">
           <View className="flex-row items-center justify-between w-full mb-auto">
             <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
               Test Result
@@ -165,11 +177,6 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
     );
   }, [showModal]);
 
-  async function measureTemperature() {
-    await measureBodyTemperature();
-    setShowModal(true);
-  }
-
   function temperatureResult() {
     if (temperature >= 36 && temperature <= 37.2) return 'Normal';
     else if (temperature > 37.2 && temperature <= 42) return 'High';
@@ -177,13 +184,29 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
     else return 'Invalid Temperature';
   }
 
+  function handleTestInProgress() {
+    Alert.alert(
+      'Test in Progress',
+      'Body Temperature test is in progress. Please wait for it to complete.',
+      [
+        {
+          text: 'Cancel',
+          isPreferred: true,
+          style: 'default',
+        },
+      ],
+    );
+  }
+
   return (
-    <>
-      <View className="flex-1 px-5 bg-white">
+    <CustomSafeArea stylesClass="flex-1 bg-white">
+      <View className="flex-1 px-5">
         <View className="flex-row items-center py-5">
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              isMeasuring ? handleTestInProgress() : navigation.goBack();
+            }}
             className="p-1">
             <Image
               source={require('../assets/icons/back_arrow.png')}
@@ -193,7 +216,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Body Temperature
           </CustomTextRegular>
-          <DrawerToggleButton />
+          <DrawerToggleButton tintColor="black" />
         </View>
 
         {/* Result here */}
@@ -210,13 +233,13 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
                 ℃
               </CustomTextRegular>
             </View>
-            <View
+            {/* <View
               className="px-2 py-1 mt-2 border border-gray-400 rounded-full"
               style={{opacity: temperature === 0 ? 0 : 100}}>
               <CustomTextRegular className="text-gray-400 text-[10px]">
                 {temperatureResult()}
               </CustomTextRegular>
-            </View>
+            </View> */}
           </View>
         </View>
 
@@ -272,10 +295,10 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
           text={isMeasuring ? 'Measuring' : 'Start Test'}
           className="mt-auto mb-5"
           disabled={isMeasuring}
-          onPress={() => measureTemperature()}
+          onPress={() => measureBodyTemperature()}
         />
       </View>
       <CustomDrawer />
-    </>
+    </CustomSafeArea>
   );
 }

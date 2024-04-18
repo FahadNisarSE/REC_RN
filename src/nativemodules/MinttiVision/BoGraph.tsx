@@ -52,13 +52,14 @@ const BoGraph = forwardRef((props, ref) => {
       className="border border-gray-200"
       style={{
         height: 220,
-        start: 0,
-        width: 300,
+        width: useWindowDimensions().width,
+        // justifyContent: 'center',
+        // alignItems: 'center',
       }}>
       <BoGraphViewManager
         style={{
           height: 220,
-        width: 300,
+          width: useWindowDimensions().width,
         }}
         ref={boGraphRef}
       />

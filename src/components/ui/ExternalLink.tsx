@@ -26,7 +26,8 @@ const ExternalLink: React.FC<ExternalLinkProps> = ({
   ...props
 }) => {
   const handlePress = async () => {
-    const supported = await Linking.canOpenURL(url);
+    if (!url) return;
+    const supported = true;
 
     if (supported) {
       await Linking.openURL(url);
@@ -38,7 +39,7 @@ const ExternalLink: React.FC<ExternalLinkProps> = ({
   return (
     <Text
       onPress={onPress ? onPress : handlePress}
-      className={`underline text-green ${props.className}`}
+      className={`underline text-primmary ${props.className}`}
       style={[globalStyles.fontRegular, textStyle]}>
       {buttonText}
     </Text>

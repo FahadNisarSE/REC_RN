@@ -57,10 +57,9 @@ export const meetingStyles = StyleSheet.create({
     marginTop: 'auto',
     justifyContent: 'center',
     alignItems: 'center',
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    borderRadius: 30,
     overflow: 'hidden',
-    width: '100%',
+    width: '90%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

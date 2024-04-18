@@ -1,6 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useRef, useState} from 'react';
 import {
+  Alert,
   Image,
   Modal,
   Pressable,
@@ -23,6 +24,7 @@ import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStor
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {calculateAverage} from '../utils/utilityFunctions';
 import {DrawerToggleButton} from '@react-navigation/drawer';
+import CustomSafeArea from '../components/CustomSafeArea';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -52,9 +54,11 @@ export default function ECG({navigation}: BloodOxygenProps) {
       ecgChartRef.current?.updateEcgData(event.wave);
     },
     onEcgResult: event => {
+      console.log('ECG RESULT: ', event);
       setEcgResult(event.results);
     },
     onEcgRespiratoryRate: event => {
+      console.log('ECG RESPIRATORY RATE: ', event);
       if (event.respiratoryRate) {
         // @ts-ignore
         setrespiratoryRateArray(prev => [...prev, event?.respiratoryRate]);
@@ -62,6 +66,8 @@ export default function ECG({navigation}: BloodOxygenProps) {
       }
     },
     onEcgHeartRate: event => {
+      console.log('ECG HEART RATE: ', event);
+
       if (event.heartRate) {
         // @ts-ignore
         setHeartRateArray(prev => [...prev, event.heartRate]);
@@ -69,6 +75,8 @@ export default function ECG({navigation}: BloodOxygenProps) {
       }
     },
     onEcgDuration: event => {
+      console.log('ECG DURATION: ', event);
+
       if (event.duration?.duration) {
         setDuration(event.duration?.duration);
       }
@@ -111,7 +119,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
             'Respiratory Rate',
           ],
           VariableValue: [
-            `${ecgResult?.hrv} bpm`,
+            `${ecgResult?.hrv} ms`,
             `${ecgResult?.rrMin ?? 0} ms`,
             `${ecgResult?.rrMax} ms`,
             `${calculateAverage(heartRateArray)} bpm`,
@@ -120,7 +128,10 @@ export default function ECG({navigation}: BloodOxygenProps) {
         },
         {
           onError: () => {
-            ToastAndroid.show('Whoops! Something went wrong', 5000);
+            Toast.show({
+              type: 'error',
+              text1: 'Oops! Something went wrong while saving test result.',
+            });
           },
           onSuccess: () => {
             resetSate();
@@ -158,17 +169,21 @@ export default function ECG({navigation}: BloodOxygenProps) {
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
+          resetSate();
           toggleModal(false);
         }}>
         <Pressable
-          onPress={() => toggleModal(false)}
+          onPress={() => {
+            resetSate();
+            toggleModal(false);
+          }}
           className="w-full h-full bg-black opacity-25"></Pressable>
         <View
           style={{
             ...meetingStyles.modal,
-            height: '65%',
+            height: '50%',
           }}
-          className="p-4 bg-white">
+          className="p-4 pb-8 bg-white m-4 mb-8">
           <View className="flex-row items-center justify-between w-full mb-auto">
             <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
               Test Result
@@ -205,7 +220,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                   RRI Maximum: {ecgResult?.rrMax ?? 0} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  HRV: {ecgResult?.rrMin ?? 0} ms
+                  HRV: {ecgResult?.hrv ?? 0} ms
                 </CustomTextRegular>
               </View>
               <CustomTextRegular className="mt-4 text-text">
@@ -239,15 +254,40 @@ export default function ECG({navigation}: BloodOxygenProps) {
         </View>
       </Modal>
     );
-  }, [showModal, ecgResult]);
+  }, [showModal]);
+
+  function handleTestInProgress() {
+    Alert.alert(
+      'Test in Progress',
+      'ECG test is in progress. Please wait for it to complete or stop the test and then go back.',
+      [
+        {
+          text: 'Stop Test and Exit',
+          onPress: () => {
+            stopECG();
+            resetSate()
+            navigation.goBack();
+          },
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          isPreferred: true,
+          style: 'default',
+        },
+      ],
+    );
+  }
 
   return (
-    <>
-      <View className="flex-1 bg-white">
+    <CustomSafeArea stylesClass="flex-1 bg-white">
+      <View className="flex-1">
         <View className="flex-row items-center py-5 mx-5">
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              isMeasuring ? handleTestInProgress() : navigation.goBack()
+            }
             className="p-1">
             <Image
               source={require('../assets/icons/back_arrow.png')}
@@ -257,7 +297,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             ECG
           </CustomTextRegular>
-          <DrawerToggleButton />
+          <DrawerToggleButton tintColor="black" />
         </View>
 
         <EcgChart ref={ecgChartRef} />
@@ -335,6 +375,6 @@ export default function ECG({navigation}: BloodOxygenProps) {
         />
       </View>
       <CustomDrawer />
-    </>
+    </CustomSafeArea>
   );
 }

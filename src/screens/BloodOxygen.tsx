@@ -1,6 +1,13 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Image, Modal, Pressable, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  Modal,
+  Pressable,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
@@ -15,6 +22,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {DrawerToggleButton} from '@react-navigation/drawer';
+import CustomSafeArea from '../components/CustomSafeArea';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -38,13 +46,14 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
         bloodOxygenGraphRef?.current?.updateData(event.waveData);
     },
     onSpo2Ended: event => {
+      console.log('MEASUREMENT ENDED: ', event);
+
       if (event.measurementEnded) {
         setIsMeasuring(false);
         toggleModal(true);
       }
 
       if (event.message) {
-       
       }
     },
     onSpo2Result: event => {
@@ -129,17 +138,21 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
+          setSpO2Result(undefined);
           toggleModal(false);
         }}>
         <Pressable
-          onPress={() => toggleModal(false)}
+          onPress={() => {
+            setSpO2Result(undefined);
+            toggleModal(false);
+          }}
           className="w-full h-full bg-black opacity-25"></Pressable>
         <View
           style={{
             ...meetingStyles.modal,
-            height: '65%',
+            height: '50%',
           }}
-          className="p-4 bg-white">
+          className="p-4 pb-8 bg-white m-4 mb-8">
           <View className="flex-row items-center justify-between w-full mb-auto">
             <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
               Test Result
@@ -204,13 +217,38 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     );
   }, [showModal]);
 
+  function handleTestInProgress() {
+    Alert.alert(
+      'Test in Progress',
+      'Blood Oxygen test is in progress. Please wait for it to complete or stop the test and then go back.',
+      [
+        {
+          text: 'Stop Test and Exit',
+          onPress: () => {
+            stopSpo2();
+            setSpO2Result(undefined)
+            navigation.goBack();
+          },
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          isPreferred: true,
+          style: 'default',
+        },
+      ],
+    );
+  }
+
   return (
-    <>
-      <View className="flex-1 bg-white">
+    <CustomSafeArea stylesClass="flex-1 bg-white">
+      <View className="flex-1">
         <View className="flex-row items-center py-5 mx-5">
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              isMeasuring ? handleTestInProgress() : navigation.goBack();
+            }}
             className="p-1">
             <Image
               source={require('../assets/icons/back_arrow.png')}
@@ -220,16 +258,16 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           <CustomTextRegular className="mx-auto text-xl text-text">
             Blood Oxygen Saturation
           </CustomTextRegular>
-          <DrawerToggleButton />
+          <DrawerToggleButton tintColor="black" />
         </View>
 
         <BoGraph ref={bloodOxygenGraphRef} />
 
         {/* Result here */}
         <View className="p-4 mx-5 mt-4 border border-gray-300 rounded-md">
-          <CustomTextRegular className="px-2 py-1 mx-auto mb-4 text-xs border rounded-full text-secondary w-fit border-secondary">
+          {/* <CustomTextRegular className="px-2 py-1 mx-auto mb-4 text-xs border rounded-full text-secondary w-fit border-secondary">
             Normal
-          </CustomTextRegular>
+          </CustomTextRegular> */}
           <View className="flex-row items-stretch">
             <View className="items-center flex-1 max-w-[100px] mx-auto">
               <CustomTextSemiBold className="mb-4 text-xs text-text">
@@ -298,6 +336,6 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
         />
       </View>
       <CustomDrawer />
-    </>
+    </CustomSafeArea>
   );
 }
