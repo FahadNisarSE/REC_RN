@@ -116,16 +116,27 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
   // Handle discovery of peripherals
   if([peripheral.name hasPrefix:@"Mintti-Vision"])
   {
-    [self sendEventWithName:@"onScanResult" body:@{@"name": peripheral.name ?: @"", @"rssi": RSSI, @"mac":peripheral.identifier, @"bluetoothDevice": @{@"address":peripheral.identifier, @"bondState":@"disconnected", @"name":peripheral.name }}];
+    NSString *localName = advertisementData[CBAdvertisementDataLocalNameKey] ?: @"";
+    NSDictionary *bluetoothDevice = @{
+      @"address": peripheral.identifier.UUIDString,
+      @"bondState": @"disconnected",
+      @"name": localName
+    };
+    [self sendEventWithName:@"onScanResult" body:@{
+      @"name": peripheral.name ?: localName,
+      @"rssi": RSSI,
+      @"mac": peripheral.identifier.UUIDString,
+      @"bluetoothDevice": bluetoothDevice
+    }];
     NSLog(@"Scan to device %@", peripheral);
     if(_peripheralModels == nil)
     {
         _peripheralModels = [[NSMutableArray alloc] init];
     }
-//    [self.peripheralModels addObject:peripheral];
     [self addPeripheralIfNotAlreadyPresent:peripheral];
   }
 }
+
 
 //SDK Listenrs
 -(void)receiveMTECGDataSmoothedWave:(int)smoothedWave{ //Get SDK ECG data
@@ -193,10 +204,14 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
  *throw heart rate variability
 */
 - (void)receiveSDNN:(double)SDNN{
-  NSLog(@"SDNN %d", SDNN);
-  [self sendEventWithName:@"onEcgDuration" body:@{@"duration": @{@"duration": @(SDNN)}}];
+  NSLog(@"heart rate variability:%.1f", SDNN);
+  [self sendEventWithName:@"onEcgHeartRate" body:@{@"heartRate":  @(SDNN)}];
 }
 
+/**ecgMeasurement ended*/
+- (void)receiveECGEnd{
+  [self sendEventWithName:@"onSpo2Ended" body:@{@"measurementEnded": @true, @"message": @"Spo2 measurement ended"}];
+}
 //** SDK body temperature ***/
 -(void)receiveMTTemDataValue:(double)temValue andBlackBody:(double)blackBodyValue andAmbient:(double)ambientValue{ //Get SDK body temperature data
   NSLog(@"TEMPERATURE: %d", temValue);
