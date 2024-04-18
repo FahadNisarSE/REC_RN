@@ -42,7 +42,7 @@ export default function AppointmentDetail({
 }: AppointmentDetailProps) {
   const appointmentId = route.params.id;
   const {setAppointmentDetail} = useAppointmentDetailStore();
-  const {isLoading, isError, data, refetch} =
+  const {isLoading, isError, data, refetch, error} =
     useGetAppointmentDetails(appointmentId);
   const [showAllSpecialTreatment, setShowAllSpecialTreatment] = useState(false);
 
@@ -60,7 +60,25 @@ export default function AppointmentDetail({
 
   if (isLoading) return <Loader size={50} />;
 
-  if (isError) return <Error />;
+  if (isError)
+    return (
+      <CustomSafeArea stylesClass="flex-1">
+        <View className="flex-row items-center p-4">
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <Image
+              source={require('../assets/icons/chevron-left.png')}
+              alt="Go back"
+              className="w-5 h-5"
+            />
+          </TouchableOpacity>
+          <CustomTextSemiBold className="mx-auto text-xl text-text">
+            Appointment Details
+          </CustomTextSemiBold>
+          <DrawerToggleButton tintColor="black" />
+        </View>
+        <Error />
+      </CustomSafeArea>
+    );
 
   return (
     <>
@@ -76,7 +94,7 @@ export default function AppointmentDetail({
           <CustomTextSemiBold className="mx-auto text-xl text-text">
             Appointment Details
           </CustomTextSemiBold>
-          <DrawerToggleButton tintColor='black' />
+          <DrawerToggleButton tintColor="black" />
         </View>
         <View className="p-5 px-5 mx-4 overflow-hidden bg-white rounded-xl">
           {/* Doctor Information: 1st row */}

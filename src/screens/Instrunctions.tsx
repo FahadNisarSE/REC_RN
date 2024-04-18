@@ -1,23 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  Animated,
-  Dimensions,
-  Image,
-  Pressable,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
 
+import {DrawerToggleButton} from '@react-navigation/drawer';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {FlatList} from 'react-native-gesture-handler';
+import Carousel from 'react-native-reanimated-carousel';
+import CustomSafeArea from '../components/CustomSafeArea';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import {TTemperatureInstruction} from '../constant/Instructions';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useInstuctionsStore} from '../utils/store/useIntructionsStore';
-import {DrawerToggleButton} from '@react-navigation/drawer';
-import CustomSafeArea from '../components/CustomSafeArea';
-import Carousel from 'react-native-reanimated-carousel';
 
 const {width, height} = Dimensions.get('window');
 
@@ -28,42 +20,43 @@ type InstrunctionsProps = NativeStackScreenProps<
 
 export default function Instructions({navigation, route}: InstrunctionsProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const {testType} = route.params
+  const {testType} = route.params;
   const {instructionList} = useInstuctionsStore();
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, []);
 
   return (
     <CustomSafeArea stylesClass="flex-1 mb-3">
-        <View className="flex-row items-center p-4 pb-0">
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Image
-              source={require('../assets/icons/chevron-left.png')}
-              alt="Go back"
-              className="w-5 h-5"
-            />
-          </TouchableOpacity>
-          <CustomTextSemiBold className="mx-auto text-lg text-text">
-            {testType}
-          </CustomTextSemiBold>
-          <DrawerToggleButton tintColor='black' />
-        </View>
-        <Carousel
-          width={width}
-          loop={false}
-          height={height * 0.9}
-          pagingEnabled={true}
-          data={instructionList}
-          scrollAnimationDuration={250}
-          mode="parallax"
-          onSnapToItem={index => setActiveIndex(index)}
-          renderItem={({index}) => (
-            <SingleInstrunction {...instructionList[index]} />
-          )}
-        />
-        <Pagination
-          length={instructionList.length}
-          currentIndex={activeIndex}
-        />
-      </CustomSafeArea>
+      <View className="flex-row items-center p-4 pb-0">
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Image
+            source={require('../assets/icons/chevron-left.png')}
+            alt="Go back"
+            className="w-5 h-5"
+          />
+        </TouchableOpacity>
+        <CustomTextSemiBold className="mx-auto text-lg text-text">
+          {testType}
+        </CustomTextSemiBold>
+        <DrawerToggleButton tintColor="black" />
+      </View>
+      <Carousel
+        width={width}
+        loop={false}
+        height={height * 0.9}
+        pagingEnabled={true}
+        data={instructionList}
+        scrollAnimationDuration={250}
+        mode="parallax"
+        onSnapToItem={index => setActiveIndex(index)}
+        renderItem={({index}) => (
+          <SingleInstrunction {...instructionList[index]} />
+        )}
+      />
+      <Pagination length={instructionList.length} currentIndex={activeIndex} />
+    </CustomSafeArea>
   );
 }
 function SingleInstrunction({

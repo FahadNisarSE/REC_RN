@@ -100,7 +100,7 @@ function ChangeClinicModal({
           ...meetingStyles.modal,
           height: '45%',
         }}
-        className="p-4 bg-white">
+        className="p-4 pb-8 bg-white m-4 mb-8">
         <View>
           <CustomTextSemiBold className="text-lg text-primmary">
             Change Your Clinic
@@ -111,7 +111,7 @@ function ChangeClinicModal({
           className="w-full py-5">
           {clinics?.map(clinic => (
             <Pressable
-              className="flex-row items-center justify-between px-2 py-3 mb-2 rounded-lg shadow bg-gray-50 shadow-gray-400"
+              className="flex-row items-center justify-between px-2 py-3 mb-2 rounded-lg bg-gray-50 border border-gray-100"
               key={clinic.ClinicId}
               onPress={() => toggleClinicId(clinic.ClinicId)}>
               <CustomTextRegular className="text-text">
@@ -130,7 +130,7 @@ function ChangeClinicModal({
             </Pressable>
           ))}
           <Pressable
-            className="flex-row items-center justify-between px-2 py-3 mb-2 rounded-lg shadow bg-gray-50 shadow-gray-400"
+            className="flex-row items-center justify-between px-2 py-3 mb-2 rounded-lg bg-gray-50 border border-gray-100"
             onPress={() => toggleClinicId('all')}>
             <CustomTextRegular className="text-text">
               Show All

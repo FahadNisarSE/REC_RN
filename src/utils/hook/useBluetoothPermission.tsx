@@ -1,5 +1,12 @@
-import {PermissionStatus, PermissionsAndroid, Platform, ToastAndroid} from 'react-native';
-import { request, PERMISSIONS } from 'react-native-permissions';
+import {
+  Alert,
+  PermissionStatus,
+  PermissionsAndroid,
+  Platform,
+  ToastAndroid,
+} from 'react-native';
+import {request, PERMISSIONS} from 'react-native-permissions';
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
 type VoidCallback = (result: boolean) => void;
 
@@ -50,15 +57,13 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
             result[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] ===
               PermissionsAndroid.RESULTS.GRANTED;
 
-          console.log('is perimssion granted: ', isGranted);
-
           cb(isGranted);
         } catch (error) {
           console.log('Error: ', JSON.stringify(error));
           ToastAndroid.show('Permission Denied', 1000);
         }
       }
-    } else if(Platform.OS === 'ios') {
+    } else if (Platform.OS === 'ios') {
       try {
         const locationPermission = (await request(
           PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
@@ -67,11 +72,35 @@ export default function useBluetoothPermissions(): BluetoothPermissions {
           PERMISSIONS.IOS.BLUETOOTH,
         )) as PermissionStatus;
 
-        const permissionAllowed = locationPermission === 'granted' && bluetoothPermission === 'granted';
-        console.log("Bluetooth permission requested...", {locationPermission, bluetoothPermission})
+        const permissionAllowed =
+          locationPermission === 'granted' && bluetoothPermission === 'granted';
+        console.log('Bluetooth permission requested...', {
+          locationPermission,
+          bluetoothPermission,
+        });
+
+        if (!permissionAllowed) {
+          const bleState = await BluetoothStateManager.getState();
+          switch (bleState) {
+            case 'Unknown':
+            case 'Resetting':
+            case 'Unsupported':
+            case 'Unauthorized':
+            case 'PoweredOff':
+              Alert.alert(
+                'Bluetooth is off',
+                'Please turn on bluetooth to connect to device.',
+              );
+              break;
+            case 'PoweredOn':
+            default:
+              break;
+          }
+        }
+
         cb(permissionAllowed);
       } catch (error) {
-        console.log("Error: ", error)
+        console.log('Error: ', error);
         cb(false);
       }
     }

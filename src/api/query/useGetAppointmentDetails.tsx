@@ -9,6 +9,7 @@ export async function getAppointmentDetails(id: string) {
       return data.data as AppointmentDetail;
     } else throw new Error('Oops! Something went wrong.');
   } catch (error) {
+    console.log("ERror", error)
     throw error;
   }
 }

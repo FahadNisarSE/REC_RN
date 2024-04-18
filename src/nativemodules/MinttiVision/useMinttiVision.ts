@@ -1,6 +1,11 @@
 import _ from 'lodash';
 import {useEffect, useState} from 'react';
-import {Linking, NativeEventEmitter, NativeModules, ToastAndroid} from 'react-native';
+import {
+  Linking,
+  NativeEventEmitter,
+  NativeModules,
+  ToastAndroid,
+} from 'react-native';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 import Toast from 'react-native-toast-message';
 import {useMinttiVisionStore} from '../../utils/store/useMinttiVisionStore';
@@ -30,9 +35,24 @@ const useMinttiVision = ({
     setBleDevices,
     setIsConnecting,
     setIsScanning,
+    isConnected,
     setIsMeasuring,
+    resetBleDevices,
     setIsConnected,
   } = useMinttiVisionStore();
+
+  function resetBluetoothState() {
+    if(isConnected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Medical device has been diconnected..',
+      });
+    }
+    setDiscoveredDevices([]);
+    resetBleDevices();
+    setIsConnected(false);
+    setIsConnecting(false);
+  }
 
   useEffect(() => {
     const eventEmitter = new NativeEventEmitter(NativeModules.VisionModule);
@@ -47,14 +67,7 @@ const useMinttiVision = ({
     );
     const disconnectEventListener = eventEmitter.addListener(
       'onDisconnected',
-      event => {
-        setIsConnected(false);
-        setIsConnecting(false);
-        Toast.show({
-          type: 'error',
-          text1: 'Medical device has been diconnected..',
-        });
-      },
+      event => resetBluetoothState(),
     );
     const batteryListener = eventEmitter.addListener('onBattery', event =>
       setBattery(event.battery),
@@ -164,7 +177,7 @@ const useMinttiVision = ({
             case 'Unsupported':
             case 'Unauthorized':
             case 'PoweredOff':
-              await Linking.openURL('App-Prefs:Bluetooth')
+              await Linking.openURL('App-Prefs:Bluetooth');
               earlyReturn = true;
               break;
             case 'PoweredOn':
@@ -298,6 +311,7 @@ const useMinttiVision = ({
     measureBodyTemperature,
     getBattery,
     connectToDevice,
+    resetBluetoothState,
     stopScan,
     discoveredDevices,
     connectedDevice,

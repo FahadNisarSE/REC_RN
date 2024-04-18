@@ -7,6 +7,8 @@ export async function saveTestResult(data: {
 }) {
   const {AppointmentTestId, VariableName, VariableValue} = data;
 
+  console.log("Save TEst REsult: ", data)
+
   try {
     const formData = new FormData();
     formData.append('AppointmentTestId', AppointmentTestId);
@@ -25,6 +27,8 @@ export async function saveTestResult(data: {
     );
 
     const data = await response.json();
+
+    console.log(" Save TEst REsult Respnse: ", data)
 
     if (data?.status === 201) {
       return 'Test result saved successfully.';

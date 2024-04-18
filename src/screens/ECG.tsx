@@ -42,9 +42,10 @@ export default function ECG({navigation}: BloodOxygenProps) {
 
   const [heartRate, setHeartRate] = useState(0);
   const [respiratoryRate, setRespiratoryRate] = useState(0);
-  const [ecgResult, setEcgResult] = useState<
-    {rrMax: number; rrMin: number; hrv: number} | undefined
-  >();
+  const [hrv, setHrv] = useState(0);
+  const [rrMin, setrrMin] = useState(0);
+  const [rrMax, setrrMax] = useState(0);
+
   const [duration, setDuration] = useState(0);
 
   const {isConnected, battery, isMeasuring} = useMinttiVisionStore();
@@ -55,7 +56,24 @@ export default function ECG({navigation}: BloodOxygenProps) {
     },
     onEcgResult: event => {
       console.log('ECG RESULT: ', event);
-      setEcgResult(event.results);
+      // Merge the new data with the existing ecgResult object
+      if (!event.results) return;
+
+      // Update the ecgResult object based on the type of data received
+      if ('rrMin' in event.results) {
+        console.log('rrMin section', event.results);
+
+        setrrMin(event.results.rrMin);
+      }
+      if ('rrMax' in event.results) {
+        console.log('rrMax section', event.results);
+
+        setrrMax(event.results.rrMax);
+      }
+      if ('hrv' in event.results) {
+        console.log('hrv section', event.results);
+        setHrv(event.results.hrv);
+      }
     },
     onEcgRespiratoryRate: event => {
       console.log('ECG RESPIRATORY RATE: ', event);
@@ -89,7 +107,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
     await measureECG();
     setTimeout(async () => {
       await stopECG();
-      toggleModal(true);
+      setTimeout(() => toggleModal(true), 1000)
     }, 90 * 1000); // 1.5 min
   }
 
@@ -100,7 +118,9 @@ export default function ECG({navigation}: BloodOxygenProps) {
   function resetSate() {
     setHeartRate(0);
     setRespiratoryRate(0);
-    setEcgResult(undefined);
+    setHrv(0);
+    setrrMax(0)
+    setrrMax(0)
     setHeartRateArray([]);
     setrespiratoryRateArray([]);
     setDuration(0);
@@ -119,15 +139,16 @@ export default function ECG({navigation}: BloodOxygenProps) {
             'Respiratory Rate',
           ],
           VariableValue: [
-            `${ecgResult?.hrv} ms`,
-            `${ecgResult?.rrMin ?? 0} ms`,
-            `${ecgResult?.rrMax} ms`,
+            `${hrv} ms`,
+            `${rrMin} ms`,
+            `${rrMax} ms`,
             `${calculateAverage(heartRateArray)} bpm`,
             `${calculateAverage(respiratoryRateArray)} bpm`,
           ],
         },
         {
-          onError: () => {
+          onError: (error) => {
+            console.log("Save test result failed...", error)
             Toast.show({
               type: 'error',
               text1: 'Oops! Something went wrong while saving test result.',
@@ -207,20 +228,19 @@ export default function ECG({navigation}: BloodOxygenProps) {
                   Heart Rate: {heartRate} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Average Heart Rate: {calculateAverage(respiratoryRateArray)}{' '}
-                  bpm
+                  Average Heart Rate: {calculateAverage(heartRateArray)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
                   Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Minimum: {ecgResult?.rrMin ?? 0} ms
+                  RRI Minimum: {rrMin} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Maximum: {ecgResult?.rrMax ?? 0} ms
+                  RRI Maximum: {rrMax} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  HRV: {ecgResult?.hrv ?? 0} ms
+                  HRV: {hrv} ms
                 </CustomTextRegular>
               </View>
               <CustomTextRegular className="mt-4 text-text">
@@ -265,7 +285,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
           text: 'Stop Test and Exit',
           onPress: () => {
             stopECG();
-            resetSate()
+            resetSate();
             navigation.goBack();
           },
           style: 'destructive',
@@ -319,7 +339,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
           <View className="flex-row">
             <View className="flex-col items-start">
               <CustomTextRegular className="text-xs text-text">
-                RRI maximum: {ecgResult?.rrMax ?? 0} ms
+                RRI maximum: {rrMax} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
                 Heart rate: {heartRate} bpm
@@ -330,10 +350,10 @@ export default function ECG({navigation}: BloodOxygenProps) {
             </View>
             <View className="flex-col items-start ml-4">
               <CustomTextRegular className="text-xs text-text">
-                RRI minimum: {ecgResult?.rrMin ?? 0} ms
+                RRI minimum: {rrMin} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                HRV: {ecgResult?.hrv ?? 0} ms
+                HRV: {hrv} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
                 Duration rate: {duration} s

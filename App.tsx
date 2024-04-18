@@ -1,6 +1,6 @@
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
-import {Alert, Platform} from 'react-native';
+import {Alert, Linking, Platform} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
 import Toast from 'react-native-toast-message';
@@ -12,6 +12,7 @@ import SpInAppUpdates, {
   StartUpdateOptions,
   IAUUpdateKind,
 } from 'sp-react-native-in-app-updates';
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
 export const queryClient = new QueryClient();
 const inAppUpdates = new SpInAppUpdates(true);
@@ -37,7 +38,7 @@ export default function App() {
   const [isConnected, setConnected] = useState(true);
 
   const {setBattery} = useMinttiVisionStore();
-  const mittiVision = useMinttiVision({
+  const {resetBluetoothState} = useMinttiVision({
     onBattery: battery => setBattery(battery.battery),
   });
 
@@ -61,6 +62,21 @@ export default function App() {
   // In app updates
   useEffect(() => {
     checkUpdates();
+
+    BluetoothStateManager.onStateChange(async bluetoothState => {
+      switch (bluetoothState) {
+        case 'Unknown':
+        case 'Resetting':
+        case 'Unsupported':
+        case 'Unauthorized':
+        case 'PoweredOff':
+          resetBluetoothState()
+          break;
+        case 'PoweredOn':
+        default:
+          break;
+      }
+    }, true);
   }, []);
 
   const showAlert = () => {

@@ -18,6 +18,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {DrawerToggleButton} from '@react-navigation/drawer';
 import CustomSafeArea from '../components/CustomSafeArea';
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
 const dimension = Dimensions.get('window');
 
@@ -53,13 +54,30 @@ export default function DeviceInitalization({
   useEffect(() => {
     requestPermissions((result: boolean) => setBluetoothPermissions(result));
     setIsConnecting(false);
+
+    BluetoothStateManager.onStateChange(async bluetoothState => {
+      switch (bluetoothState) {
+        case 'Unknown':
+        case 'Resetting':
+        case 'Unsupported':
+        case 'Unauthorized':
+        case 'PoweredOff':
+          setBluetoothPermissions(false)
+          break;
+        case 'PoweredOn':
+          setBluetoothPermissions(true)
+        default:
+          break;
+      }
+    }, true);
   }, []);
 
-  const onPressHandler = () => {
-    isScanning ? stopScan() : discoverDevices();
-    // if (bluetoothPermissions) isScanning ? stopScan() : discoverDevices();
-    // else
-    //   requestPermissions((result: boolean) => setBluetoothPermissions(result));
+  const onPressHandler = async () => {
+    if(bluetoothPermissions) {
+      isScanning ? stopScan() : discoverDevices();
+    } else {
+      await requestPermissions((result: boolean) => setBluetoothPermissions(result))
+    }
   };
 
   return (
@@ -76,7 +94,7 @@ export default function DeviceInitalization({
             />
           </TouchableOpacity>
           <CustomTextRegular className="mx-auto text-xl text-text">
-            Electronic StethoScope
+            Mintti Vision
           </CustomTextRegular>
           <DrawerToggleButton tintColor="black" />
         </View>

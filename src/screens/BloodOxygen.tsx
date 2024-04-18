@@ -57,6 +57,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
       }
     },
     onSpo2Result: event => {
+      console.log("spo2 REsult: ", event)
       if (event.result) {
         setSpO2Result(event.result);
       }
@@ -76,6 +77,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     await measureBloodOxygen();
     setTimeout(async () => {
       await stopSpo2();
+      setShowModal(true)
     }, 40 * 1000);
   }
 
