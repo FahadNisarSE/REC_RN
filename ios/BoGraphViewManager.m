@@ -2,9 +2,11 @@
 
 #import "React/RCTViewManager.h"
 #import "OxyWaveView.h"
+#import "SPView.h"
 #import <React/RCTUIManager.h>
 
 @interface RCTOxyWaveViewManager : RCTViewManager
+@property(nonatomic, strong) SPView *spView;
 @end
 
 static int testData[600] = {0};
@@ -20,11 +22,13 @@ RCT_EXPORT_MODULE(BoGraph)
 {
   OxyWaveView *oxyWaveView = [[OxyWaveView alloc] init];
   [oxyWaveView setXSpeed:25.0*5.0/14.0 andYheight:3 andYMaxVal:1];
+  [self.spView.values removeAllObjects];
+  [self.spView setNeedsDisplay];
   return oxyWaveView;
 }
 
 // Example method to expose updating values
-RCT_EXPORT_METHOD(updateWaveData:(NSNumber *)reactTag reactTag:(NSNumber *)reactTag next:(NSNumber *)next)
+RCT_EXPORT_METHOD(updateWaveData:(nonnull NSNumber *)reactTag1 reactTag:(nonnull NSNumber *)reactTag data:(int)data)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, OxyWaveView *> *viewRegistry) {
     OxyWaveView *view = viewRegistry[reactTag];
@@ -35,7 +39,7 @@ RCT_EXPORT_METHOD(updateWaveData:(NSNumber *)reactTag reactTag:(NSNumber *)react
     
     [view updateValues:@(oxyData[testCount])];
     
-    testData[testCount] = next;
+    testData[testCount] = data;
     testCount ++;
 
     if (testCount == 600) {
