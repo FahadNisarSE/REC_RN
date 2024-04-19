@@ -239,11 +239,12 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 //            _measureSugViewController.sugLbl.text = @"Calibration failed, please measure again";
             break;
         case 0x08:
-          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventWaitDripBlood", @"message":@"Waiting for the blood sample to be dripped"}];
+          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventWaitPagerInsert", @"message":@"Waiting for the pager stripped to be inserted."}];
 //            _measureSugViewController.sugLbl.text = @"Waiting to insert blood glucose test strip";
             break;
         case 0x07:
 //            _measureSugViewController.sugLbl.text = @"The blood glucose test strip was pulled out";
+        [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEvent07", @"message":@"The dripped blood sample is collected, and the calculation is in progress"}];
             break;
         case 0x06:
           [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventPaperUsed", @"message":@"Test paper has been used"}];
@@ -254,15 +255,19 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 //            _measureSugViewController.sugLbl.text = @"Measurement ended";
             break;
         case 0x04:
+          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventMeasureEnd", @"message":@"End of blood glucose measurement"}];
 //            _measureSugViewController.sugLbl.text = @"Calibration ended";
             break;
         case 0x03:
+          [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventBloodSampleDetecting", @"message":@"The dripped blood sample is collected, and the calculation is in progress"}];
 //            _measureSugViewController.sugLbl.text = @"to get blood";
             break;
         case 0x02:
 //            _measureSugViewController.sugLbl.text = @"Waiting for dripping blood";
+            [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEventWaitDripBlood", @"message":@"Waiting for the blood sample to be dripped"}];
             break;
         case 0x01:
+        [self sendEventWithName:@"onBgEvent" body:@{@"event": @"bgEvent01", @"message":@"The dripped blood sample is collected, and the calculation is in progress"}];
 //            _measureSugViewController.sugLbl.text = @"Blood glucose test strip has been inserted";
             break;
         case 0x00:
@@ -272,6 +277,10 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
         default:
             break;
     }
+}
+
+-(void)receiveMTSugDataValue:(double)sugValue{
+  [self sendEventWithName:@"onBgResult" body:@{@"bg": @(sugValue / 10)}];
 }
 
 //** SDK blood pressure  ***/

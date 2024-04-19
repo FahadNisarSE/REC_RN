@@ -1,5 +1,7 @@
 function calculateAverage(arrayOfNumbers: number[]): number {
-  let size = 1;
+  const size = arrayOfNumbers.filter(
+    item => item !== 0 && typeof item === 'number',
+  ).length;
 
   if (size === 0) {
     // Handle empty array case: return 0
@@ -11,7 +13,6 @@ function calculateAverage(arrayOfNumbers: number[]): number {
   for (let i = 0; i < size; i++) {
     if (typeof arrayOfNumbers[i] === 'number') {
       sum += arrayOfNumbers[i];
-      arrayOfNumbers[i] !== 0 && size++;
     }
   }
 
@@ -27,20 +28,24 @@ function calculateAverage(arrayOfNumbers: number[]): number {
   return roundedAverage;
 }
 
-function calculateMinExcludingZero (resultArray: number[]) {
-  const nonZeroArray = resultArray.filter(value => value !== 0 && typeof(value) === 'number')
+function calculateMinExcludingZero(resultArray: number[]) {
+  const nonZeroArray = resultArray.filter(
+    value => value !== 0 && typeof value === 'number',
+  );
 
-  if(nonZeroArray.length === 0) return 0
+  if (nonZeroArray.length === 0) return 0;
 
-  return Math.min(...nonZeroArray)
+  return Math.min(...nonZeroArray);
 }
 
 function calculateMaxExcludingZero(resultArray: number[]) {
-  const nonZeroArray = resultArray.filter(value => value !== 0 && typeof(value) === 'number')
+  const nonZeroArray = resultArray.filter(
+    value => value !== 0 && typeof value === 'number',
+  );
 
-  if(nonZeroArray.length === 0) return 0
+  if (nonZeroArray.length === 0) return 0;
 
-  return Math.max(...nonZeroArray)
+  return Math.max(...nonZeroArray);
 }
 
 type CallbackFunction = (event: any) => void;
@@ -58,4 +63,9 @@ function debounce(callback: CallbackFunction, delay: number): CallbackFunction {
   };
 }
 
-export {calculateAverage, debounce, calculateMinExcludingZero, calculateMaxExcludingZero};
+export {
+  calculateAverage,
+  debounce,
+  calculateMinExcludingZero,
+  calculateMaxExcludingZero,
+};

@@ -115,14 +115,6 @@ export default function ECG({navigation}: BloodOxygenProps) {
     return () => clearInterval(interval);
   }, [timerRunning, seconds]);
 
-  const startTimer = () => {
-    setTimerRunning(true);
-  };
-
-  const stopTimer = () => {
-    setTimerRunning(false);
-  };
-
   const {mutate, isPending} = useSaveTestResults();
 
   async function startECGTest() {
@@ -240,7 +232,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                 <View className="p-2 rounded-full bg-primmary">
                   <Image
                     className="w-5 h-5"
-                    source={require('../assets/icons/devices/temperature.png')}
+                    source={require('../assets/icons/devices/blood_pressure.png')}
                   />
                 </View>
                 <CustomTextSemiBold className="ml-4 text-lg text-primmary">
@@ -252,7 +244,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                   Heart Rate: {heartRate.toFixed(2)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Average Heart Rate: {calculateAverage(heartRateArray).toFixed(2)} bpm
+                  Average Heart Rate: {calculateAverage(heartRateArray)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
                   Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm

@@ -121,10 +121,10 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           VariableValue: [
             `${calculateMinExcludingZero(spo2Array).toFixed(2)} %`,
             `${calculateMaxExcludingZero(spo2Array).toFixed(2)} %`,
-            `${calculateAverage(spo2Array).toFixed(2)} %`,
+            `${calculateAverage(spo2Array)} %`,
             `${calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm`,
             `${calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm`,
-            `${calculateAverage(heartRateArray).toFixed(2)} bpm`,
+            `${calculateAverage(heartRateArray)} bpm`,
           ],
         },
         {
@@ -211,7 +211,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
                     Max Blood Oxygen: {calculateMaxExcludingZero(spo2Array).toFixed(2)} %
                   </CustomTextRegular>
                   <CustomTextRegular className="text-gray-600">
-                    Average Blood Oxygen: {calculateAverage(spo2Array).toFixed(2)} %
+                    Average Blood Oxygen: {calculateAverage(spo2Array)} %
                   </CustomTextRegular>
                   <CustomTextRegular className="text-gray-600">
                     Min Heart Rate: {calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm
@@ -220,7 +220,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
                     Max Heart Rate: {calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm
                   </CustomTextRegular>
                   <CustomTextRegular className="text-gray-600">
-                    Average Heart Rate: {calculateAverage(heartRateArray).toFixed(2)} bpm
+                    Average Heart Rate: {calculateAverage(heartRateArray)} bpm
                   </CustomTextRegular>
                 </View>
               </View>

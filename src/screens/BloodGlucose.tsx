@@ -51,6 +51,7 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
   } = useMinttiVisionStore();
   const {getBattery, measureBg} = useMinttiVision({
     onBgEvent: event => {
+      console.log('on notification result', event);
       console.log('Event: ', event);
       if (event.event === 'bgEventMeasureEnd') {
         setShowModal(true);
@@ -58,7 +59,8 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
       setBgEvent(event);
     },
     onBgResult: event => {
-      console.log('on Measrung result');
+      console.log('on Measrung result', event);
+      setShowModal(false)
       setIsMeasuring(false);
       setBgResult(event);
     },
