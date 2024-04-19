@@ -1,3 +1,4 @@
+import {DrawerToggleButton} from '@react-navigation/drawer';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
@@ -12,6 +13,7 @@ import Toast from 'react-native-toast-message';
 import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
 import BatteryIndicator from '../components/BatteryIndicatory';
+import CustomSafeArea from '../components/CustomSafeArea';
 import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
@@ -21,8 +23,11 @@ import {meetingStyles} from '../styles/style';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import {DrawerToggleButton} from '@react-navigation/drawer';
-import CustomSafeArea from '../components/CustomSafeArea';
+import {
+  calculateAverage,
+  calculateMaxExcludingZero,
+  calculateMinExcludingZero,
+} from '../utils/utilityFunctions';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -37,6 +42,8 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
   const [spO2Result, setSpO2Result] = useState<
     {heartRate: number; spo2: number} | undefined
   >();
+  const [heartRateArray, setHeartRateArray] = useState<number[]>([]);
+  const [spo2Array, setSpo2Array] = useState<number[]>([]);
   const {setIsMeasuring, isConnected, battery, isMeasuring} =
     useMinttiVisionStore();
   const {measureBloodOxygen, stopSpo2} = useMinttiVision({
@@ -57,9 +64,17 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
       }
     },
     onSpo2Result: event => {
-      console.log("spo2 REsult: ", event)
+      console.log('spo2 REsult: ', event);
       if (event.result) {
         setSpO2Result(event.result);
+
+        if ('heartRate' in event.result) {
+          setHeartRateArray(prev => [...prev, event.result?.heartRate ?? 0]);
+        }
+
+        if ('spo2' in event.result) {
+          setSpo2Array(prev => [...prev, event.result?.spo2 ?? 0]);
+        }
       }
     },
   });
@@ -77,7 +92,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     await measureBloodOxygen();
     setTimeout(async () => {
       await stopSpo2();
-      setShowModal(true)
+      setShowModal(true);
     }, 40 * 1000);
   }
 
@@ -95,10 +110,21 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
       mutate(
         {
           AppointmentTestId: appointmentTestId!,
-          VariableName: ['Blood Oxygen', 'Heart Rate'],
+          VariableName: [
+            'Min Blood Oxygen',
+            'Max Blood Oxygen',
+            'Average Blood Oxygen',
+            'Min Heart Rate',
+            'Max Heart Rate',
+            'Average Heart Rate',
+          ],
           VariableValue: [
-            `${spO2Result?.spo2} %`,
-            `${spO2Result?.heartRate} bpm`,
+            `${calculateMinExcludingZero(spo2Array).toFixed(2)} %`,
+            `${calculateMaxExcludingZero(spo2Array).toFixed(2)} %`,
+            `${calculateAverage(spo2Array).toFixed(2)} %`,
+            `${calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm`,
+            `${calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm`,
+            `${calculateAverage(heartRateArray).toFixed(2)} bpm`,
           ],
         },
         {
@@ -152,7 +178,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
         <View
           style={{
             ...meetingStyles.modal,
-            height: '50%',
+            height: '55%',
           }}
           className="p-4 pb-8 bg-white m-4 mb-8">
           <View className="flex-row items-center justify-between w-full mb-auto">
@@ -175,14 +201,26 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </View>
               <View className="mt-4">
                 <View>
-                  <CustomTextSemiBold className="text-text">
+                  <CustomTextSemiBold className="text-text mb-2">
                     Blood Oxygen
                   </CustomTextSemiBold>
                   <CustomTextRegular className="text-gray-600">
-                    Heart Rate: {spO2Result?.heartRate}: bpm
+                    Min Blood Oxygen: {calculateMinExcludingZero(spo2Array).toFixed(2)} %
                   </CustomTextRegular>
                   <CustomTextRegular className="text-gray-600">
-                    Blood Oxygen: {spO2Result?.spo2}: %
+                    Max Blood Oxygen: {calculateMaxExcludingZero(spo2Array).toFixed(2)} %
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Average Blood Oxygen: {calculateAverage(spo2Array).toFixed(2)} %
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Min Heart Rate: {calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Max Heart Rate: {calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Average Heart Rate: {calculateAverage(heartRateArray).toFixed(2)} bpm
                   </CustomTextRegular>
                 </View>
               </View>
@@ -228,7 +266,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           text: 'Stop Test and Exit',
           onPress: () => {
             stopSpo2();
-            setSpO2Result(undefined)
+            setSpO2Result(undefined);
             navigation.goBack();
           },
           style: 'destructive',

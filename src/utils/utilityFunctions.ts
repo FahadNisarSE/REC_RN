@@ -1,5 +1,5 @@
 function calculateAverage(arrayOfNumbers: number[]): number {
-  const size = arrayOfNumbers.length;
+  let size = 1;
 
   if (size === 0) {
     // Handle empty array case: return 0
@@ -9,7 +9,10 @@ function calculateAverage(arrayOfNumbers: number[]): number {
   let sum = 0;
 
   for (let i = 0; i < size; i++) {
-    sum += arrayOfNumbers[i];
+    if (typeof arrayOfNumbers[i] === 'number') {
+      sum += arrayOfNumbers[i];
+      arrayOfNumbers[i] !== 0 && size++;
+    }
   }
 
   // Check for non-numeric elements before rounding
@@ -22,6 +25,22 @@ function calculateAverage(arrayOfNumbers: number[]): number {
   const roundedAverage = Number(average.toFixed(2));
 
   return roundedAverage;
+}
+
+function calculateMinExcludingZero (resultArray: number[]) {
+  const nonZeroArray = resultArray.filter(value => value !== 0 && typeof(value) === 'number')
+
+  if(nonZeroArray.length === 0) return 0
+
+  return Math.min(...nonZeroArray)
+}
+
+function calculateMaxExcludingZero(resultArray: number[]) {
+  const nonZeroArray = resultArray.filter(value => value !== 0 && typeof(value) === 'number')
+
+  if(nonZeroArray.length === 0) return 0
+
+  return Math.max(...nonZeroArray)
 }
 
 type CallbackFunction = (event: any) => void;
@@ -39,4 +58,4 @@ function debounce(callback: CallbackFunction, delay: number): CallbackFunction {
   };
 }
 
-export {calculateAverage, debounce};
+export {calculateAverage, debounce, calculateMinExcludingZero, calculateMaxExcludingZero};

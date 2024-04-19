@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Image,
@@ -100,13 +100,37 @@ export default function ECG({navigation}: BloodOxygenProps) {
       }
     },
   });
+  const [seconds, setSeconds] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
+
+  useEffect(() => {
+    let interval: any;
+
+    if (timerRunning && seconds < 90) {
+      interval = setInterval(() => {
+        setSeconds(prevSeconds => prevSeconds + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [timerRunning, seconds]);
+
+  const startTimer = () => {
+    setTimerRunning(true);
+  };
+
+  const stopTimer = () => {
+    setTimerRunning(false);
+  };
 
   const {mutate, isPending} = useSaveTestResults();
 
   async function startECGTest() {
     await measureECG();
+    setTimerRunning(true)
     setTimeout(async () => {
       await stopECG();
+      setTimerRunning(false)
       setTimeout(() => toggleModal(true), 1000)
     }, 90 * 1000); // 1.5 min
   }
@@ -225,10 +249,10 @@ export default function ECG({navigation}: BloodOxygenProps) {
               </View>
               <View className="mt-4">
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Heart Rate: {heartRate} bpm
+                  Heart Rate: {heartRate.toFixed(2)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  Average Heart Rate: {calculateAverage(heartRateArray)} bpm
+                  Average Heart Rate: {calculateAverage(heartRateArray).toFixed(2)} bpm
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
                   Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm
@@ -342,7 +366,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                 RRI maximum: {rrMax} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                Heart rate: {heartRate} bpm
+                Heart rate: {heartRate.toFixed(2)} bpm
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
                 Respiratory rate: {respiratoryRate} bpm
@@ -356,7 +380,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                 HRV: {hrv} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                Duration rate: {duration} s
+                Duration rate: {seconds} s
               </CustomTextRegular>
             </View>
           </View>
