@@ -1,14 +1,13 @@
 import _ from 'lodash';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
   Linking,
   NativeEventEmitter,
-  NativeModules,
-  ToastAndroid,
+  NativeModules
 } from 'react-native';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 import Toast from 'react-native-toast-message';
-import {useMinttiVisionStore} from '../../utils/store/useMinttiVisionStore';
+import { useMinttiVisionStore } from '../../utils/store/useMinttiVisionStore';
 
 const {VisionModule} = NativeModules;
 

@@ -1,30 +1,29 @@
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Image,
   Modal,
   Pressable,
-  ToastAndroid,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import {queryClient} from '../../App';
+import { queryClient } from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
 import BatteryIndicator from '../components/BatteryIndicatory';
+import CustomSafeArea from '../components/CustomSafeArea';
 import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import EcgChart from '../nativemodules/MinttiVision/EcgChart';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import {meetingStyles} from '../styles/style';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import {calculateAverage} from '../utils/utilityFunctions';
-import {DrawerToggleButton} from '@react-navigation/drawer';
-import CustomSafeArea from '../components/CustomSafeArea';
+import { meetingStyles } from '../styles/style';
+import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
+import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
+import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
+import { calculateAverage } from '../utils/utilityFunctions';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -167,7 +166,9 @@ export default function ECG({navigation}: BloodOxygenProps) {
             console.log("Save test result failed...", error)
             Toast.show({
               type: 'error',
-              text1: 'Oops! Something went wrong while saving test result.',
+              text1: 'Something went wrong.',
+              text2:
+                'Something went wrong while saving test result. Please try again.',
             });
           },
           onSuccess: () => {

@@ -80,7 +80,7 @@ function Item({
 
   return (
     <View className="px-2 py-3 mb-2 bg-white rounded-lg">
-      <View className="flex-row items-center flex-1">
+      <View className="flex-row items-center">
         <View className="p-2 mr-2 overflow-hidden rounded-xl bg-primmary">
           <Image
             source={
@@ -135,7 +135,7 @@ function Item({
                     <CustomTextRegular className="capitalize text-text">
                       {item.VariableName}:
                     </CustomTextRegular>
-                    <View className="justify-center flex-1 mt-2">
+                    <View className="mt-2">
                       <Image
                         source={{uri: BASE_IMG_URL + item.VariableValue}}
                         alt="Self Assessment"

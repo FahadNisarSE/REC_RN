@@ -1,30 +1,28 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
-  Dimensions,
   Image,
   Modal,
   Pressable,
-  ToastAndroid,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { queryClient } from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
+import BatteryIndicator from '../components/BatteryIndicatory';
+import CustomSafeArea from '../components/CustomSafeArea';
+import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import {meetingStyles} from '../styles/style';
-import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import Button from '../components/ui/Button';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import {queryClient} from '../../App';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
-import BatteryIndicator from '../components/BatteryIndicatory';
-import {DrawerToggleButton} from '@react-navigation/drawer';
-import CustomSafeArea from '../components/CustomSafeArea';
+import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
+import { meetingStyles } from '../styles/style';
+import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
+import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
+import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -125,7 +123,12 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
         },
         {
           onError: () => {
-            ToastAndroid.show('Whoops! Something went wrong', 5000);
+            Toast.show({
+              type: 'error',
+              text1: 'Something went wrong.',
+              text2:
+                'Something went wrong while saving test result. Please try again.',
+            });
           },
           onSuccess: () => {
             toggleModal(false),

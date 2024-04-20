@@ -1,4 +1,6 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   BackHandler,
@@ -6,27 +8,24 @@ import {
   Image,
   Modal,
   Pressable,
-  ToastAndroid,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { queryClient } from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
+import BatteryIndicator from '../components/BatteryIndicatory';
+import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
+import CustomSafeArea from '../components/CustomSafeArea';
+import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import {meetingStyles} from '../styles/style';
-import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
-import Button from '../components/ui/Button';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import {queryClient} from '../../App';
-import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
-import BatteryIndicator from '../components/BatteryIndicatory';
-import {DrawerToggleButton} from '@react-navigation/drawer';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
-import CustomSafeArea from '../components/CustomSafeArea';
+import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
+import { meetingStyles } from '../styles/style';
+import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
+import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
+import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,

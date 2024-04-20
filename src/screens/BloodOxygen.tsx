@@ -131,8 +131,9 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           onError: () => {
             Toast.show({
               type: 'error',
-              text1: 'Someting went wrong while saving test!',
-              text2: 'Plese try again.',
+              text1: 'Something went wrong.',
+              text2:
+                'Something went wrong while saving test result. Please try again.',
             });
           },
           onSuccess: () => {

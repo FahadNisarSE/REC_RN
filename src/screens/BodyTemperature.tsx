@@ -1,17 +1,16 @@
-import {DrawerToggleButton} from '@react-navigation/drawer';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useState} from 'react';
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useCallback, useState } from 'react';
 import {
   Alert,
   Image,
   Modal,
   Pressable,
-  ToastAndroid,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import {queryClient} from '../../App';
+import { queryClient } from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import CustomSafeArea from '../components/CustomSafeArea';
@@ -20,10 +19,10 @@ import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import {meetingStyles} from '../styles/style';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
-import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
+import { meetingStyles } from '../styles/style';
+import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
+import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
+import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -64,7 +63,12 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
         },
         {
           onError: () => {
-            ToastAndroid.show('Whoops! Something went wrong', 5000);
+            Toast.show({
+              type: 'error',
+              text1: 'Something went wrong.',
+              text2:
+                'Something went wrong while saving test result. Please try again.',
+            });
           },
           onSuccess: () => {
             toggleModal(false),

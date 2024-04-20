@@ -5,8 +5,8 @@ import {
   Platform,
   ToastAndroid,
 } from 'react-native';
-import {request, PERMISSIONS} from 'react-native-permissions';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
+import { PERMISSIONS, request } from 'react-native-permissions';
 
 type VoidCallback = (result: boolean) => void;
 
