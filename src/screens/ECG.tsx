@@ -157,7 +157,11 @@ export default function ECG({navigation}: BloodOxygenProps) {
         },
         {
           onError: () => {
-            ToastAndroid.show('Whoops! Something went wrong', 5000);
+            Toast.show({
+              type: 'error',
+              text1: 'Someting went wrong while saving test!',
+              text2: 'Plese try again.',
+            });
           },
           onSuccess: () => {
             resetSate();
