@@ -195,7 +195,8 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 */
 - (void)receiveAvrHr:(int)AvrHr{
   NSLog(@"AvrHr %d", AvrHr);
-  [self sendEventWithName:@"onEcgResult" body:@{@"results": @{@"hrv": @(AvrHr)}}];
+  [self sendEventWithName:@"onEcgHeartRate" body:@{@"heartRate":  @(AvrHr)}];
+//  [self sendEventWithName:@"onEcgResult" body:@{@"results": @{@"hrv": @(AvrHr)}}];
 }
 /**
  *@SDNN  SDNN       heart rate variability
@@ -205,7 +206,8 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
 */
 - (void)receiveSDNN:(double)SDNN{
   NSLog(@"heart rate variability:%.1f", SDNN);
-  [self sendEventWithName:@"onEcgHeartRate" body:@{@"heartRate":  @(SDNN)}];
+  [self sendEventWithName:@"onEcgResult" body:@{@"results": @{@"hrv": @(SDNN)}}];
+//  [self sendEventWithName:@"onEcgHeartRate" body:@{@"heartRate":  @(SDNN)}];
 }
 
 /**ecgMeasurement ended*/
