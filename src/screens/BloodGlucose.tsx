@@ -59,8 +59,10 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
       setBgEvent(event);
     },
     onBgResult: event => {
-      console.log('on Measrung result', event);
+      // Note: In IOS "bgEventMeasureEnd" is not triggered. So when result is return, it is considered that test has ended.
       setShowModal(false)
+      setBgEvent({event: 'bgEventMeasureEnd', message: 'Blood Glucose measurement is ended'})
+
       setIsMeasuring(false);
       setBgResult(event);
     },

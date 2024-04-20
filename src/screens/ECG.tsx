@@ -155,7 +155,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
             'Respiratory Rate',
           ],
           VariableValue: [
-            `${hrv} ms`,
+            `${hrv.toFixed(2)} ms`,
             `${rrMin} ms`,
             `${rrMax} ms`,
             `${calculateAverage(heartRateArray)} bpm`,
@@ -256,7 +256,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                   RRI Maximum: {rrMax} ms
                 </CustomTextRegular>
                 <CustomTextRegular className="ml-2 text-gray-600">
-                  HRV: {hrv} ms
+                  HRV: {hrv.toFixed(2)} ms
                 </CustomTextRegular>
               </View>
               <CustomTextRegular className="mt-4 text-text">
@@ -369,7 +369,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
                 RRI minimum: {rrMin} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
-                HRV: {hrv} ms
+                HRV: {hrv.toFixed(2)} ms
               </CustomTextRegular>
               <CustomTextRegular className="mt-1 text-xs text-text">
                 Duration rate: {seconds} s
