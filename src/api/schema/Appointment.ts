@@ -105,17 +105,18 @@ export interface AppointmentTest {
   PlaystoreLink: string;
   AppstoreLink: string;
   DeviceName: string;
-  Result: AppointmentTestResult | null;
+  Result: AppointmentTestResult[];
 }
 
 interface AppointmentTestResult {
   TestResultId: string;
   AppointmentTestId: string;
   TestDate: string;
+  DoctorComments: string;
   Variables: AppointmentTestVariable[];
 }
 
-interface AppointmentTestVariable {
+export interface AppointmentTestVariable {
   TestResultVariableId: string;
   VariableName: string;
   VariableValue: string;

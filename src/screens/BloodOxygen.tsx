@@ -15,6 +15,7 @@ import { meetingStyles } from '../styles/style';
 import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
 import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
 import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
+import { calculateMinExcludingZero, calculateMaxExcludingZero, calculateAverage } from '../utils/utilityFunctions';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -29,6 +30,8 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
   const [spO2Result, setSpO2Result] = useState<
     {heartRate: number; spo2: number} | undefined
   >();
+  const [heartRateArray, setHeartRateArray] = useState<number[]>([]);
+  const [spo2Array, setSpo2Array] = useState<number[]>([]);
   const {setIsMeasuring, isConnected, battery, isMeasuring} =
     useMinttiVisionStore();
   const {measureBloodOxygen, stopSpo2} = useMinttiVision({
@@ -49,6 +52,14 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     onSpo2Result: event => {
       if (event.result) {
         setSpO2Result(event.result);
+
+        if ('heartRate' in event.result) {
+          setHeartRateArray(prev => [...prev, event.result?.heartRate ?? 0]);
+        }
+
+        if ('spo2' in event.result) {
+          setSpo2Array(prev => [...prev, event.result?.spo2 ?? 0]);
+        }
       }
     },
   });
@@ -116,10 +127,21 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
       mutate(
         {
           AppointmentTestId: appointmentTestId!,
-          VariableName: ['Blood Oxygen', 'Heart Rate'],
+          VariableName: [
+            'Min Blood Oxygen',
+            'Max Blood Oxygen',
+            'Average Blood Oxygen',
+            'Min Heart Rate',
+            'Max Heart Rate',
+            'Average Heart Rate',
+          ],
           VariableValue: [
-            `${spO2Result?.spo2} %`,
-            `${spO2Result?.heartRate} bpm`,
+            `${calculateMinExcludingZero(spo2Array).toFixed(2)} %`,
+            `${calculateMaxExcludingZero(spo2Array).toFixed(2)} %`,
+            `${calculateAverage(spo2Array)} %`,
+            `${calculateMinExcludingZero(heartRateArray)} bpm`,
+            `${calculateMaxExcludingZero(heartRateArray)} bpm`,
+            `${calculateAverage(heartRateArray)} bpm`,
           ],
         },
         {
@@ -196,14 +218,26 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               </View>
               <View className="mt-4">
                 <View>
-                  <CustomTextSemiBold className="text-text">
+                  <CustomTextSemiBold className="mb-2 text-text">
                     Blood Oxygen
                   </CustomTextSemiBold>
                   <CustomTextRegular className="text-gray-600">
-                    Heart Rate: {spO2Result?.heartRate}: bpm
+                    Min Blood Oxygen: {calculateMinExcludingZero(spo2Array).toFixed(2)} %
                   </CustomTextRegular>
                   <CustomTextRegular className="text-gray-600">
-                    Blood Oxygen: {spO2Result?.spo2}: %
+                    Max Blood Oxygen: {calculateMaxExcludingZero(spo2Array).toFixed(2)} %
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Average Blood Oxygen: {calculateAverage(spo2Array)} %
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Min Heart Rate: {calculateMinExcludingZero(heartRateArray)} bpm
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Max Heart Rate: {calculateMaxExcludingZero(heartRateArray)} bpm
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Average Heart Rate: {calculateAverage(heartRateArray)} bpm
                   </CustomTextRegular>
                 </View>
               </View>
