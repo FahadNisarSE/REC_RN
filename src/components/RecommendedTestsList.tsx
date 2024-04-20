@@ -83,7 +83,10 @@ function Item({
       <View className="flex-row items-center flex-1">
         <View className="p-2 mr-2 overflow-hidden rounded-xl bg-primmary">
           <Image
-            source={RECOMMENDED_TESTS_IMAGES[TestName]}
+            source={
+              RECOMMENDED_TESTS_IMAGES[TestName] ??
+              require('../assets/icons/devices/self_assessment.png')
+            }
             alt={TestName}
             className="w-6 h-6"
             style={{objectFit: 'contain'}}
@@ -115,31 +118,42 @@ function Item({
 
       {Result ? (
         <View className="p-2 mt-2 bg-gray-100 rounded-lg">
-          {Result?.Variables.map((item, index) =>
-            item.VariableName !== 'Self Assessment' ? (
-              <View key={item.VariableName + index} className="flex-row ">
-                <CustomTextRegular className="capitalize text-text">
-                  {item.VariableName}:
-                </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-text tex-xs">
-                  {item.VariableValue}
-                </CustomTextRegular>
-              </View>
-            ) : (
-              <View key={item.VariableName + index}>
-                <CustomTextRegular className="capitalize text-text">
-                  {item.VariableName}:
-                </CustomTextRegular>
-                <View className="justify-center flex-1 mt-1">
-                  <Image
-                    source={{uri: BASE_IMG_URL + item.VariableValue}}
-                    alt="Self Assessment"
-                    className="object-cover w-40 h-40 rounded-lg"
-                  />
+          {Result.map((result, index) => (
+            <View key={index} className="flex">
+              {result.Variables?.map((item, itemIndex) =>
+                item.VariableName !== 'Self Assessment' ? (
+                  <View key={item.VariableName + itemIndex} className="flex-row items-center">
+                    <CustomTextRegular className="capitalize text-text">
+                      {item.VariableName}:
+                    </CustomTextRegular>
+                    <CustomTextRegular className="ml-2 text-xs text-text">
+                      {item.VariableValue}
+                    </CustomTextRegular>
+                  </View>
+                ) : (
+                  <View key={item.VariableName + itemIndex} className="flex">
+                    <CustomTextRegular className="capitalize text-text">
+                      {item.VariableName}:
+                    </CustomTextRegular>
+                    <View className="justify-center flex-1 mt-2">
+                      <Image
+                        source={{uri: BASE_IMG_URL + item.VariableValue}}
+                        alt="Self Assessment"
+                        className="object-cover w-40 h-40 rounded-lg"
+                      />
+                    </View>
+                  </View>
+                ),
+              )}
+              {result.DoctorComments ? (
+                <View className="p-2 mt-4 bg-gray-600 rounded">
+                  <CustomTextRegular className="text-white">
+                    Doctor Comments: {result.DoctorComments}
+                  </CustomTextRegular>
                 </View>
-              </View>
-            ),
-          )}
+              ) : null}
+            </View>
+          ))}
         </View>
       ) : null}
     </View>
