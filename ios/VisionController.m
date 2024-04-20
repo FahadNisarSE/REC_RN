@@ -306,18 +306,34 @@ RCT_EXPORT_METHOD(getBattery: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
     [self.visionMTSDK endBloodPressure];
 }
 
-- (void)receiveBatteryValue:(NSData *)batteryValue{ //Battery power data
-  NSMutableString *hexString = [NSMutableString string];
-  const unsigned char *dataBuffer = (const unsigned char *)[batteryValue bytes];
-  if (dataBuffer) {
-      for (NSUInteger i = 0; i < batteryValue.length; ++i) {
-          [hexString appendFormat:@"%02x", (unsigned int)dataBuffer[i]];
-      }
-  }
-  self.batteryLevel = hexString;
-  NSLog(@"batteryValue: %@", hexString);
-  [self sendEventWithName:@"onBattery" body:@{@"battery": hexString}];
+//- (void)receiveBatteryValue:(NSData *)batteryValue{ //Battery power data
+//  NSLog(@"Battery power data == %@",batteryValue);
+//  NSMutableString *hexString = [NSMutableString string];
+//  const unsigned char *dataBuffer = (const unsigned char *)[batteryValue bytes];
+//  if (dataBuffer) {
+//      for (NSUInteger i = 0; i < batteryValue.length; ++i) {
+//          [hexString appendFormat:@"%02x", (unsigned int)dataBuffer[i]];
+//      }
+//  }
+//  self.batteryLevel = hexString;
+//  NSLog(@"batteryValue: %@", hexString);
+//  [self sendEventWithName:@"onBattery" body:@{@"battery": hexString}];
+//}
+- (void)receiveBatteryValue:(NSData *)batteryValue {
+    // Check if the data is not empty
+    if ([batteryValue length] > 0) {
+        // Convert the first byte of data to an unsigned char (byte)
+        const uint8_t *bytes = [batteryValue bytes];
+        uint8_t batteryLevel = bytes[0];
+        // Log or use the battery level as needed
+        NSLog(@"Battery Level: %u%%", batteryLevel);
+      [self sendEventWithName:@"onBattery" body:@{@"battery": @(batteryLevel)}];
+    } else {
+        [self sendEventWithName:@"onBattery" body:@{@"battery": @(0)}];
+        NSLog(@"Received empty battery level data");
+    }
 }
+
 
 
 
