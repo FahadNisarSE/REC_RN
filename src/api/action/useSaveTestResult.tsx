@@ -26,13 +26,13 @@ export async function saveTestResult(data: {
 
     const data = await response.json();
 
-    if (data?.status === 200) {
+    if (data?.status === 200 || data?.status === 201 || data?.status === 204) {
       return 'Test result saved successfully.';
     } else {
       throw new Error('Oops! Something went wrong.');
     }
   } catch (error) {
-    console.log("Error is saving result: ", error)
+    console.log('Error is saving result: ', error);
     throw error;
   }
 }
