@@ -32,8 +32,6 @@ type BloodOxygenProps = NativeStackScreenProps<
   'BloodGlucose'
 >;
 
-const dimensions = Dimensions.get('window');
-
 export default function BloodGlucose({navigation}: BloodOxygenProps) {
   const [showModal, setShowModal] = useState(false);
   const {appointmentDetail, appointmentTestId} = useAppointmentDetailStore();
@@ -145,163 +143,48 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
     );
   };
 
-  const CustomDrawer = useCallback(() => {
-    function saveResult() {
-      mutate(
-        {
-          AppointmentTestId: appointmentTestId!,
-          VariableName: ['Blood Glucose'],
-          VariableValue: [`${bgResult} mmol/L`],
+  function saveResult() {
+    mutate(
+      {
+        AppointmentTestId: appointmentTestId!,
+        VariableName: ['Blood Glucose'],
+        VariableValue: [`${bgResult} mmol/L`],
+      },
+      {
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Someting went wrong while saving test!',
+            text2: 'Plese try again.',
+          });
         },
-        {
-          onError: () => {
-            Toast.show({
-              type: 'error',
-              text1: 'Someting went wrong while saving test!',
-              text2: 'Plese try again.',
-            });
-          },
-          onSuccess: () => {
-            toggleModal(false);
-            setBgResult({bg: 0});
-            setBgEvent(null);
-
-            Toast.show({
-              type: 'success',
-              text1: 'Save Result',
-              text2: 'Blood Glucose result saved successfully. 👍',
-            });
-            queryClient.invalidateQueries({
-              queryKey: [
-                `get_appointment_details_${appointmentDetail?.AppointmentId}`,
-              ],
-            }),
-              navigation.navigate('AppointmentDetail', {
-                id: appointmentDetail?.AppointmentId!,
-              });
-          },
-        },
-      );
-    }
-
-    function reTakeTesthandler() {
-      setBgResult({bg: 0});
-      setBgEvent(null);
-      setShowModal(false);
-    }
-
-    return (
-      <Modal
-        visible={
-          showModal &&
-          navigation.getState().routes[navigation.getState().index].name ===
-            'BloodGlucose'
-        }
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => {
-          reTakeTesthandler();
+        onSuccess: () => {
           toggleModal(false);
-        }}>
-        <Pressable
-          onPress={() => {
-            reTakeTesthandler();
-            toggleModal(false);
-          }}
-          className="w-full h-full bg-black opacity-25"></Pressable>
-        <View
-          style={{
-            ...meetingStyles.modal,
-            height: '75%',
-          }}
-          className="p-4 bg-white">
-          <View className="flex-row items-center justify-between w-full mb-auto">
-            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
-              Test Result
-            </CustomTextSemiBold>
-          </View>
-          <View className="flex-1 mt-4">
-            <View className="flex-1 my-auto">
-              <View className="flex-row items-center">
-                <View className="p-2 rounded-full bg-primmary">
-                  <Image
-                    className="w-5 h-5"
-                    source={require('../assets/icons/devices/temperature.png')}
-                  />
-                </View>
-                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
-                  Blood Glucose
-                </CustomTextSemiBold>
-              </View>
-              <View className="mt-4">
-                <View className="flex-row items-center">
-                  <CustomTextSemiBold className="text-text">
-                    Blood Glucose
-                  </CustomTextSemiBold>
-                  <CustomTextRegular className="ml-2 text-gray-600">
-                    {bgResult?.bg} mmol / L
-                  </CustomTextRegular>
-                </View>
-              </View>
+          setBgResult({bg: 0});
+          setBgEvent(null);
 
-              {/* Normal Blood Glucose here */}
-              <View className="p-4 my-8 border border-gray-300 rounded-md">
-                <View>
-                  <CustomTextSemiBold className="text-xs text-center text-text">
-                    Normal Blood Glucose
-                  </CustomTextSemiBold>
-                  <CustomTextRegular className="text-[10px] text-center text-text mt-3">
-                    3.9 mmol/L - 6.1 mmol/L
-                  </CustomTextRegular>
-                  <View
-                    className="flex-row items-center my-4 rounded"
-                    style={{opacity: bgResult?.bg ? 100 : 0}}>
-                    <ResultIdicatorBar
-                      lowThreshold={3.9}
-                      highThreshold={6.1}
-                      lowestLimit={0}
-                      highestLimit={10}
-                      value={bgResult?.bg ?? 0}
-                    />
-                  </View>
-                </View>
-              </View>
-              
-              <CustomTextRegular className="mt-4 text-text">
-                By pressing "Save Result", your test results will be securely
-                saved and will be shared with{' '}
-                {appointmentDetail?.doctor.Firstname}{' '}
-                {appointmentDetail?.doctor.Lastname} for your upcoming
-                appointment on {appointmentDetail?.AppointmentDate}. If you
-                wish, you have the option to retake the test in case you are not
-                satisfied with the results.
-              </CustomTextRegular>
-              <View className="flex flex-row justify-end mt-auto">
-                <TouchableOpacity
-                  onPress={reTakeTesthandler}
-                  className="px-4 py-2 border rounded-md border-text">
-                  <CustomTextRegular className="text-center text-text">
-                    Retake Test
-                  </CustomTextRegular>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => saveResult()}
-                  disabled={isPending}
-                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
-                  <CustomTextRegular className="text-center text-white">
-                    {isPending ? 'Saving...' : 'Save Result'}
-                  </CustomTextRegular>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+          Toast.show({
+            type: 'success',
+            text1: 'Save Result',
+            text2: 'Blood Glucose result saved successfully. 👍',
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              `get_appointment_details_${appointmentDetail?.AppointmentId}`,
+            ],
+          }),
+            navigation.navigate('AppointmentDetail', {
+              id: appointmentDetail?.AppointmentId!,
+            });
+        },
+      },
     );
-  }, [showModal]);
+  }
 
-  async function measureBloodGlucose() {
-    await measureBg();
+  function reTakeTesthandler() {
+    setBgResult({bg: 0});
+    setBgEvent(null);
+    setShowModal(false);
   }
 
   return (
@@ -392,11 +275,119 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
           text={isMeasuring ? 'Measuring...' : 'Start Test'}
           className="mt-auto mb-5"
           disabled={isMeasuring}
-          onPress={() => measureBloodGlucose()}
+          onPress={() => measureBg()}
         />
       </View>
       <MeasruementStepsModal />
-      <CustomDrawer />
+
+      {/* Save Result Modal */}
+
+      <Modal
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BloodGlucose'
+        }
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => {
+          reTakeTesthandler();
+          toggleModal(false);
+        }}>
+        <Pressable
+          onPress={() => {
+            reTakeTesthandler();
+            toggleModal(false);
+          }}
+          className="w-full h-full bg-black opacity-25"></Pressable>
+        <View
+          style={{
+            ...meetingStyles.modal,
+            height: '75%',
+          }}
+          className="p-4 bg-white">
+          <View className="flex-row items-center justify-between w-full mb-auto">
+            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
+              Test Result
+            </CustomTextSemiBold>
+          </View>
+          <View className="flex-1 mt-4">
+            <View className="flex-1 my-auto">
+              <View className="flex-row items-center">
+                <View className="p-2 rounded-full bg-primmary">
+                  <Image
+                    className="w-5 h-5"
+                    source={require('../assets/icons/devices/temperature.png')}
+                  />
+                </View>
+                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
+                  Blood Glucose
+                </CustomTextSemiBold>
+              </View>
+              <View className="mt-4">
+                <View className="flex-row items-center">
+                  <CustomTextSemiBold className="text-text">
+                    Blood Glucose
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="ml-2 text-gray-600">
+                    {bgResult?.bg} mmol / L
+                  </CustomTextRegular>
+                </View>
+              </View>
+
+              {/* Normal Blood Glucose here */}
+              <View className="p-4 my-8 border border-gray-300 rounded-md">
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Normal Blood Glucose
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text mt-3">
+                    3.9 mmol/L - 6.1 mmol/L
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bgResult?.bg ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={3.9}
+                      highThreshold={6.1}
+                      lowestLimit={0}
+                      highestLimit={10}
+                      value={bgResult?.bg ?? 0}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <CustomTextRegular className="mt-4 text-text">
+                By pressing "Save Result", your test results will be securely
+                saved and will be shared with{' '}
+                {appointmentDetail?.doctor.Firstname}{' '}
+                {appointmentDetail?.doctor.Lastname} for your upcoming
+                appointment on {appointmentDetail?.AppointmentDate}. If you
+                wish, you have the option to retake the test in case you are not
+                satisfied with the results.
+              </CustomTextRegular>
+              <View className="flex flex-row justify-end mt-auto">
+                <TouchableOpacity
+                  onPress={reTakeTesthandler}
+                  className="px-4 py-2 border rounded-md border-text">
+                  <CustomTextRegular className="text-center text-text">
+                    Retake Test
+                  </CustomTextRegular>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => saveResult()}
+                  disabled={isPending}
+                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
+                  <CustomTextRegular className="text-center text-white">
+                    {isPending ? 'Saving...' : 'Save Result'}
+                  </CustomTextRegular>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

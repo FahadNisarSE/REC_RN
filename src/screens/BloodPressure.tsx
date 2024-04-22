@@ -132,181 +132,47 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
     }
   }
 
-  const CustomDrawer = useCallback(() => {
-    function saveResult() {
-      mutate(
-        {
-          AppointmentTestId: appointmentTestId!,
-          VariableName: ['Systolic', 'Diastolic', 'Heart Rate'],
-          VariableValue: [
-            `${bp?.result?.systolic} mmHg`,
-            `${bp?.result?.diastolic} mmHg`,
-            `${bp?.result?.heartRate} bpm`,
-          ],
+  function saveResult() {
+    mutate(
+      {
+        AppointmentTestId: appointmentTestId!,
+        VariableName: ['Systolic', 'Diastolic', 'Heart Rate'],
+        VariableValue: [
+          `${bp?.result?.systolic} mmHg`,
+          `${bp?.result?.diastolic} mmHg`,
+          `${bp?.result?.heartRate} bpm`,
+        ],
+      },
+      {
+        onError: () => {
+          ToastAndroid.show('Whoops! Something went wrong', 5000);
         },
-        {
-          onError: () => {
-            ToastAndroid.show('Whoops! Something went wrong', 5000);
-          },
-          onSuccess: () => {
-            toggleModal(false),
-              setBp(null),
-              Toast.show({
-                type: 'success',
-                text1: 'Save Result',
-                text2: 'Blood Pressure result saved successfully. 👍',
-              });
-            queryClient.invalidateQueries({
-              queryKey: [
-                `get_appointment_details_${appointmentDetail?.AppointmentId}`,
-              ],
-            }),
-              navigation.navigate('AppointmentDetail', {
-                id: appointmentDetail?.AppointmentId!,
-              });
-          },
+        onSuccess: () => {
+          toggleModal(false),
+            setBp(null),
+            Toast.show({
+              type: 'success',
+              text1: 'Save Result',
+              text2: 'Blood Pressure result saved successfully. 👍',
+            });
+          queryClient.invalidateQueries({
+            queryKey: [
+              `get_appointment_details_${appointmentDetail?.AppointmentId}`,
+            ],
+          }),
+            navigation.navigate('AppointmentDetail', {
+              id: appointmentDetail?.AppointmentId!,
+            });
         },
-      );
-    }
-
-    function reTakeTesthandler() {
-      setBp(null);
-      setAppliedPressure(0);
-      setShowModal(false);
-    }
-
-    return (
-      <Modal
-        visible={
-          showModal &&
-          navigation.getState().routes[navigation.getState().index].name ===
-            'BloodPressure'
-        }
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => {
-          setBp(null);
-          toggleModal(false);
-        }}>
-        <Pressable
-          onPress={() => {
-            setBp(null);
-            toggleModal(false);
-          }}
-          className="w-full h-full bg-black opacity-25"></Pressable>
-        <View
-          style={{
-            ...meetingStyles.modal,
-            height: '90%',
-          }}
-          className="p-4 bg-white">
-          <View className="flex-row items-center justify-between w-full mb-auto">
-            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
-              Test Result
-            </CustomTextSemiBold>
-          </View>
-          <View className="flex-1 mt-4">
-            <View className="flex-1 my-auto">
-              <View className="flex-row items-center">
-                <View className="p-2 rounded-full bg-primmary">
-                  <Image
-                    className="w-5 h-5"
-                    source={require('../assets/icons/devices/temperature.png')}
-                  />
-                </View>
-                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
-                  Blood Pressure
-                </CustomTextSemiBold>
-              </View>
-              <View className="mt-4">
-                <CustomTextSemiBold className="text-text">
-                  Blood Pressure
-                </CustomTextSemiBold>
-                <CustomTextRegular className="text-gray-600">
-                  Systolic pressure: {bp?.result?.systolic} mmHg
-                </CustomTextRegular>
-                <CustomTextRegular className="text-gray-600">
-                  Diastolic pressure: {bp?.result?.diastolic} mmHg
-                </CustomTextRegular>
-                <CustomTextRegular className="text-gray-600">
-                  Heart Rate: {bp?.result?.heartRate} bpm
-                </CustomTextRegular>
-              </View>
-
-              {/* Normal Blood Pressure here */}
-              <View className="p-4 my-8 border border-gray-300 rounded-md">
-                <View>
-                  <CustomTextSemiBold className="text-xs text-center text-text">
-                    Systolic Pressure
-                  </CustomTextSemiBold>
-                  <CustomTextRegular className="text-[10px] text-center text-text">
-                    90 mmHg - 120 mmHg
-                  </CustomTextRegular>
-                  <View
-                    className="flex-row items-center my-4 rounded"
-                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
-                    <ResultIdicatorBar
-                      lowThreshold={90}
-                      highThreshold={140}
-                      lowestLimit={60}
-                      highestLimit={180}
-                      value={bp?.result?.systolic ?? 0}
-                    />
-                  </View>
-                </View>
-                <View>
-                  <CustomTextSemiBold className="text-xs text-center text-text">
-                    Distolic Pressure
-                  </CustomTextSemiBold>
-                  <CustomTextRegular className="text-[10px] text-center text-text">
-                    60 mmHg - 90 mmHg
-                  </CustomTextRegular>
-                  <View
-                    className="flex-row items-center my-4 rounded"
-                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
-                    <ResultIdicatorBar
-                      lowThreshold={60}
-                      highThreshold={90}
-                      lowestLimit={40}
-                      highestLimit={120}
-                      value={bp?.result?.diastolic ?? 0}
-                    />
-                  </View>
-                </View>
-              </View>
-
-              <CustomTextRegular className="mt-4 text-text">
-                By pressing "Save Result", your test results will be securely
-                saved and will be shared with{' '}
-                {appointmentDetail?.doctor.Firstname}{' '}
-                {appointmentDetail?.doctor.Lastname} for your upcoming
-                appointment on {appointmentDetail?.AppointmentDate}. If you
-                wish, you have the option to retake the test in case you are not
-                satisfied with the results.
-              </CustomTextRegular>
-              <View className="flex flex-row justify-end mt-auto">
-                <TouchableOpacity
-                  onPress={reTakeTesthandler}
-                  className="px-4 py-2 border rounded-md border-text">
-                  <CustomTextRegular className="text-center text-text">
-                    Retake Test
-                  </CustomTextRegular>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => saveResult()}
-                  disabled={isPending}
-                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
-                  <CustomTextRegular className="text-center text-white">
-                    {isPending ? 'Saving...' : 'Save Result'}
-                  </CustomTextRegular>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      },
     );
-  }, [showModal]);
+  }
+
+  function reTakeTesthandler() {
+    setBp(null);
+    setAppliedPressure(0);
+    setShowModal(false);
+  }
 
   return (
     <>
@@ -466,7 +332,137 @@ export default function BloodPressure({navigation}: BloodOxygenProps) {
           onPress={() => measureBp()}
         />
       </View>
-      <CustomDrawer />
+
+      {/* Save Result Modal */}
+      <Modal
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BloodPressure'
+        }
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => {
+          setBp(null);
+          toggleModal(false);
+        }}>
+        <Pressable
+          onPress={() => {
+            setBp(null);
+            toggleModal(false);
+          }}
+          className="w-full h-full bg-black opacity-25"></Pressable>
+        <View
+          style={{
+            ...meetingStyles.modal,
+            height: '90%',
+          }}
+          className="p-4 bg-white">
+          <View className="flex-row items-center justify-between w-full mb-auto">
+            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
+              Test Result
+            </CustomTextSemiBold>
+          </View>
+          <View className="flex-1 mt-4">
+            <View className="flex-1 my-auto">
+              <View className="flex-row items-center">
+                <View className="p-2 rounded-full bg-primmary">
+                  <Image
+                    className="w-5 h-5"
+                    source={require('../assets/icons/devices/temperature.png')}
+                  />
+                </View>
+                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
+                  Blood Pressure
+                </CustomTextSemiBold>
+              </View>
+              <View className="mt-4">
+                <CustomTextSemiBold className="text-text">
+                  Blood Pressure
+                </CustomTextSemiBold>
+                <CustomTextRegular className="text-gray-600">
+                  Systolic pressure: {bp?.result?.systolic} mmHg
+                </CustomTextRegular>
+                <CustomTextRegular className="text-gray-600">
+                  Diastolic pressure: {bp?.result?.diastolic} mmHg
+                </CustomTextRegular>
+                <CustomTextRegular className="text-gray-600">
+                  Heart Rate: {bp?.result?.heartRate} bpm
+                </CustomTextRegular>
+              </View>
+
+              {/* Normal Blood Pressure here */}
+              <View className="p-4 my-8 border border-gray-300 rounded-md">
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Systolic Pressure
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text">
+                    90 mmHg - 120 mmHg
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={90}
+                      highThreshold={140}
+                      lowestLimit={60}
+                      highestLimit={180}
+                      value={bp?.result?.systolic ?? 0}
+                    />
+                  </View>
+                </View>
+                <View>
+                  <CustomTextSemiBold className="text-xs text-center text-text">
+                    Distolic Pressure
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-[10px] text-center text-text">
+                    60 mmHg - 90 mmHg
+                  </CustomTextRegular>
+                  <View
+                    className="flex-row items-center my-4 rounded"
+                    style={{opacity: bp?.result?.systolic ? 100 : 0}}>
+                    <ResultIdicatorBar
+                      lowThreshold={60}
+                      highThreshold={90}
+                      lowestLimit={40}
+                      highestLimit={120}
+                      value={bp?.result?.diastolic ?? 0}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <CustomTextRegular className="mt-4 text-text">
+                By pressing "Save Result", your test results will be securely
+                saved and will be shared with{' '}
+                {appointmentDetail?.doctor.Firstname}{' '}
+                {appointmentDetail?.doctor.Lastname} for your upcoming
+                appointment on {appointmentDetail?.AppointmentDate}. If you
+                wish, you have the option to retake the test in case you are not
+                satisfied with the results.
+              </CustomTextRegular>
+              <View className="flex flex-row justify-end mt-auto">
+                <TouchableOpacity
+                  onPress={reTakeTesthandler}
+                  className="px-4 py-2 border rounded-md border-text">
+                  <CustomTextRegular className="text-center text-text">
+                    Retake Test
+                  </CustomTextRegular>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => saveResult()}
+                  disabled={isPending}
+                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
+                  <CustomTextRegular className="text-center text-white">
+                    {isPending ? 'Saving...' : 'Save Result'}
+                  </CustomTextRegular>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

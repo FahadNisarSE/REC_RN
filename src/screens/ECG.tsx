@@ -84,7 +84,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
     await measureECG();
     setTimeout(async () => {
       await stopECG();
-      toggleModal(true)
+      toggleModal(true);
     }, 90 * 1000); // 1.5 min
   }
 
@@ -135,155 +135,58 @@ export default function ECG({navigation}: BloodOxygenProps) {
     setDuration(0);
   }
 
-  const CustomDrawer = useCallback(() => {
-    function saveResult() {
-      mutate(
-        {
-          AppointmentTestId: appointmentTestId!,
-          VariableName: [
-            'Heart Rate Variablity',
-            'RR min',
-            'RR max',
-            'Average Heart Rate',
-            'Respiratory Rate',
-          ],
-          VariableValue: [
-            `${ecgResult?.hrv} ms`,
-            `${ecgResult?.rrMin ?? 0} ms`,
-            `${ecgResult?.rrMax} ms`,
-            `${calculateAverage(heartRateArray)} bpm`,
-            `${calculateAverage(respiratoryRateArray)} bpm`,
-          ],
+  function saveResult() {
+    mutate(
+      {
+        AppointmentTestId: appointmentTestId!,
+        VariableName: [
+          'Heart Rate Variablity',
+          'RR min',
+          'RR max',
+          'Average Heart Rate',
+          'Respiratory Rate',
+        ],
+        VariableValue: [
+          `${ecgResult?.hrv} ms`,
+          `${ecgResult?.rrMin ?? 0} ms`,
+          `${ecgResult?.rrMax} ms`,
+          `${calculateAverage(heartRateArray)} bpm`,
+          `${calculateAverage(respiratoryRateArray)} bpm`,
+        ],
+      },
+      {
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Something went wrong while saving test!',
+            text2: 'Plese try again.',
+          });
         },
-        {
-          onError: () => {
-            Toast.show({
-              type: 'error',
-              text1: 'Someting went wrong while saving test!',
-              text2: 'Plese try again.',
-            });
-          },
-          onSuccess: () => {
-            resetSate();
-            toggleModal(false),
-              Toast.show({
-                type: 'success',
-                text1: 'Save Result',
-                text2: 'ECG result saved successfully. 👍',
-              });
-            queryClient.invalidateQueries({
-              queryKey: [
-                `get_appointment_details_${appointmentDetail?.AppointmentId}`,
-              ],
-            }),
-              navigation.navigate('AppointmentDetail', {
-                id: appointmentDetail?.AppointmentId!,
-              });
-          },
-        },
-      );
-    }
-
-    function reTakeTesthandler() {
-      setShowModal(false);
-      resetSate();
-    }
-
-    return (
-      <Modal
-        visible={
-          showModal &&
-          navigation.getState().routes[navigation.getState().index].name ===
-            'ECG'
-        }
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => {
+        onSuccess: () => {
           resetSate();
-          toggleModal(false);
-        }}>
-        <Pressable
-          onPress={() => {
-            resetSate();
-            toggleModal(false);
-          }}
-          className="w-full h-full bg-black opacity-25"></Pressable>
-        <View
-          style={{
-            ...meetingStyles.modal,
-            height: '65%',
-          }}
-          className="p-4 bg-white">
-          <View className="flex-row items-center justify-between w-full mb-auto">
-            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
-              Test Result
-            </CustomTextSemiBold>
-          </View>
-          <View className="flex-1 mt-4">
-            <View className="flex-1 my-auto">
-              <View className="flex-row items-center">
-                <View className="p-2 rounded-full bg-primmary">
-                  <Image
-                    className="w-5 h-5"
-                    source={require('../assets/icons/devices/temperature.png')}
-                  />
-                </View>
-                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
-                  ECG
-                </CustomTextSemiBold>
-              </View>
-              <View className="mt-4">
-                <CustomTextRegular className="ml-2 text-gray-600">
-                  Heart Rate: {heartRate} bpm
-                </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
-                  Average Heart Rate: {calculateAverage(heartRateArray)} bpm
-                </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
-                  Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm
-                </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Minimum: {ecgResult?.rrMin ?? 0} ms
-                </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
-                  RRI Maximum: {ecgResult?.rrMax ?? 0} ms
-                </CustomTextRegular>
-                <CustomTextRegular className="ml-2 text-gray-600">
-                  HRV: {ecgResult?.hrv ?? 0} ms
-                </CustomTextRegular>
-              </View>
-              <CustomTextRegular className="mt-4 text-text">
-                By pressing "Save Result", your test results will be securely
-                saved and will be shared with{' '}
-                {appointmentDetail?.doctor.Firstname}{' '}
-                {appointmentDetail?.doctor.Lastname} for your upcoming
-                appointment on {appointmentDetail?.AppointmentDate}. If you
-                wish, you have the option to retake the test in case you are not
-                satisfied with the results.
-              </CustomTextRegular>
-              <View className="flex flex-row justify-end mt-auto">
-                <TouchableOpacity
-                  onPress={reTakeTesthandler}
-                  className="px-4 py-2 border rounded-md border-text">
-                  <CustomTextRegular className="text-center text-text">
-                    Retake Test
-                  </CustomTextRegular>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => saveResult()}
-                  disabled={isPending}
-                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
-                  <CustomTextRegular className="text-center text-white">
-                    {isPending ? 'Saving...' : 'Save Result'}
-                  </CustomTextRegular>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+          toggleModal(false),
+            Toast.show({
+              type: 'success',
+              text1: 'Save Result',
+              text2: 'ECG result saved successfully. 👍',
+            });
+          queryClient.invalidateQueries({
+            queryKey: [
+              `get_appointment_details_${appointmentDetail?.AppointmentId}`,
+            ],
+          }),
+            navigation.navigate('AppointmentDetail', {
+              id: appointmentDetail?.AppointmentId!,
+            });
+        },
+      },
     );
-  }, [showModal, ecgResult]);
+  }
+
+  function reTakeTesthandler() {
+    setShowModal(false);
+    resetSate();
+  }
 
   return (
     <>
@@ -380,7 +283,101 @@ export default function ECG({navigation}: BloodOxygenProps) {
           onPress={() => startECGTest()}
         />
       </View>
-      <CustomDrawer />
+
+      {/* Save Result Modal */}
+
+      <Modal
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'ECG'
+        }
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => {
+          resetSate();
+          toggleModal(false);
+        }}>
+        <Pressable
+          onPress={() => {
+            resetSate();
+            toggleModal(false);
+          }}
+          className="w-full h-full bg-black opacity-25"></Pressable>
+        <View
+          style={{
+            ...meetingStyles.modal,
+            height: '65%',
+          }}
+          className="p-4 bg-white">
+          <View className="flex-row items-center justify-between w-full mb-auto">
+            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
+              Test Result
+            </CustomTextSemiBold>
+          </View>
+          <View className="flex-1 mt-4">
+            <View className="flex-1 my-auto">
+              <View className="flex-row items-center">
+                <View className="p-2 rounded-full bg-primmary">
+                  <Image
+                    className="w-5 h-5"
+                    source={require('../assets/icons/devices/temperature.png')}
+                  />
+                </View>
+                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
+                  ECG
+                </CustomTextSemiBold>
+              </View>
+              <View className="mt-4">
+                <CustomTextRegular className="ml-2 text-gray-600">
+                  Heart Rate: {heartRate} bpm
+                </CustomTextRegular>
+                <CustomTextRegular className="ml-2 text-gray-600">
+                  Average Heart Rate: {calculateAverage(heartRateArray)} bpm
+                </CustomTextRegular>
+                <CustomTextRegular className="ml-2 text-gray-600">
+                  Respiratory Rate: {calculateAverage(respiratoryRateArray)} bpm
+                </CustomTextRegular>
+                <CustomTextRegular className="ml-2 text-gray-600">
+                  RRI Minimum: {ecgResult?.rrMin ?? 0} ms
+                </CustomTextRegular>
+                <CustomTextRegular className="ml-2 text-gray-600">
+                  RRI Maximum: {ecgResult?.rrMax ?? 0} ms
+                </CustomTextRegular>
+                <CustomTextRegular className="ml-2 text-gray-600">
+                  HRV: {ecgResult?.hrv ?? 0} ms
+                </CustomTextRegular>
+              </View>
+              <CustomTextRegular className="mt-4 text-text">
+                By pressing "Save Result", your test results will be securely
+                saved and will be shared with{' '}
+                {appointmentDetail?.doctor.Firstname}{' '}
+                {appointmentDetail?.doctor.Lastname} for your upcoming
+                appointment on {appointmentDetail?.AppointmentDate}. If you
+                wish, you have the option to retake the test in case you are not
+                satisfied with the results.
+              </CustomTextRegular>
+              <View className="flex flex-row justify-end mt-auto">
+                <TouchableOpacity
+                  onPress={reTakeTesthandler}
+                  className="px-4 py-2 border rounded-md border-text">
+                  <CustomTextRegular className="text-center text-text">
+                    Retake Test
+                  </CustomTextRegular>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => saveResult()}
+                  disabled={isPending}
+                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
+                  <CustomTextRegular className="text-center text-white">
+                    {isPending ? 'Saving...' : 'Save Result'}
+                  </CustomTextRegular>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
