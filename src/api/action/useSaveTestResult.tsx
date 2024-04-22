@@ -27,7 +27,7 @@ export async function saveTestResult(data: {
     console.log("There is a response: ", response)
     const data = await response.json();
 
-    if (data?.status === 200) {
+    if (data?.status === 201 ||  data?.status === 204 || data?.status === 200) {
       return 'Test result saved successfully.';
     } else {
       throw new Error('Oops! Something went wrong.');

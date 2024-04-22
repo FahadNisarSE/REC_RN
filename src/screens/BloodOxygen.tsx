@@ -105,158 +105,56 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
     setSpO2Result(undefined);
   }
 
-  const CustomDrawer = useCallback(() => {
-    function saveResult() {
-      mutate(
-        {
-          AppointmentTestId: appointmentTestId!,
-          VariableName: [
-            'Min Blood Oxygen',
-            'Max Blood Oxygen',
-            'Average Blood Oxygen',
-            'Min Heart Rate',
-            'Max Heart Rate',
-            'Average Heart Rate',
-          ],
-          VariableValue: [
-            `${calculateMinExcludingZero(spo2Array).toFixed(2)} %`,
-            `${calculateMaxExcludingZero(spo2Array).toFixed(2)} %`,
-            `${calculateAverage(spo2Array)} %`,
-            `${calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm`,
-            `${calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm`,
-            `${calculateAverage(heartRateArray)} bpm`,
-          ],
+  function saveResult() {
+    mutate(
+      {
+        AppointmentTestId: appointmentTestId!,
+        VariableName: [
+          'Min Blood Oxygen',
+          'Max Blood Oxygen',
+          'Average Blood Oxygen',
+          'Min Heart Rate',
+          'Max Heart Rate',
+          'Average Heart Rate',
+        ],
+        VariableValue: [
+          `${calculateMinExcludingZero(spo2Array).toFixed(2)} %`,
+          `${calculateMaxExcludingZero(spo2Array).toFixed(2)} %`,
+          `${calculateAverage(spo2Array)} %`,
+          `${calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm`,
+          `${calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm`,
+          `${calculateAverage(heartRateArray)} bpm`,
+        ],
+      },
+      {
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Something went wrong.',
+            text2:
+              'Something went wrong while saving test result. Please try again.',
+          });
         },
-        {
-          onError: () => {
-            Toast.show({
-              type: 'error',
-              text1: 'Something went wrong.',
-              text2:
-                'Something went wrong while saving test result. Please try again.',
-            });
-          },
-          onSuccess: () => {
-            setSpO2Result(undefined);
-            toggleModal(false),
-              Toast.show({
-                type: 'success',
-                text1: 'Save Result',
-                text2: 'Blood Pressure result saved successfully. 👍',
-              });
-            queryClient.invalidateQueries({
-              queryKey: [
-                `get_appointment_details_${appointmentDetail?.AppointmentId}`,
-              ],
-            }),
-              navigation.navigate('AppointmentDetail', {
-                id: appointmentDetail?.AppointmentId!,
-              });
-          },
-        },
-      );
-    }
-
-    return (
-      <Modal
-        visible={
-          showModal &&
-          navigation.getState().routes[navigation.getState().index].name ===
-            'BloodOxygen'
-        }
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => {
+        onSuccess: () => {
           setSpO2Result(undefined);
-          toggleModal(false);
-        }}>
-        <Pressable
-          onPress={() => {
-            setSpO2Result(undefined);
-            toggleModal(false);
-          }}
-          className="w-full h-full bg-black opacity-25"></Pressable>
-        <View
-          style={{
-            ...meetingStyles.modal,
-            height: '55%',
-          }}
-          className="p-4 pb-8 bg-white m-4 mb-8">
-          <View className="flex-row items-center justify-between w-full mb-auto">
-            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
-              Test Result
-            </CustomTextSemiBold>
-          </View>
-          <View className="flex-1 mt-4">
-            <View className="flex-1 my-auto">
-              <View className="flex-row items-center">
-                <View className="p-2 rounded-full bg-primmary">
-                  <Image
-                    className="w-5 h-5"
-                    source={require('../assets/icons/devices/blood_pressure.png')}
-                  />
-                </View>
-                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
-                  Blood Oxygen
-                </CustomTextSemiBold>
-              </View>
-              <View className="mt-4">
-                <View>
-                  <CustomTextSemiBold className="text-text mb-2">
-                    Blood Oxygen
-                  </CustomTextSemiBold>
-                  <CustomTextRegular className="text-gray-600">
-                    Min Blood Oxygen: {calculateMinExcludingZero(spo2Array).toFixed(2)} %
-                  </CustomTextRegular>
-                  <CustomTextRegular className="text-gray-600">
-                    Max Blood Oxygen: {calculateMaxExcludingZero(spo2Array).toFixed(2)} %
-                  </CustomTextRegular>
-                  <CustomTextRegular className="text-gray-600">
-                    Average Blood Oxygen: {calculateAverage(spo2Array)} %
-                  </CustomTextRegular>
-                  <CustomTextRegular className="text-gray-600">
-                    Min Heart Rate: {calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm
-                  </CustomTextRegular>
-                  <CustomTextRegular className="text-gray-600">
-                    Max Heart Rate: {calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm
-                  </CustomTextRegular>
-                  <CustomTextRegular className="text-gray-600">
-                    Average Heart Rate: {calculateAverage(heartRateArray)} bpm
-                  </CustomTextRegular>
-                </View>
-              </View>
-              <CustomTextRegular className="mt-4 text-text">
-                By pressing "Save Result", your test results will be securely
-                saved and will be shared with{' '}
-                {appointmentDetail?.doctor.Firstname}{' '}
-                {appointmentDetail?.doctor.Lastname} for your upcoming
-                appointment on {appointmentDetail?.AppointmentDate}. If you
-                wish, you have the option to retake the test in case you are not
-                satisfied with the results.
-              </CustomTextRegular>
-              <View className="flex flex-row justify-end mt-auto">
-                <TouchableOpacity
-                  onPress={reTakeTesthandler}
-                  className="px-4 py-2 border rounded-md border-text">
-                  <CustomTextRegular className="text-center text-text">
-                    Retake Test
-                  </CustomTextRegular>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => saveResult()}
-                  disabled={isPending}
-                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
-                  <CustomTextRegular className="text-center text-white">
-                    {isPending ? 'Saving...' : 'Save Result'}
-                  </CustomTextRegular>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+          toggleModal(false),
+            Toast.show({
+              type: 'success',
+              text1: 'Save Result',
+              text2: 'Blood Oxygen result saved successfully. 👍',
+            });
+          queryClient.invalidateQueries({
+            queryKey: [
+              `get_appointment_details_${appointmentDetail?.AppointmentId}`,
+            ],
+          }),
+            navigation.navigate('AppointmentDetail', {
+              id: appointmentDetail?.AppointmentId!,
+            });
+        },
+      },
     );
-  }, [showModal]);
+  }
 
   function handleTestInProgress() {
     Alert.alert(
@@ -376,7 +274,109 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
           onPress={() => startMeasurement()}
         />
       </View>
-      <CustomDrawer />
+
+      {/* Save Result Moda */}
+      <Modal
+        visible={
+          showModal &&
+          navigation.getState().routes[navigation.getState().index].name ===
+            'BloodOxygen'
+        }
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => {
+          setSpO2Result(undefined);
+          toggleModal(false);
+        }}>
+        <Pressable
+          onPress={() => {
+            setSpO2Result(undefined);
+            toggleModal(false);
+          }}
+          className="w-full h-full bg-black opacity-25"></Pressable>
+        <View
+          style={{
+            ...meetingStyles.modal,
+            height: '55%',
+          }}
+          className="p-4 pb-8 bg-white m-4 mb-8">
+          <View className="flex-row items-center justify-between w-full mb-auto">
+            <CustomTextSemiBold className="mx-auto text-lg font-semibold text-text">
+              Test Result
+            </CustomTextSemiBold>
+          </View>
+          <View className="flex-1 mt-4">
+            <View className="flex-1 my-auto">
+              <View className="flex-row items-center">
+                <View className="p-2 rounded-full bg-primmary">
+                  <Image
+                    className="w-5 h-5"
+                    source={require('../assets/icons/devices/blood_pressure.png')}
+                  />
+                </View>
+                <CustomTextSemiBold className="ml-4 text-lg text-primmary">
+                  Blood Oxygen
+                </CustomTextSemiBold>
+              </View>
+              <View className="mt-4">
+                <View>
+                  <CustomTextSemiBold className="text-text mb-2">
+                    Blood Oxygen
+                  </CustomTextSemiBold>
+                  <CustomTextRegular className="text-gray-600">
+                    Min Blood Oxygen:{' '}
+                    {calculateMinExcludingZero(spo2Array).toFixed(2)} %
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Max Blood Oxygen:{' '}
+                    {calculateMaxExcludingZero(spo2Array).toFixed(2)} %
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Average Blood Oxygen: {calculateAverage(spo2Array)} %
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Min Heart Rate:{' '}
+                    {calculateMinExcludingZero(heartRateArray).toFixed(2)} bpm
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Max Heart Rate:{' '}
+                    {calculateMaxExcludingZero(heartRateArray).toFixed(2)} bpm
+                  </CustomTextRegular>
+                  <CustomTextRegular className="text-gray-600">
+                    Average Heart Rate: {calculateAverage(heartRateArray)} bpm
+                  </CustomTextRegular>
+                </View>
+              </View>
+              <CustomTextRegular className="mt-4 text-text">
+                By pressing "Save Result", your test results will be securely
+                saved and will be shared with{' '}
+                {appointmentDetail?.doctor.Firstname}{' '}
+                {appointmentDetail?.doctor.Lastname} for your upcoming
+                appointment on {appointmentDetail?.AppointmentDate}. If you
+                wish, you have the option to retake the test in case you are not
+                satisfied with the results.
+              </CustomTextRegular>
+              <View className="flex flex-row justify-end mt-auto">
+                <TouchableOpacity
+                  onPress={reTakeTesthandler}
+                  className="px-4 py-2 border rounded-md border-text">
+                  <CustomTextRegular className="text-center text-text">
+                    Retake Test
+                  </CustomTextRegular>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => saveResult()}
+                  disabled={isPending}
+                  className="px-4 py-2 ml-2 border rounded-md bg-primmary border-primmary">
+                  <CustomTextRegular className="text-center text-white">
+                    {isPending ? 'Saving...' : 'Save Result'}
+                  </CustomTextRegular>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </CustomSafeArea>
   );
 }

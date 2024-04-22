@@ -563,6 +563,8 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = remote_medical_care_2/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = REC;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -573,7 +575,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.remotemedtech.rec;
+				PRODUCT_BUNDLE_IDENTIFIER = com.remotemedtech.rtc;
 				PRODUCT_NAME = remote_medical_care_2;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -594,6 +596,8 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = remote_medical_care_2/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = REC;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.medical";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -604,7 +608,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.remotemedtech.rec;
+				PRODUCT_BUNDLE_IDENTIFIER = com.remotemedtech.rtc;
 				PRODUCT_NAME = remote_medical_care_2;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

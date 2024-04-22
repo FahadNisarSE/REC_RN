@@ -1,6 +1,6 @@
-import { DrawerToggleButton } from '@react-navigation/drawer';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useState } from 'react';
+import {DrawerToggleButton} from '@react-navigation/drawer';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -9,10 +9,10 @@ import {
   Modal,
   Pressable,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { queryClient } from '../../App';
+import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
@@ -22,10 +22,10 @@ import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import { meetingStyles } from '../styles/style';
-import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
-import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
-import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
+import {meetingStyles} from '../styles/style';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
+import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -59,8 +59,11 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
     },
     onBgResult: event => {
       // Note: In IOS "bgEventMeasureEnd" is not triggered. So when result is return, it is considered that test has ended.
-      setShowModal(false)
-      setBgEvent({event: 'bgEventMeasureEnd', message: 'Blood Glucose measurement is ended'})
+      setShowModal(false);
+      setBgEvent({
+        event: 'bgEventMeasureEnd',
+        message: 'Blood Glucose measurement is ended',
+      });
 
       setIsMeasuring(false);
       setBgResult(event);
@@ -149,53 +152,145 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
     );
   };
 
-  const CustomDrawer = useCallback(() => {
-    function saveResult() {
-      mutate(
-        {
-          AppointmentTestId: appointmentTestId!,
-          VariableName: ['Blood Glucose'],
-          VariableValue: [`${bgResult} mmol/L`],
+  function saveResult() {
+    mutate(
+      {
+        AppointmentTestId: appointmentTestId!,
+        VariableName: ['Blood Glucose'],
+        VariableValue: [`${bgResult} mmol/L`],
+      },
+      {
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Something went wrong.',
+            text2:
+              'Something went wrong while saving test result. Please try again.',
+          });
         },
-        {
-          onError: () => {
-            Toast.show({
-              type: 'error',
-              text1: 'Something went wrong.',
-              text2:
-                'Something went wrong while saving test result. Please try again.',
-            });
-          },
-          onSuccess: () => {
-            toggleModal(false);
-            setBgEvent(null);
-            setBgResult({bg: 0});
+        onSuccess: () => {
+          toggleModal(false);
+          setBgEvent(null);
+          setBgResult({bg: 0});
 
-            Toast.show({
-              type: 'success',
-              text1: 'Save Result',
-              text2: 'Blood Pressure result saved successfully. 👍',
+          Toast.show({
+            type: 'success',
+            text1: 'Save Result',
+            text2: 'Blood Glucose result saved successfully. 👍',
+          });
+          queryClient.invalidateQueries({
+            queryKey: [
+              `get_appointment_details_${appointmentDetail?.AppointmentId}`,
+            ],
+          }),
+            navigation.navigate('AppointmentDetail', {
+              id: appointmentDetail?.AppointmentId!,
             });
-            queryClient.invalidateQueries({
-              queryKey: [
-                `get_appointment_details_${appointmentDetail?.AppointmentId}`,
-              ],
-            }),
-              navigation.navigate('AppointmentDetail', {
-                id: appointmentDetail?.AppointmentId!,
-              });
-          },
         },
-      );
-    }
+      },
+    );
+  }
 
-    function reTakeTesthandler() {
-      setBgResult({bg: 0});
-      setBgEvent(null);
-      setShowModal(false);
-    }
+  function reTakeTesthandler() {
+    setBgResult({bg: 0});
+    setBgEvent(null);
+    setShowModal(false);
+  }
 
-    return (
+  return (
+    <CustomSafeArea stylesClass="flex-1 bg-white">
+      <View className="flex-1 px-5">
+        <View className="flex-row items-center py-5">
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => {
+              isMeasuring ? handleTestInProgress() : navigation.goBack();
+            }}
+            className="p-1">
+            <Image
+              source={require('../assets/icons/back_arrow.png')}
+              alt="Go back"
+            />
+          </TouchableOpacity>
+          <CustomTextRegular className="mx-auto text-xl text-text">
+            Blood Glucose
+          </CustomTextRegular>
+          <DrawerToggleButton tintColor="black" />
+        </View>
+
+        {/* Blood Glucose Result */}
+        <View className="items-center justify-between p-4 border border-gray-200 rounded-md">
+          <View className="items-center mx-auto">
+            <CustomTextRegular className="text-5xl text-text">
+              {bgResult?.bg ?? 0}
+            </CustomTextRegular>
+            <CustomTextRegular className="text-xs text-text mb-8">
+              mmol/L
+            </CustomTextRegular>
+            {/* <CustomTextRegular className="px-2 py-1 mt-2 text-[10px] border rounded-full text-secondary border-secondary">
+              Normal
+            </CustomTextRegular> */}
+          </View>
+        </View>
+
+        {/* Normal Blood Glucose here */}
+        <View className="p-4 mt-4 border border-gray-300 rounded-md">
+          <View>
+            <CustomTextSemiBold className="text-xs text-center text-text">
+              Normal Blood Glucose
+            </CustomTextSemiBold>
+            <CustomTextRegular className="text-[10px] text-center text-text mt-3">
+              3.9 mmol/L - 6.1 mmol/L
+            </CustomTextRegular>
+            <View
+              className="flex-row items-center my-4 rounded"
+              style={{opacity: bgResult?.bg ? 100 : 0}}>
+              <ResultIdicatorBar
+                lowThreshold={3.9}
+                highThreshold={6.1}
+                lowestLimit={0}
+                highestLimit={10}
+                value={bgResult?.bg ?? 0}
+              />
+            </View>
+          </View>
+        </View>
+
+        <View className="flex flex-row justify-between mt-10">
+          <View
+            className={`flex flex-row items-center px-4 py-2 mr-auto rounded-full ${
+              isConnected ? 'bg-primmary' : 'bg-rose-400'
+            }`}>
+            <Image
+              className="w-3 h-3"
+              source={
+                isConnected
+                  ? require('../assets/icons/bluetooth.png')
+                  : require('../assets/icons/bluetooth-off.png')
+              }
+              alt="Connection status"
+            />
+            <CustomTextSemiBold className={`ml-2 text-xs text-white`}>
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </CustomTextSemiBold>
+          </View>
+          <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
+            <BatteryIndicator percentage={battery} />
+            <CustomTextSemiBold className="ml-2 text-xs text-white">
+              {battery} %
+            </CustomTextSemiBold>
+          </View>
+        </View>
+        <Button
+          text={isMeasuring ? 'Measuring...' : 'Start Test'}
+          className="mt-auto mb-5"
+          disabled={isMeasuring}
+          onPress={() => measureBg()}
+        />
+      </View>
+      <MeasruementStepsModal />
+
+      {/* Save Result Modal */}
       <Modal
         visible={
           showModal &&
@@ -300,106 +395,6 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
           </View>
         </View>
       </Modal>
-    );
-  }, [showModal]);
-
-  async function measureBloodGlucose() {
-    await measureBg();
-  }
-
-  return (
-    <CustomSafeArea stylesClass="flex-1 bg-white">
-      <View className="flex-1 px-5">
-        <View className="flex-row items-center py-5">
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={() => {
-              isMeasuring ? handleTestInProgress() : navigation.goBack();
-            }}
-            className="p-1">
-            <Image
-              source={require('../assets/icons/back_arrow.png')}
-              alt="Go back"
-            />
-          </TouchableOpacity>
-          <CustomTextRegular className="mx-auto text-xl text-text">
-            Blood Glucose
-          </CustomTextRegular>
-          <DrawerToggleButton tintColor='black' />
-        </View>
-
-        {/* Blood Glucose Result */}
-        <View className="items-center justify-between p-4 border border-gray-200 rounded-md">
-          <View className="items-center mx-auto">
-            <CustomTextRegular className="text-5xl text-text">
-              {bgResult?.bg ?? 0}
-            </CustomTextRegular>
-            <CustomTextRegular className="text-xs text-text mb-8">
-              mmol/L
-            </CustomTextRegular>
-            {/* <CustomTextRegular className="px-2 py-1 mt-2 text-[10px] border rounded-full text-secondary border-secondary">
-              Normal
-            </CustomTextRegular> */}
-          </View>
-        </View>
-
-        {/* Normal Blood Glucose here */}
-        <View className="p-4 mt-4 border border-gray-300 rounded-md">
-          <View>
-            <CustomTextSemiBold className="text-xs text-center text-text">
-              Normal Blood Glucose
-            </CustomTextSemiBold>
-            <CustomTextRegular className="text-[10px] text-center text-text mt-3">
-              3.9 mmol/L - 6.1 mmol/L
-            </CustomTextRegular>
-            <View
-              className="flex-row items-center my-4 rounded"
-              style={{opacity: bgResult?.bg ? 100 : 0}}>
-              <ResultIdicatorBar
-                lowThreshold={3.9}
-                highThreshold={6.1}
-                lowestLimit={0}
-                highestLimit={10}
-                value={bgResult?.bg ?? 0}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View className="flex flex-row justify-between mt-10">
-          <View
-            className={`flex flex-row items-center px-4 py-2 mr-auto rounded-full ${
-              isConnected ? 'bg-primmary' : 'bg-rose-400'
-            }`}>
-            <Image
-              className="w-3 h-3"
-              source={
-                isConnected
-                  ? require('../assets/icons/bluetooth.png')
-                  : require('../assets/icons/bluetooth-off.png')
-              }
-              alt="Connection status"
-            />
-            <CustomTextSemiBold className={`ml-2 text-xs text-white`}>
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </CustomTextSemiBold>
-          </View>
-          <View className="flex flex-row items-center px-3 py-1 rounded-full bg-primmary">
-            <BatteryIndicator percentage={battery} />
-            <CustomTextSemiBold className="ml-2 text-xs text-white">
-              {battery} %
-            </CustomTextSemiBold>
-          </View>
-        </View>
-        <Button
-          text={isMeasuring ? 'Measuring...' : 'Start Test'}
-          className="mt-auto mb-5"
-          disabled={isMeasuring}
-          onPress={() => measureBloodGlucose()}
-        />
-      </View>
-      <MeasruementStepsModal />
-      <CustomDrawer />
     </CustomSafeArea>
   );
 }

@@ -72,9 +72,11 @@ function AppointmentListCard(item: Appointment) {
               {item.Firstname} {item.Lastname}
             </CustomTextSemiBold>
             <CustomTextRegular className="text-xs text-text">
-              {item.Symptoms.length > 18
-                ? `${item.Symptoms.substring(0, 18)}...`
-                : item.Symptoms}
+              {item?.Symptoms
+                ? item.Symptoms.length > 18
+                  ? `${item.Symptoms.substring(0, 18)}...`
+                  : item.Symptoms
+                : ''}
             </CustomTextRegular>
           </View>
           <View className="flex-row items-end mt-2">

@@ -89,7 +89,8 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
       <Pressable
         onPress={() => {
           props.navigation.closeDrawer();
-          removeUserData()
+          props.navigation.navigate('Home')
+          setTimeout(() => removeUserData(), 100)
         }}
         className="flex-row px-4 py-3 mx-2 mt-auto mb-3 bg-white rounded-lg">
         <Image
