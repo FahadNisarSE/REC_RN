@@ -203,7 +203,7 @@ export default function Login({}) {
                 By clicking sign in, You agree to{' '}
                 <ExternalLink
                   buttonText="Privacy Policy"
-                  url="https://remotemedtech.com/data-privacy"
+                  url="https://remotemedtech.com/data-privacy.html"
                   className="text-green"
                 />{' '}
                 of Remote Medical Care.

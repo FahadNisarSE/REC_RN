@@ -84,7 +84,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
     await measureECG();
     setTimeout(async () => {
       await stopECG();
-      toggleModal(true);
+      toggleModal(true)
     }, 90 * 1000); // 1.5 min
   }
 
@@ -169,7 +169,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
               Toast.show({
                 type: 'success',
                 text1: 'Save Result',
-                text2: 'Blood Pressure result saved successfully. 👍',
+                text2: 'ECG result saved successfully. 👍',
               });
             queryClient.invalidateQueries({
               queryKey: [

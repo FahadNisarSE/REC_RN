@@ -169,7 +169,7 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
             Toast.show({
               type: 'success',
               text1: 'Save Result',
-              text2: 'Blood Pressure result saved successfully. 👍',
+              text2: 'Blood Glucose result saved successfully. 👍',
             });
             queryClient.invalidateQueries({
               queryKey: [

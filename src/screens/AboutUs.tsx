@@ -1,4 +1,10 @@
-import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Platform,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import Button from '../components/ui/Button';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
@@ -6,6 +12,11 @@ import {DrawerToggleButton} from '@react-navigation/drawer';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import SpInAppUpdates, {
+  IAUUpdateKind,
+  StartUpdateOptions,
+} from 'sp-react-native-in-app-updates';
+import {useState} from 'react';
 
 const {width, height} = Dimensions.get('window');
 
@@ -14,7 +25,36 @@ type AppointmentDetailProps = NativeStackScreenProps<
   'AppointmentDetail'
 >;
 
+const inAppUpdates = new SpInAppUpdates(true);
+
 export default function AboutUs({navigation}: AppointmentDetailProps) {
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+
+  const checkUpdates = async () => {
+    try {
+      const result = await inAppUpdates.checkNeedsUpdate();
+      if (result.shouldUpdate) {
+        setUpdateAvailable(true);
+      } else {
+        setUpdateAvailable(false);
+      }
+    } catch (error) {
+      console.log('In app update: ', error);
+    }
+  };
+
+  const updateApp = async () => {
+    if (updateAvailable) {
+      let updateOptions: StartUpdateOptions = {};
+      if (Platform.OS === 'android') {
+        updateOptions = {
+          updateType: IAUUpdateKind.FLEXIBLE,
+        };
+      }
+      inAppUpdates.startUpdate(updateOptions);
+    }
+  };
+
   return (
     <>
       <View className="flex-row items-center p-4">
@@ -43,7 +83,11 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
         <CustomTextRegular className="my-6 text-center text-text">
           Current Version: {DeviceInfo.getVersion()}
         </CustomTextRegular>
-        <Button text="Check for Updates" className="" />
+        <Button
+          disabled={!updateAvailable}
+          text={updateAvailable ? 'Update Available' : 'Up to Date'}
+          className=""
+        />
       </View>
     </>
   );

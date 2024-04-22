@@ -1,2 +1,2 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('visionsdk_v1.0.26.aar'))
+artifacts.add("default", file('visionsdk_v1.0.26-release.aar'))

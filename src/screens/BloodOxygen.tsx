@@ -158,7 +158,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
               Toast.show({
                 type: 'success',
                 text1: 'Save Result',
-                text2: 'Blood Pressure result saved successfully. 👍',
+                text2: 'Blood Oxygen result saved successfully. 👍',
               });
             queryClient.invalidateQueries({
               queryKey: [
