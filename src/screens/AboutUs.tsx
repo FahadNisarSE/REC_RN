@@ -13,24 +13,29 @@ import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import SpInAppUpdates, {
+  AndroidInstallStatus,
   IAUUpdateKind,
   StartUpdateOptions,
 } from 'sp-react-native-in-app-updates';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 const {width, height} = Dimensions.get('window');
 
-type AppointmentDetailProps = NativeStackScreenProps<
+type AboutUsProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
-  'AppointmentDetail'
->;
+  'AboutUs'
+>; // Renamed for clarity
 
 const inAppUpdates = new SpInAppUpdates(true);
 
-export default function AboutUs({navigation}: AppointmentDetailProps) {
+export default function AboutUs({navigation}: AboutUsProps) {
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState<AndroidInstallStatus>(0);
+  const [totalSize, setTotalSize] = useState<number>(0);
+  const [currentDownloaded, setCurrentDownloaded] = useState<number>(0);
 
-  const checkUpdates = async () => {
+  const checkForUpdates = async () => {
+    // Use a clearer function name
     try {
       const result = await inAppUpdates.checkNeedsUpdate();
       if (result.shouldUpdate) {
@@ -43,7 +48,8 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
     }
   };
 
-  const updateApp = async () => {
+  const handleUpdateApp = async () => {
+    // Use a more descriptive function name
     if (updateAvailable) {
       let updateOptions: StartUpdateOptions = {};
       if (Platform.OS === 'android') {
@@ -51,9 +57,21 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
           updateType: IAUUpdateKind.FLEXIBLE,
         };
       }
-      inAppUpdates.startUpdate(updateOptions);
+      await inAppUpdates.startUpdate(updateOptions);
+      inAppUpdates.installUpdate();
     }
   };
+
+  useEffect(() => {
+    inAppUpdates.addStatusUpdateListener(param => {
+      const {status, bytesDownloaded, totalBytesToDownload} = param;
+      setUpdateStatus(status);
+      setTotalSize(totalBytesToDownload);
+      setCurrentDownloaded(bytesDownloaded);
+    });
+
+    return inAppUpdates.removeStatusUpdateListener(() => {});
+  }, []);
 
   return (
     <>
@@ -66,7 +84,7 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
           />
         </TouchableOpacity>
         <CustomTextSemiBold className="mx-auto text-xl text-text">
-          Appointment Details
+          About Us
         </CustomTextSemiBold>
         <DrawerToggleButton />
       </View>
@@ -84,9 +102,16 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
           Current Version: {DeviceInfo.getVersion()}
         </CustomTextRegular>
         <Button
-          disabled={!updateAvailable}
-          text={updateAvailable ? 'Update Available' : 'Up to Date'}
-          className=""
+          onPress={handleUpdateApp}
+          disabled={!updateAvailable || updateStatus === 3}
+          text={
+            updateStatus === 3
+              ? `${currentDownloaded} / ${totalSize}`
+              : updateAvailable
+              ? 'Update Available'
+              : 'No Updates Available'
+          }
+          className="px-5"
         />
       </View>
     </>
