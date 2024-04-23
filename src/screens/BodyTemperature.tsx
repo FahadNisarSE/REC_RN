@@ -24,6 +24,7 @@ import {meetingStyles} from '../styles/style';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
+import AppUpdating from '../components/AppUpdating';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -127,6 +128,7 @@ export default function BodyTemperature({navigation}: BloodOxygenProps) {
 
   return (
     <>
+      <AppUpdating />
       <View className="flex-1 px-5 bg-white">
         <View className="flex-row items-center py-5">
           <TouchableOpacity

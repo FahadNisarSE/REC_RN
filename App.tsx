@@ -26,7 +26,8 @@ const checkUpdates = async () => {
           updateType: IAUUpdateKind.FLEXIBLE,
         };
       }
-      inAppUpdates.startUpdate(updateOptions);
+      await inAppUpdates.startUpdate(updateOptions);
+      inAppUpdates.installUpdate()
     }
   } catch (error) {
     console.log('In app update: ', error);

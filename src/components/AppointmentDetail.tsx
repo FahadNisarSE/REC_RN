@@ -22,6 +22,7 @@ import CustomTextSemiBold from './ui/CustomTextSemiBold';
 import Error from './ui/Error';
 import Loader from './ui/Loader';
 import {DrawerToggleButton} from '@react-navigation/drawer';
+import AppUpdating from './AppUpdating';
 
 export type AppointmentDetailTab = {
   'Recom. tests': {appointmentTests: AppointmentTest[]};
@@ -65,6 +66,7 @@ export default function AppointmentDetail({
 
   return (
     <>
+      <AppUpdating />
       <CustomSafeArea stylesClass="flex-1">
         <View className="flex-row items-center p-4">
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>

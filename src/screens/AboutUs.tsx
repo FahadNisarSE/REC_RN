@@ -1,23 +1,24 @@
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
   Platform,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import Button from '../components/ui/Button';
-import CustomTextRegular from '../components/ui/CustomTextRegular';
-import {DrawerToggleButton} from '@react-navigation/drawer';
-import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import SpInAppUpdates, {
   AndroidInstallStatus,
   IAUUpdateKind,
   StartUpdateOptions,
 } from 'sp-react-native-in-app-updates';
-import {useEffect, useState} from 'react';
+import AppUpdating from '../components/AppUpdating';
+import Button from '../components/ui/Button';
+import CustomTextRegular from '../components/ui/CustomTextRegular';
+import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
 
 const {width, height} = Dimensions.get('window');
 
@@ -31,8 +32,6 @@ const inAppUpdates = new SpInAppUpdates(true);
 export default function AboutUs({navigation}: AboutUsProps) {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<AndroidInstallStatus>(0);
-  const [totalSize, setTotalSize] = useState<number>(0);
-  const [currentDownloaded, setCurrentDownloaded] = useState<number>(0);
 
   const checkForUpdates = async () => {
     // Use a clearer function name
@@ -49,7 +48,6 @@ export default function AboutUs({navigation}: AboutUsProps) {
   };
 
   const handleUpdateApp = async () => {
-    // Use a more descriptive function name
     if (updateAvailable) {
       let updateOptions: StartUpdateOptions = {};
       if (Platform.OS === 'android') {
@@ -63,11 +61,10 @@ export default function AboutUs({navigation}: AboutUsProps) {
   };
 
   useEffect(() => {
+    checkForUpdates();
     inAppUpdates.addStatusUpdateListener(param => {
-      const {status, bytesDownloaded, totalBytesToDownload} = param;
+      const {status} = param;
       setUpdateStatus(status);
-      setTotalSize(totalBytesToDownload);
-      setCurrentDownloaded(bytesDownloaded);
     });
 
     return inAppUpdates.removeStatusUpdateListener(() => {});
@@ -75,6 +72,7 @@ export default function AboutUs({navigation}: AboutUsProps) {
 
   return (
     <>
+      <AppUpdating />
       <View className="flex-row items-center p-4">
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Image
@@ -103,10 +101,9 @@ export default function AboutUs({navigation}: AboutUsProps) {
         </CustomTextRegular>
         <Button
           onPress={handleUpdateApp}
-          disabled={!updateAvailable || updateStatus === 3}
           text={
-            updateStatus === 3
-              ? `${currentDownloaded} / ${totalSize}`
+            updateStatus === 2
+              ? `Updating! Please wait...`
               : updateAvailable
               ? 'Update Available'
               : 'No Updates Available'

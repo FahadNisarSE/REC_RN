@@ -20,8 +20,8 @@ android {
         applicationId "com.remote_medical_care_2"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "2.0.7"
+        versionCode 12
+        versionName "2.0.10"
     }
     signingConfigs {
         release {

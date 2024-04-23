@@ -1,6 +1,6 @@
-import { DrawerToggleButton } from '@react-navigation/drawer';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState } from 'react';
+import {DrawerToggleButton} from '@react-navigation/drawer';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { queryClient } from '../../App';
+import {queryClient} from '../../App';
 import useSaveTestResults from '../api/action/useSaveTestResult';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import Button from '../components/ui/Button';
@@ -19,15 +19,16 @@ import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import BoGraph from '../nativemodules/MinttiVision/BoGraph';
 import useMinttiVision from '../nativemodules/MinttiVision/useMinttiVision';
-import { meetingStyles } from '../styles/style';
-import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
-import { useAppointmentDetailStore } from '../utils/store/useAppointmentDetailStore';
-import { useMinttiVisionStore } from '../utils/store/useMinttiVisionStore';
+import {meetingStyles} from '../styles/style';
+import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
+import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
+import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {
   calculateAverage,
   calculateMaxExcludingZero,
   calculateMinExcludingZero,
 } from '../utils/utilityFunctions';
+import AppUpdating from '../components/AppUpdating';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -186,6 +187,7 @@ export default function BloodOxygen({navigation}: BloodOxygenProps) {
 
   return (
     <>
+      <AppUpdating />
       <View className="flex-1 bg-white">
         <View className="flex-row items-center py-5 mx-5">
           <TouchableOpacity

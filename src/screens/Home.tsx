@@ -9,6 +9,7 @@ import {useSignInStore} from '../utils/store/useSignInStore';
 import AppointmentHistory from '../components/AppointmentHistory';
 import {DrawerToggleButton} from '@react-navigation/drawer';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
+import AppUpdating from '../components/AppUpdating';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -17,6 +18,7 @@ export default function Home() {
 
   return (
     <>
+      <AppUpdating />
       <View className="flex-1 mx-5">
         <StatusBar backgroundColor="#46b98d" />
 

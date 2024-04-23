@@ -26,6 +26,7 @@ import BloodGlucoseIntructionMap from '../components/BloodGlucoseTestSteps';
 import BatteryIndicator from '../components/BatteryIndicatory';
 import {DrawerToggleButton} from '@react-navigation/drawer';
 import ResultIdicatorBar from '../components/ui/ResultIdicatorBar';
+import AppUpdating from '../components/AppUpdating';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -189,6 +190,7 @@ export default function BloodGlucose({navigation}: BloodOxygenProps) {
 
   return (
     <>
+      <AppUpdating />
       <View className="flex-1 px-5 bg-white">
         <View className="flex-row items-center py-5">
           <TouchableOpacity

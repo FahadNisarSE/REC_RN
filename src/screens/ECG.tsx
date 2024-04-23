@@ -26,6 +26,7 @@ import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStor
 import {useMinttiVisionStore} from '../utils/store/useMinttiVisionStore';
 import {calculateAverage} from '../utils/utilityFunctions';
 import {useFocusEffect} from '@react-navigation/native';
+import AppUpdating from '../components/AppUpdating';
 
 type BloodOxygenProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
@@ -190,6 +191,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
 
   return (
     <>
+      <AppUpdating />
       <View className="flex-1 bg-white">
         <View className="flex-row items-center py-5 mx-5">
           <TouchableOpacity
