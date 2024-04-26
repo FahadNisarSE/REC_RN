@@ -6,7 +6,7 @@ import Instruction from '../components/Instruction';
 import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
 import {BASE_IMG_URL} from '../utils/config';
 import {useSignInStore} from '../utils/store/useSignInStore';
-import AppointmentHistory from '../components/AppointmentHistory';
+import AppointmentHistory from '../components/TestPlan';
 import {DrawerToggleButton} from '@react-navigation/drawer';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
 import CustomSafeArea from '../components/CustomSafeArea';
@@ -99,7 +99,7 @@ const HomeTabs = () => {
         }}>
         <Tab.Screen name="instructions" component={Instruction} />
         <Tab.Screen name="appointment" component={AppointmentList} />
-        <Tab.Screen name="history" component={AppointmentHistory} />
+        <Tab.Screen name="test plan" component={AppointmentHistory} />
       </Tab.Navigator>
     </View>
   );

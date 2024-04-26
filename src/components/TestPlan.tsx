@@ -13,7 +13,7 @@ import Error from './ui/Error';
 import Loader from './ui/Loader';
 import NoAppointmentFound from './ui/NoAppointmentFound';
 
-export default function AppointmentHistory() {
+export default function TestPlan() {
   const {setShowModal, clinicId} = useToggleStore();
   const {isLoading, isError, data, refetch} =
     useGetAppointmentHistory(clinicId);

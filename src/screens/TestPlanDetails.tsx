@@ -13,13 +13,13 @@ import {AppointmentAnswer, AppointmentTest} from '../api/schema/Appointment';
 import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import {BASE_IMG_URL} from '../utils/config';
 import {useAppointmentDetailStore} from '../utils/store/useAppointmentDetailStore';
-import AppointmentQuestions from './AppointmentQuestions';
-import CustomSafeArea from './CustomSafeArea';
-import RecommendedTestsList from './RecommendedTestsList';
-import CustomTextRegular from './ui/CustomTextRegular';
-import CustomTextSemiBold from './ui/CustomTextSemiBold';
-import Error from './ui/Error';
-import Loader from './ui/Loader';
+import AppointmentQuestions from '../components/AppointmentQuestions';
+import CustomSafeArea from '../components/CustomSafeArea';
+import RecommendedTestsList from '../components/RecommendedTestsList';
+import CustomTextRegular from '../components/ui/CustomTextRegular';
+import CustomTextSemiBold from '../components/ui/CustomTextSemiBold';
+import Error from '../components/ui/Error';
+import Loader from '../components/ui/Loader';
 import {DrawerToggleButton} from '@react-navigation/drawer';
 
 export type AppointmentDetailTab = {
@@ -36,7 +36,7 @@ type AppointmentDetailProps = NativeStackScreenProps<
 
 const {width, height} = Dimensions.get('window');
 
-export default function AppointmentDetail({
+export default function TestPlanDetails({
   navigation,
   route,
 }: AppointmentDetailProps) {

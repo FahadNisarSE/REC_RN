@@ -1,10 +1,10 @@
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import AppointmentDetail from '../components/AppointmentDetail';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import AppointmentDetail from '../screens/AppointmentDetail';
 import CustomDrawer from '../components/CustomDrawer';
 import AboutUs from '../screens/AboutUs';
 import BloodGlucose from '../screens/BloodGlucose';
@@ -16,7 +16,8 @@ import ECG from '../screens/ECG';
 import Home from '../screens/Home';
 import Instructions from '../screens/Instrunctions';
 import Login from '../screens/Login';
-import { useSignInStore } from './store/useSignInStore';
+import {useSignInStore} from './store/useSignInStore';
+import AppointmentHistory from '../screens/AppointmentHistory';
 
 export type HomeStackNavigatorParamList = {
   Home: undefined;
@@ -36,6 +37,7 @@ export type HomeStackNavigatorParamList = {
   BodyTemperature: undefined;
   BloodPressure: undefined;
   ECG: undefined;
+  History: undefined;
 };
 
 const Drawer = createDrawerNavigator<HomeStackNavigatorParamList>();
@@ -105,6 +107,11 @@ export default function AppNavigation() {
               <Drawer.Screen
                 name="ECG"
                 component={ECG}
+                options={{headerShown: false}}
+              />
+              <Drawer.Screen
+                name="History"
+                component={AppointmentHistory}
                 options={{headerShown: false}}
               />
             </Drawer.Navigator>

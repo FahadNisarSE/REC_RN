@@ -13,6 +13,7 @@ export async function getAppointmentHistory(
     });
 
     if (data.status === 201) {
+      console.log("Appointment History: ", data.data)
       return data.data as any;
     } else throw new Error('Oops! Something went wrong.');
   } catch (error) {

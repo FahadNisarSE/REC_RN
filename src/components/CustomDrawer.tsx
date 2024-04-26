@@ -1,12 +1,12 @@
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerItem
+  DrawerItem,
 } from '@react-navigation/drawer';
 import React from 'react';
-import { Image, Pressable, View } from 'react-native';
-import { BASE_IMG_URL } from '../utils/config';
-import { useSignInStore } from '../utils/store/useSignInStore';
+import {Image, Pressable, View} from 'react-native';
+import {BASE_IMG_URL} from '../utils/config';
+import {useSignInStore} from '../utils/store/useSignInStore';
 import CustomTextRegular from './ui/CustomTextRegular';
 import CustomTextSemiBold from './ui/CustomTextSemiBold';
 import CustomSafeArea from './CustomSafeArea';
@@ -23,7 +23,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
 
   return (
     <CustomSafeArea stylesClass="flex-1 bg-[#052438]">
-      <View className='mx-3 my-4 overflow-hidden rounded-lg'>
+      <View className="mx-3 my-4 overflow-hidden rounded-lg">
         <View className="relative">
           <Image
             source={require('../assets/images/background.png')}
@@ -53,7 +53,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
       <DrawerContentScrollView {...props}>
         <DrawerItem
           {...props}
-          style={{marginTop: 4, marginHorizontal: 12}} 
+          style={{marginTop: 4, marginHorizontal: 12}}
           label="Home"
           focused={isRouteActive('Home')}
           activeBackgroundColor="#46b98d"
@@ -85,12 +85,29 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
           )}
           onPress={() => props.navigation.navigate('AboutUs')}
         />
+        <DrawerItem
+          {...props}
+          style={{marginTop: 4, marginHorizontal: 12}}
+          label="History"
+          focused={isRouteActive('History')}
+          activeBackgroundColor="#46b98d"
+          activeTintColor="#000000"
+          labelStyle={{fontFamily: 'Inter-SemiBold', color: 'white'}}
+          icon={() => (
+            <Image
+              source={require('../assets/icons/history.png')}
+              alt="History"
+              style={{width: 17, height: 17}}
+            />
+          )}
+          onPress={() => props.navigation.navigate('History')}
+        />
       </DrawerContentScrollView>
       <Pressable
         onPress={() => {
           props.navigation.closeDrawer();
-          props.navigation.navigate('Home')
-          setTimeout(() => removeUserData(), 100)
+          props.navigation.navigate('Home');
+          setTimeout(() => removeUserData(), 100);
         }}
         className="flex-row px-4 py-3 mx-2 mt-auto mb-3 bg-white rounded-lg">
         <Image
