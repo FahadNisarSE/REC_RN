@@ -12,7 +12,7 @@ const {width, height} = Dimensions.get('window');
 
 type AppointmentDetailProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
-  'AppointmentDetail'
+  'AboutUs'
 >;
 
 export default function AboutUs({navigation}: AppointmentDetailProps) {
