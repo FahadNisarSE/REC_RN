@@ -6,12 +6,14 @@ export interface Appointment {
   AppointmentStatus: string;
   MeetingLink: string | null;
   MeetingChannel: string | null;
-  CanceledBy: string | null;
-  CancellationReason: string | null;
+  CanceledBy?: string | null;
+  CancellationReason?: string | null;
   AppointmentDate: string;
   AppointmentStartTime: string;
   AppointmentEndTime: string;
   RescheduledBy: string | null;
+  BookingReason?: string | null;
+  BookedBy: string | null;
   created_at: string;
   updated_at: string;
   SpecialTreatment: string;
@@ -19,11 +21,11 @@ export interface Appointment {
   Symptoms?: string;
   CloserDiagnosis: string | null;
   ClinicName: string;
+  Language: string;
   Firstname: string;
   Lastname: string;
   ProfileImg: string;
 }
-
 export interface AppointmentDetail {
   AppointmentId: string;
   DoctorId: string;
@@ -37,7 +39,8 @@ export interface AppointmentDetail {
   AppointmentDate: string;
   AppointmentStartTime: string;
   AppointmentEndTime: string;
-  RescheduledBy: string | null;
+  RescheduledBy?: string | null;
+  BookingReason?: string | null;
   created_at: string;
   IsoEndTime: string;
   IsoStartTime: string;

@@ -10,12 +10,12 @@ import CustomSafeArea from '../components/CustomSafeArea';
 
 const {width, height} = Dimensions.get('window');
 
-type AppointmentDetailProps = NativeStackScreenProps<
+type AboutAppProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
-  'AboutUs'
+  'AboutApp'
 >;
 
-export default function AboutUs({navigation}: AppointmentDetailProps) {
+export default function AboutApp({navigation}: AboutAppProps) {
   return (
     <CustomSafeArea stylesClass='flex-1'>
       <View className="flex-row items-center p-4">
@@ -27,7 +27,7 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
           />
         </TouchableOpacity>
         <CustomTextSemiBold className="mx-auto text-xl text-text">
-          About Us
+          About App
         </CustomTextSemiBold>
         <DrawerToggleButton tintColor='black' />
       </View>

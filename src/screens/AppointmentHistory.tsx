@@ -6,7 +6,7 @@ import {
 } from '@react-navigation/native-stack';
 import React from 'react';
 import {FlatList, Image, TouchableOpacity, View} from 'react-native';
-import useGetAppointmentHistory from '../api/query/useGetAppointmentHistory';
+import useGetPaginatedAppointmentHistory from '../api/query/useGetAppointmentHistory';
 import {Appointment} from '../api/schema/Appointment';
 import CustomSafeArea from '../components/CustomSafeArea';
 import CustomTextRegular from '../components/ui/CustomTextRegular';
@@ -32,12 +32,13 @@ export default function AppointmentHistory({
   const {clinicId, setClinicId, setShowModal, showModal} = useToggleStore();
   const {isLoading, isError, data, refetch} =
     useGetAppointmentHistory(clinicId);
+    const {isFetching, isFetchingNextPage, data:something, fetchNextPage, hasNextPage, refetch:something2 } = useGetPaginatedAppointmentHistory(clinicId)
 
-    function toggleClinicId(clinicId: string) {
-        setClinicId(clinicId);
-        setShowModal(false);
-        refetch();
-      }
+  function toggleClinicId(clinicId: string) {
+    setClinicId(clinicId);
+    setShowModal(false);
+    refetch();
+  }
 
   return (
     <>
@@ -82,12 +83,12 @@ export default function AppointmentHistory({
           />
         )}
         <ChangeClinicModal
-        showModal={showModal}
-        toggleModal={setShowModal}
-        clinics={userData?.Clinics}
-        clinicId={clinicId}
-        toggleClinicId={toggleClinicId}
-      />
+          showModal={showModal}
+          toggleModal={setShowModal}
+          clinics={userData?.Clinics}
+          clinicId={clinicId}
+          toggleClinicId={toggleClinicId}
+        />
       </CustomSafeArea>
     </>
   );
