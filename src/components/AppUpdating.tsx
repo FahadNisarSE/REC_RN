@@ -15,6 +15,7 @@ export default function AppUpdating() {
   useEffect(() => {
     inAppUpdates.addStatusUpdateListener(param => {
       const {status, bytesDownloaded, totalBytesToDownload} = param;
+      if(status === 11) inAppUpdates.installUpdate()
       setUpdateStatus(status);
       setTotalSize(totalBytesToDownload);
       setCurrentDownloaded(bytesDownloaded);

@@ -22,14 +22,14 @@ import { HomeStackNavigatorParamList } from '../utils/AppNavigation';
 
 const {width, height} = Dimensions.get('window');
 
-type AboutUsProps = NativeStackScreenProps<
+type AboutAppProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
-  'AboutUs'
+  'AboutApp'
 >; // Renamed for clarity
 
 const inAppUpdates = new SpInAppUpdates(true);
 
-export default function AboutUs({navigation}: AboutUsProps) {
+export default function AboutApp({navigation}: AboutAppProps) {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<AndroidInstallStatus>(0);
 

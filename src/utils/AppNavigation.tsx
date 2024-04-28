@@ -6,7 +6,7 @@ import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppointmentDetail from '../components/AppointmentDetail';
 import CustomDrawer from '../components/CustomDrawer';
-import AboutUs from '../screens/AboutUs';
+import AboutApp from '../screens/AboutApp';
 import BloodGlucose from '../screens/BloodGlucose';
 import BloodOxygen from '../screens/BloodOxygen';
 import BloodPressure from '../screens/BloodPressure';
@@ -30,7 +30,7 @@ export type HomeStackNavigatorParamList = {
   DeviceInitialization: {
     testRoute: string;
   };
-  AboutUs: undefined;
+  AboutApp: undefined;
   BloodGlucose: undefined;
   BloodOxygen: undefined;
   BodyTemperature: undefined;
@@ -73,8 +73,8 @@ export default function AppNavigation() {
                 options={{headerShown: false}}
               />
               <Drawer.Screen
-                name="AboutUs"
-                component={AboutUs}
+                name="AboutApp"
+                component={AboutApp}
                 options={{headerShown: false}}
               />
               <Drawer.Screen

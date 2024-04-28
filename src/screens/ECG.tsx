@@ -48,6 +48,7 @@ export default function ECG({navigation}: BloodOxygenProps) {
     {rrMax: number; rrMin: number; hrv: number} | undefined
   >();
   const [duration, setDuration] = useState(0);
+  const {mutate, isPending} = useSaveTestResults();
 
   const {isConnected, battery, isMeasuring} = useMinttiVisionStore();
   const {measureECG, stopECG} = useMinttiVision({
@@ -78,8 +79,6 @@ export default function ECG({navigation}: BloodOxygenProps) {
       }
     },
   });
-
-  const {mutate, isPending} = useSaveTestResults();
 
   async function startECGTest() {
     await measureECG();

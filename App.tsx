@@ -27,7 +27,6 @@ const checkUpdates = async () => {
         };
       }
       await inAppUpdates.startUpdate(updateOptions);
-      inAppUpdates.installUpdate()
     }
   } catch (error) {
     console.log('In app update: ', error);
