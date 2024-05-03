@@ -6,6 +6,7 @@ import {HomeStackNavigatorParamList} from '../utils/AppNavigation';
 import CustomTextSemiBold from './ui/CustomTextSemiBold';
 import {FlatList} from 'react-native-gesture-handler';
 import {
+  BloodGlucoseInstructions,
   BloodPressureInstruction,
   ECGInstructions,
   TemperatureInstruction,
@@ -33,6 +34,11 @@ const InstunctionList = [
     image: require('../assets/icons/devices/blood_pressure.png'),
     name: 'ECG',
     list: ECGInstructions,
+  },
+  {
+    image: require('../assets/icons/devices/sugar_level.png'),
+    name: 'Blood Glucose',
+    list: BloodGlucoseInstructions,
   },
 ];
 

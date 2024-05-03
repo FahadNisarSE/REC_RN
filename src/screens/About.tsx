@@ -12,10 +12,10 @@ const {width, height} = Dimensions.get('window');
 
 type AppointmentDetailProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
-  'AppointmentDetail'
+  'About'
 >;
 
-export default function AboutUs({navigation}: AppointmentDetailProps) {
+export default function About({navigation}: AppointmentDetailProps) {
   return (
     <CustomSafeArea stylesClass='flex-1'>
       <View className="flex-row items-center p-4">
@@ -27,7 +27,7 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
           />
         </TouchableOpacity>
         <CustomTextSemiBold className="mx-auto text-xl text-text">
-          About Us
+          About
         </CustomTextSemiBold>
         <DrawerToggleButton tintColor='black' />
       </View>
@@ -44,7 +44,6 @@ export default function AboutUs({navigation}: AppointmentDetailProps) {
         <CustomTextRegular className="my-6 text-center text-text">
           Current Version: {DeviceInfo.getVersion()}
         </CustomTextRegular>
-        <Button text="Check for Updates" className="" />
       </View>
     </CustomSafeArea>
   );

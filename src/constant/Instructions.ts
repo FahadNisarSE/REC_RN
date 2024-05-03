@@ -163,4 +163,60 @@ export const ECGInstructions = [
   },
 ];
 
+export const BloodGlucoseInstructions = [
+  {
+    id: '1',
+    title: 'Begin Test',
+    description:
+      'Tap the "Start Test" button to initiate the measurement process.',
+    image: require('../assets/images/step_0.jpeg'),
+  },
+  {
+    id: '2',
+    title: 'Connect to Device',
+    description:
+      'Ensure Bluetooth is enabled. Find and select your device from the list. Wait for connection confirmation.',
+    image: require('../assets/images/step_1.png'),
+  },
+  {
+    id: '3',
+    title: 'Start the Test',
+    description: 'You can start the test by Pressing "Start Test" button.',
+    image: require('../assets/images/bloodglucose/step_02.png'),
+  },
+  {
+    id: '4',
+    title: 'Insert test paper',
+    description:
+      'After calibration, a promt "please insert the blood glucose test paper ini to the blood glucose test port of the device" will pop up.',
+    image: require('../assets/images/bloodglucose/step_03.png'),
+  },
+  {
+    id: '5',
+    title: 'Insert test paper',
+    description:
+      'According to the prompt, insert the test paper into the blood glucose test paper interface as shown in the figure.',
+    image: require('../assets/images/bloodglucose/step_04.png'),
+  },
+  {
+    id: '6',
+    title: 'Collect Blood',
+    description:
+      'After the test paper is inserted correctly, drop the blood of the finger correctly on the front section of test paper.',
+    image: require('../assets/images/ecg/step_05.jpg'),
+  },
+  {
+    id: '6',
+    title: 'Wait for Result',
+    description: 'After dripping blood correctly, you need to wait for 15s.',
+    image: require('../assets/images/ecg/step_05.jpg'),
+  },
+  {
+    id: '7',
+    title: 'Save the Result',
+    description: 'After reviewing save the result of the blood glucose test.',
+    image: require('../assets/images/ecg/step_05.jpg'),
+  },
+];
+
 export type TTemperatureInstruction = typeof TemperatureInstruction;

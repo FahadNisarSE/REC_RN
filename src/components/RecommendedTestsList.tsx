@@ -55,7 +55,7 @@ const RECOMMENDED_TESTS_IMAGES: {
 function Item({
   testAttemptable,
   DeviceName,
-  PlaystoreLink,
+  AppstoreLink,
   Result,
   TestName,
   AppointmentTestId,
@@ -75,7 +75,7 @@ function Item({
         navigation.navigate('DeviceInitialization', {
           testRoute: mapTestUrl(TestName),
         });
-    } else Linking.openURL(PlaystoreLink);
+    } else Linking.openURL(AppstoreLink);
   }
 
   return (
